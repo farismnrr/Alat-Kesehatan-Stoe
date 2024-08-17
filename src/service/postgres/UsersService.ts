@@ -33,7 +33,7 @@ class UserService {
 
 		const userResult = await this._pool.query(userQuery);
 		if (!userResult.rowCount) {
-			throw new AuthenticationError("Username or password is incorrect");
+			throw new NotFoundError("Username not found");
 		}
 
 		const user = userResult.rows[0];

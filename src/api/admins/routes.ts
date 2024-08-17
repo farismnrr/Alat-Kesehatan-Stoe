@@ -1,4 +1,5 @@
-const routes = (handler: any) => [ 
+const routes = (handler: any) => [
+	// Start Admin Routes
 	{
 		method: "POST",
 		path: "/admins",
@@ -13,7 +14,26 @@ const routes = (handler: any) => [
 		method: "DELETE",
 		path: "/admins/{id}",
 		handler: handler.deleteAdminHandler
+	},
+	// End Admin Routes
+
+	// Start Auth Routes
+	{
+		method: "POST",
+		path: "/admins/auth",
+		handler: handler.postAdminAuthHandler
+	},
+	{
+		method: "PUT",
+		path: "/admins/auth",
+		handler: handler.putAdminAuthHandler
+	},
+	{
+		method: "DELETE",
+		path: "/admins/auth",
+		handler: handler.deleteAdminAuthHandler
 	}
-]
+	// End Auth Routes
+];
 
 export default routes;

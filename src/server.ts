@@ -1,3 +1,4 @@
+import Jwt from "@hapi/jwt";
 import Hapi from "@hapi/hapi";
 import config from "./utils/config";
 
@@ -9,9 +10,12 @@ import admins from "./api/admins";
 import AdminService from "./service/postgres/AdminsService";
 import AdminValidator from "./validator/admins";
 
-import ClientError from "./error/ClientError";
 import LogService from "./service/server/LogsService";
+import AuthService from "./service/postgres/AuthService";
 import MigrationsService from "./service/server/MigrationsService";
+
+import ClientError from "./error/ClientError";
+import TokenManager from "./token/TokenManager";
 
 const createServer = () => {
 	const server = new Hapi.Server({
@@ -28,22 +32,55 @@ const createServer = () => {
 	return server;
 };
 
+const externalPlugins = async (server: Hapi.Server) => {
+	await server.register([
+		{
+			plugin: Jwt
+		}
+	]);
+
+	const jwtOptions = {
+		keys: config.jwt.accessTokenKey,
+		verify: {
+			aud: false,
+			iss: false,
+			sub: false,
+			maxAgeSec: config.jwt.accessTokenAge
+		},
+		validate: (payload: any) => ({
+			isValid: true,
+			credentials: {
+				id: payload.decoded.payload.id
+			}
+		})
+	};
+
+	server.auth.strategy("admin", "jwt", jwtOptions);
+	server.auth.strategy("user", "jwt", jwtOptions);
+};
+
 const registerPlugins = async (server: Hapi.Server) => {
 	const userService = new UserService();
 	const adminService = new AdminService();
+	const authService = new AuthService();
+	const tokenManager = new TokenManager();
 
 	await server.register([
 		{
 			plugin: users,
 			options: {
-				service: userService,
+				authService,
+				userService,
+				tokenManager,
 				validator: UserValidator
 			}
 		},
 		{
 			plugin: admins,
 			options: {
-				service: adminService,
+				authService,
+				adminService,
+				tokenManager,
 				validator: AdminValidator
 			}
 		}
@@ -85,6 +122,7 @@ const handleServerLog = (server: Hapi.Server) => {
 
 const startServer = async () => {
 	const server = createServer();
+	await externalPlugins(server);
 	await registerPlugins(server);
 	handleClientError(server);
 	handleServerLog(server);
