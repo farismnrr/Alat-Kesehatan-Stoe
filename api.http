@@ -1,0 +1,38 @@
+### POST /users
+POST http://localhost:5000/users
+Content-Type: application/json
+
+{
+  "username": "johnDoe",
+  "password": "*Password123",
+  "email": "john.doe@example.com",
+  "birthdate": "1990-01-01",
+  "gender": "male",
+  "address": "123 Street",
+  "city": "New York",
+  "contact_number": "081234567890"
+}
+
+### PUT /users/{id}
+PUT http://localhost:5000/users/5f98614b-d763-4f46-907d-6a609b7ed0d8
+Content-Type: application/json
+
+{
+  "username": "janeDoe",
+  "password": "pAssword123*",
+  "email": "jane.doe@example.com",
+  "birthdate": "1991-01-02",
+  "gender": "female",
+  "address": "456 Street",
+  "city": "Los Angeles",
+  "contact_number": "081234567890"
+}
+
+### DELETE /users/{id}
+DELETE http://localhost:5000/users/5f98614b-d763-4f46-907d-6a609b7ed0d8
+Content-Type: application/json
+
+{
+  "status": "success",
+  "message": "User berhasil dihapus"
+}
