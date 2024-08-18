@@ -58,10 +58,10 @@ class AdminHandler {
 		this._validator.validatePostAdminAuthPayload(request.payload);
 
 		const { username, password } = request.payload;
-		const id = await this._adminService.verifyAdminCredential(username, password);
-		const accessToken = this._tokenManager.generateAccessToken({ id });
-		const refreshToken = this._tokenManager.generateRefreshToken({ id });
-		await this._authService.addRefreshToken(refreshToken);
+		const adminId = await this._adminService.verifyAdminCredential(username, password);
+		const accessToken = this._tokenManager.generateAccessToken({ adminId });
+		const refreshToken = this._tokenManager.generateRefreshToken({ adminId });
+		await this._authService.addAdminRefreshToken(refreshToken, adminId);
 		return h
 			.response({
 				status: "success",
@@ -77,9 +77,10 @@ class AdminHandler {
 	async putAdminAuthHandler(request: any, h: any) {
 		this._validator.validatePutAdminAuthPayload(request.payload);
 		const { refreshToken } = request.payload;
-		await this._authService.verifyRefreshToken(refreshToken);
-		const { id } = this._tokenManager.verifyRefreshToken(refreshToken);
-		const accessToken = this._tokenManager.generateAccessToken({ id });
+		const { id } = request.params;
+		await this._authService.verifyAdminRefreshToken(refreshToken, id);
+		const { adminId } = this._tokenManager.verifyRefreshToken(refreshToken);
+		const accessToken = this._tokenManager.generateAccessToken({ adminId });
 		return h
 			.response({
 				status: "success",
@@ -94,8 +95,9 @@ class AdminHandler {
 	async deleteAdminAuthHandler(request: any, h: any) {
 		this._validator.validateDeleteAdminAuthPayload(request.payload);
 		const { refreshToken } = request.payload;
-		await this._authService.verifyRefreshToken(refreshToken);
-		await this._authService.deleteRefreshToken(refreshToken);
+		const { adminId } = this._tokenManager.verifyRefreshToken(refreshToken);
+		await this._authService.verifyAdminRefreshToken(refreshToken, adminId);
+		await this._authService.deleteAdminRefreshToken(refreshToken);
 		return h
 			.response({
 				status: "success",

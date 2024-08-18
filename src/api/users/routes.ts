@@ -7,13 +7,19 @@ const routes = (handler: any) => [
 	},
 	{
 		method: "PUT",
-		path: "/users/{id}",
-		handler: handler.updateUserHandler
+		path: "/users",
+		handler: handler.updateUserHandler,
+		options: {
+			auth: "users"
+		}
 	},
 	{
 		method: "DELETE",
-		path: "/users/{id}",
-		handler: handler.deleteUserHandler
+		path: "/users",
+		handler: handler.deleteUserHandler,
+		options: {
+			auth: "users"
+		}
 	},
 	// End User Routes
 

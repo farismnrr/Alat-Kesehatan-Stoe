@@ -1,7 +1,7 @@
 const config = {
 	server: {
 		host: process.env.HOST || "0.0.0.0",
-		port: process.env.PORT || 3000
+		port: process.env.PORT || 8080
 	},
 	jwt: {
 		accessTokenKey: process.env.ACCESS_TOKEN_KEY,

@@ -1,6 +1,7 @@
 import Jwt from "@hapi/jwt";
 import config from "../utils/config";
 import { InvariantError } from "../error/InvariantError";
+import { AuthenticationError } from "../error/AuthError";
 
 class TokenManager {
 	generateAccessToken(payload: any): string {
@@ -18,13 +19,14 @@ class TokenManager {
 	}
 
 	verifyRefreshToken(refreshToken: string): any {
-		if (!config.jwt.refreshTokenKey) {
-			throw new InvariantError("Refresh token key is invalid.");
+		try {
+			const artifacts = Jwt.token.decode(refreshToken);
+			Jwt.token.verifySignature(artifacts, config.jwt.refreshTokenKey as string);
+			const { payload } = artifacts.decoded;
+			return payload;
+		} catch (error) {
+			throw new AuthenticationError("Unauthorized!");
 		}
-		const artifacts = Jwt.token.decode(refreshToken);
-		Jwt.token.verifySignature(artifacts, config.jwt.refreshTokenKey);
-		const { payload } = artifacts.decoded;
-		return payload;
 	}
 }
 

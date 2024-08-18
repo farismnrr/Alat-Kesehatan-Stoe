@@ -39,7 +39,7 @@ const externalPlugins = async (server: Hapi.Server) => {
 		}
 	]);
 
-	const jwtOptions = {
+	const adminJwtOptions = {
 		keys: config.jwt.accessTokenKey,
 		verify: {
 			aud: false,
@@ -50,13 +50,31 @@ const externalPlugins = async (server: Hapi.Server) => {
 		validate: (payload: any) => ({
 			isValid: true,
 			credentials: {
-				id: payload.decoded.payload.id
+				id: payload.decoded.payload.adminId,
+				role: "admin"
 			}
 		})
 	};
 
-	server.auth.strategy("admin", "jwt", jwtOptions);
-	server.auth.strategy("user", "jwt", jwtOptions);
+	const userJwtOptions = {
+		keys: config.jwt.accessTokenKey,
+		verify: {
+			aud: false,
+			iss: false,
+			sub: false,
+			maxAgeSec: config.jwt.accessTokenAge
+		},
+		validate: (payload: any) => ({
+			isValid: true,
+			credentials: {
+				id: payload.decoded.payload.userId,
+				role: "user"
+			}
+		})
+	};
+
+	server.auth.strategy("admins", "jwt", adminJwtOptions);
+	server.auth.strategy("users", "jwt", userJwtOptions);
 };
 
 const registerPlugins = async (server: Hapi.Server) => {

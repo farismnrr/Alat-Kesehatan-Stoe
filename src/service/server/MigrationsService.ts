@@ -15,11 +15,11 @@ class MigrationsService {
 			await this.pool.query("BEGIN TRANSACTION");
 
 			const migrations = [
+				"create-users-table.sql",
 				"create-admins-table.sql",
 				"create-auth-table.sql",
 				"create-categories-table.sql",
 				"create-products-table.sql",
-				"create-users-table.sql",
 				"create-orders-table.sql",
 				"create-orders-items-table.sql",
 				"create-payments-table.sql"

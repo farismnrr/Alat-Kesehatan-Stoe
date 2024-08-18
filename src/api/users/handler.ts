@@ -31,8 +31,8 @@ class UserHandler {
 
 	async updateUserHandler(request: any, h: any) {
 		this._validator.validateUserPayload(request.payload);
-		const { id } = request.params;
-		await this._userService.editUserById(id, request.payload);
+		const { id: credentialId, role } = request.auth.credentials;
+		await this._userService.editUserById(credentialId, role, request.payload);
 		return h
 			.response({
 				status: "success",
@@ -42,8 +42,8 @@ class UserHandler {
 	}
 
 	async deleteUserHandler(request: any, h: any) {
-		const { id } = request.params;
-		await this._userService.deleteUserById(id);
+		const { id: credentialId, role } = request.auth.credentials;
+		await this._userService.deleteUserById(credentialId, role);
 		return h
 			.response({
 				status: "success",
@@ -58,10 +58,10 @@ class UserHandler {
 		this._validator.validatePostUserAuthPayload(request.payload);
 
 		const { username, password } = request.payload;
-		const id = await this._userService.verifyUserCredential(username, password);
-		const accessToken = this._tokenManager.generateAccessToken({ id });
-		const refreshToken = this._tokenManager.generateRefreshToken({ id });
-		await this._authService.addRefreshToken(refreshToken);
+		const userId = await this._userService.verifyUserCredential(username, password);
+		const accessToken = this._tokenManager.generateAccessToken({ userId });
+		const refreshToken = this._tokenManager.generateRefreshToken({ userId });
+		await this._authService.addUserRefreshToken(refreshToken, userId);
 		return h
 			.response({
 				status: "success",
@@ -77,9 +77,9 @@ class UserHandler {
 	async putUserAuthHandler(request: any, h: any) {
 		this._validator.validatePutUserAuthPayload(request.payload);
 		const { refreshToken } = request.payload;
-		await this._authService.verifyRefreshToken(refreshToken);
-		const { id } = this._tokenManager.verifyRefreshToken(refreshToken);
-		const accessToken = this._tokenManager.generateAccessToken({ id });
+		const { userId } = this._tokenManager.verifyRefreshToken(refreshToken);
+		await this._authService.verifyUserRefreshToken(refreshToken, userId);
+		const accessToken = this._tokenManager.generateAccessToken({ userId });
 		return h
 			.response({
 				status: "success",
@@ -94,8 +94,9 @@ class UserHandler {
 	async deleteUserAuthHandler(request: any, h: any) {
 		this._validator.validateDeleteUserAuthPayload(request.payload);
 		const { refreshToken } = request.payload;
-		await this._authService.verifyRefreshToken(refreshToken);
-		await this._authService.deleteRefreshToken(refreshToken);
+		const { userId } = this._tokenManager.verifyRefreshToken(refreshToken);
+		await this._authService.verifyUserRefreshToken(refreshToken, userId);
+		await this._authService.deleteUserRefreshToken(refreshToken, userId);
 		return h
 			.response({
 				status: "success",

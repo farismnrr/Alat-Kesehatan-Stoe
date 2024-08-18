@@ -4,7 +4,7 @@ import { Pool } from "pg";
 import { v4 as uuidv4 } from "uuid";
 import { NotFoundError } from "../../error/NotFoundError";
 import { InvariantError } from "../../error/InvariantError";
-import { AuthenticationError } from "../../error/AuthError";
+import { AuthenticationError, AuthorizationError } from "../../error/AuthError";
 
 class UserService {
 	private _pool: Pool;
@@ -93,6 +93,7 @@ class UserService {
 
 	async editUserById(
 		id: string,
+		role: string,
 		{ username, password, email, birthdate, gender, address, city, contact_number }: any
 	) {
 		const hashedPassword = await bcrypt.hash(password, 10);
@@ -127,10 +128,14 @@ class UserService {
 			throw new NotFoundError("User not found");
 		}
 
+		if (role !== "user") {
+			throw new AuthorizationError("Forbidden");
+		}
+
 		return userResult.rowCount;
 	}
 
-	async deleteUserById(id: string) {
+	async deleteUserById(id: string, role: string) {
 		const userQuery = {
 			text: "DELETE FROM users WHERE id = $1 RETURNING id",
 			values: [id]
@@ -139,6 +144,10 @@ class UserService {
 		const userResult = await this._pool.query(userQuery);
 		if (!userResult.rowCount) {
 			throw new NotFoundError("User not found");
+		}
+
+		if (role !== "user") {
+			throw new AuthorizationError("Forbidden");
 		}
 	}
 }

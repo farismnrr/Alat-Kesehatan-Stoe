@@ -17,7 +17,7 @@ const routes = (handler: any) => [
 	},
 	// End Admin Routes
 
-	// Start Auth Routes
+	// Start Admin Auth Routes
 	{
 		method: "POST",
 		path: "/admins/auth",
@@ -33,7 +33,7 @@ const routes = (handler: any) => [
 		path: "/admins/auth",
 		handler: handler.deleteAdminAuthHandler
 	}
-	// End Auth Routes
+	// End Admin Auth Routes
 ];
 
 export default routes;
