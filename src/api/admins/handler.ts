@@ -31,8 +31,8 @@ class AdminHandler {
 
 	async updateAdminHandler(request: any, h: any) {
 		this._validator.validateAdminPayload(request.payload);
-		const { id } = request.params;
-		await this._adminService.editAdminById(id, request.payload);
+		const { id: credentialId, role } = request.auth.credentials;
+		await this._adminService.editAdminById(credentialId, role, request.payload);
 		return h
 			.response({
 				status: "success",
@@ -42,8 +42,8 @@ class AdminHandler {
 	}
 
 	async deleteAdminHandler(request: any, h: any) {
-		const { id } = request.params;
-		await this._adminService.deleteAdminById(id);
+		const { id: credentialId, role } = request.auth.credentials;
+		await this._adminService.deleteAdminById(credentialId, role);
 		return h
 			.response({
 				status: "success",
@@ -56,7 +56,6 @@ class AdminHandler {
 	// Start Admin Auth Handler
 	async postAdminAuthHandler(request: any, h: any) {
 		this._validator.validatePostAdminAuthPayload(request.payload);
-
 		const { username, password } = request.payload;
 		const adminId = await this._adminService.verifyAdminCredential(username, password);
 		const accessToken = this._tokenManager.generateAccessToken({ adminId });
@@ -77,9 +76,8 @@ class AdminHandler {
 	async putAdminAuthHandler(request: any, h: any) {
 		this._validator.validatePutAdminAuthPayload(request.payload);
 		const { refreshToken } = request.payload;
-		const { id } = request.params;
-		await this._authService.verifyAdminRefreshToken(refreshToken, id);
 		const { adminId } = this._tokenManager.verifyRefreshToken(refreshToken);
+		await this._authService.verifyAdminRefreshToken(refreshToken, adminId);
 		const accessToken = this._tokenManager.generateAccessToken({ adminId });
 		return h
 			.response({
@@ -97,7 +95,7 @@ class AdminHandler {
 		const { refreshToken } = request.payload;
 		const { adminId } = this._tokenManager.verifyRefreshToken(refreshToken);
 		await this._authService.verifyAdminRefreshToken(refreshToken, adminId);
-		await this._authService.deleteAdminRefreshToken(refreshToken);
+		await this._authService.deleteAdminRefreshToken(refreshToken, adminId);
 		return h
 			.response({
 				status: "success",

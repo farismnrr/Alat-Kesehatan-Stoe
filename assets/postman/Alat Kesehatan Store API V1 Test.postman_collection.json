@@ -112,7 +112,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n  \"username\": \"faris_admin\",\r\n  \"password\": \"#Faris1234\",\r\n  \"email\": \"faris.admin@example.com\"\r\n}",
+									"raw": "{\r\n  \"username\": \"faris_admin\",\r\n  \"password\": \"#Faris1234\",\r\n  \"email\": \"farismnrr.admin@example.com\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -281,7 +281,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"username\": \"faris_user\",\r\n  \"password\": \"*Faris1234\",\r\n  \"email\": \"john.doe@example.com\",\r\n  \"birthdate\": \"1990-01-01\",\r\n  \"gender\": \"male\",\r\n  \"address\": \"123 Street\",\r\n  \"city\": \"New York\",\r\n  \"contact_number\": \"081234567890\"\r\n}",
+							"raw": "{\r\n  \"username\": \"faris_user\",\r\n  \"password\": \"*Faris1234\",\r\n  \"email\": \"farismnrr.user@example.com\",\r\n  \"birthdate\": \"1990-01-01\",\r\n  \"gender\": \"male\",\r\n  \"address\": \"123 Street\",\r\n  \"city\": \"New York\",\r\n  \"contact_number\": \"081234567890\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1682,17 +1682,32 @@
 								"exec": [
 									"const port = pm.environment.get(\"port\");\r",
 									"const url = pm.environment.get(\"url\");\r",
-									"const accessToken = pm.environment.get(\"accessTokenUserFaris\");\r",
+									"const accessTokenUser = pm.environment.get(\"accessTokenUserFaris\");\r",
+									"const accessTokenAdmin = pm.environment.get(\"accessTokenAdminFaris\");\r",
 									"\r",
-									"const requestParams = {\r",
+									"const requestParamsUser = {\r",
 									"    url: `${url}:${port}/users`,\r",
 									"    method: \"DELETE\",\r",
 									"    header: {\r",
-									"        Authorization: `Bearer ${accessToken}`,\r",
+									"        Authorization: `Bearer ${accessTokenUser}`,\r",
 									"    },\r",
 									"};\r",
 									"\r",
-									"pm.sendRequest(requestParams, (_, error) => {\r",
+									"const requestParamsAdmin = {\r",
+									"    url: `${url}:${port}/admins`,\r",
+									"    method: \"DELETE\",\r",
+									"    header: {\r",
+									"        Authorization: `Bearer ${accessTokenAdmin}`,\r",
+									"    },\r",
+									"};\r",
+									"\r",
+									"pm.sendRequest(requestParamsUser, (_, error) => {\r",
+									"    if (error) {\r",
+									"        console.error(error);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"pm.sendRequest(requestParamsAdmin, (_, error) => {\r",
 									"    if (error) {\r",
 									"        console.error(error);\r",
 									"    }\r",
@@ -1767,6 +1782,173 @@
 			"name": "Admins",
 			"item": [
 				{
+					"name": "[No Test] Requirements",
+					"item": [
+						{
+							"name": "Add Admin Nana",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const responseJson = pm.response.json();\r",
+											"pm.environment.set('adminNanaId', responseJson.data.adminId);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"username\": \"nana_admin\",\r\n  \"password\": \"#Nana1234\",\r\n  \"email\": \"nana.admin@example.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}:{{port}}/admins",
+									"host": [
+										"{{url}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"admins"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add Admin Faris",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const responseJson = pm.response.json();\r",
+											"pm.environment.set('adminFarisId', responseJson.data.adminId);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"username\": \"faris_admin\",\r\n  \"password\": \"#Faris1234\",\r\n  \"email\": \"farismnrr.admin@example.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}:{{port}}/admins",
+									"host": [
+										"{{url}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"admins"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add User Faris",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const responseJson = pm.response.json();\r",
+											"pm.environment.set('userFarisId', responseJson.data.userId);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"username\": \"faris_user\",\r\n  \"password\": \"*Faris1234\",\r\n  \"email\": \"farismnrr.user@example.com\",\r\n  \"birthdate\": \"1990-01-01\",\r\n  \"gender\": \"male\",\r\n  \"address\": \"123 Street\",\r\n  \"city\": \"New York\",\r\n  \"contact_number\": \"081234567890\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}:{{port}}/users",
+									"host": [
+										"{{url}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login User Faris",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const responseJson = pm.response.json();\r",
+											"pm.environment.set('accessTokenUserFaris', responseJson.data.accessToken);\r",
+											"pm.environment.set('refreshTokenUserFaris', responseJson.data.refreshToken);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"faris_user\",\r\n    \"password\": \"*Faris1234\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}:{{port}}/users/auth",
+									"host": [
+										"{{url}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"users",
+										"auth"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
 					"name": "Add Admin with Valid Payload",
 					"event": [
 						{
@@ -1792,8 +1974,6 @@
 									"    pm.expect(responseJson.status).to.equal('success');\r",
 									"    pm.expect(responseJson.data).to.be.an('object');\r",
 									"    pm.expect(responseJson.data.adminId).to.be.a('string');\r",
-									"\r",
-									"    pm.environment.set('adminId', responseJson.data.adminId);\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -1806,7 +1986,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"username\": \"farismnrr_{{$timestamp}}\",\r\n  \"password\": \"*Password123\",\r\n  \"email\": \"john.doe@example.com\"\r\n}",
+							"raw": "{\r\n  \"username\": \"test_{{$timestamp}}\",\r\n  \"password\": \"#Password123\",\r\n  \"email\": \"test@example.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1873,7 +2053,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"username\": \"farismnrr_admin\",\r\n  \"password\": \"*Password1234\",\r\n  \"email\": \"john.doe@example.com\"\r\n}",
+							"raw": "{\r\n  \"username\": \"faris_admin\",\r\n  \"password\": \"#Faris1234\",\r\n  \"email\": \"farismnrr.admin@example.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1894,7 +2074,211 @@
 					"response": []
 				},
 				{
-					"name": "Login with Valid Admin Payload",
+					"name": "Login with Invalid Admin Password",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 401 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseJson.status).to.equal('fail');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"faris_admin\",\r\n    \"password\": \"#Xx123456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/admins/auth",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"admins",
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login with Not Found Admin",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 404 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseJson.status).to.equal('fail');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"xxx\",\r\n    \"password\": \"#Xx123456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/admins/auth",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"admins",
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Admin with Valid User Payload",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 404 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseJson.status).to.equal('fail');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"faris_user\",\r\n    \"password\": \"*Faris1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/admins/auth",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"admins",
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login with Faris Valid Admin Payload",
 					"event": [
 						{
 							"listen": "test",
@@ -1921,8 +2305,8 @@
 									"    pm.expect(responseJson.data.accessToken).to.be.a('string');\r",
 									"    pm.expect(responseJson.data.refreshToken).to.be.a('string');\r",
 									"    \r",
-									"    pm.environment.set('accessTokenAdmin', responseJson.data.accessToken);\r",
-									"    pm.environment.set('refreshTokenAdmin', responseJson.data.refreshToken);\r",
+									"    pm.environment.set('accessTokenAdminFaris', responseJson.data.accessToken);\r",
+									"    pm.environment.set('refreshTokenAdminFaris', responseJson.data.refreshToken);\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -1935,7 +2319,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"farismnrr_admin\",\r\n    \"password\": \"*Password1234\"\r\n}",
+							"raw": "{\r\n    \"username\": \"faris_admin\",\r\n    \"password\": \"#Faris1234\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1957,14 +2341,14 @@
 					"response": []
 				},
 				{
-					"name": "Edit Admin with Invalid Id",
+					"name": "Login with Nana Valid Admin Payload",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test('it should response 404 status code', () => {\r",
-									"    pm.expect(pm.response).to.have.status(404);\r",
+									"pm.test('it should response 201 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(201);\r",
 									"});\r",
 									"\r",
 									"pm.test('response Content-Type header should have application/json value', () => {\r",
@@ -1974,78 +2358,253 @@
 									"pm.test('response body should an object', () => {\r",
 									"    const responseJson = pm.response.json();\r",
 									"    pm.expect(responseJson).to.be.an('object');\r",
-									"});\r",
-									"\r",
-									"pm.test('response body should have correct property and value', () => {\r",
-									"    const responseJson = pm.response.json();\r",
-									"    \r",
-									"    pm.expect(responseJson.status).to.equal('fail');\r",
-									"    pm.expect(responseJson.message).to.be.a('string');\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"username\": \"janeDoe_{{$timestamp}}\",\r\n  \"password\": \"pAssword123*\",\r\n  \"email\": \"jane.doe@example.com\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url}}:{{port}}/admins/12345678-abcd-dcba-acbd-123456789abc",
-							"host": [
-								"{{url}}"
-							],
-							"port": "{{port}}",
-							"path": [
-								"admins",
-								"12345678-abcd-dcba-acbd-123456789abc"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Edit Admin with Valid Id",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('it should response 200 status code', () => {\r",
-									"    pm.expect(pm.response).to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"pm.test('response Content-Type header should have application/json value', () => {\r",
-									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
-									"}); \r",
-									"\r",
-									"pm.test('response body should an object', () => {\r",
-									"    const responseJson = pm.response.json();\r",
-									"    pm.expect(responseJson).to.be.an('object');\r",
-									"});\r",
-									"\r",
-									"pm.test('response body should have correct property and value', () => {\r",
-									"    const responseJson = pm.response.json();\r",
-									"    \r",
-									"    pm.expect(responseJson.status).to.equal('success');\r",
-									"    pm.expect(responseJson.message).to.be.a('string');\r",
 									"});\r",
 									"\r",
 									"pm.test('response body have correct property and value', () => {\r",
 									"    const responseJson = pm.response.json();\r",
 									"\r",
 									"    pm.expect(responseJson.status).to.equal('success');\r",
+									"    pm.expect(responseJson.data).to.be.an('object');\r",
+									"    pm.expect(responseJson.data.accessToken).to.be.a('string');\r",
+									"    pm.expect(responseJson.data.refreshToken).to.be.a('string');\r",
+									"    \r",
+									"    pm.environment.set('accessTokenAdminNana', responseJson.data.accessToken);\r",
+									"    pm.environment.set('refreshTokenAdminNana', responseJson.data.refreshToken);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"nana_admin\",\r\n    \"password\": \"#Nana1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/admins/auth",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"admins",
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Authentication with Invalid Admin Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 400 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseJson.status).to.equal('fail');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"refreshToken\": \"xxxx\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/admins/auth",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"admins",
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Authentication with User Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 401 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseJson.status).to.equal('fail');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"refreshToken\": \"{{refreshTokenUserFaris}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/admins/auth",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"admins",
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Authentication with Valid Authentication",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 200 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseJson.status).to.equal('success');\r",
+									"    pm.expect(responseJson.data).to.be.an('object');\r",
+									"    pm.expect(responseJson.data.accessToken).to.be.a('string');\r",
+									"    \r",
+									"    pm.environment.set('accessTokenAdminFaris', responseJson.data.accessToken);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"refreshToken\": \"{{refreshTokenAdminFaris}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/admins/auth",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"admins",
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Admin without Authentication",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 500 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(500);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body should have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseJson.status).to.equal('fail');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
 									"});\r",
 									""
 								],
@@ -2059,7 +2618,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"username\": \"nana_{{$timestamp}}\",\r\n  \"password\": \"pAssword123*\",\r\n  \"email\": \"jane.doe@example.com\"\r\n}",
+							"raw": "{\r\n  \"username\": \"farismnrr_{{$timestamp}}\",\r\n  \"password\": \"pAssword123#\",\r\n  \"email\": \"jane.doe@example.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2067,21 +2626,156 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}:{{port}}/admins/{{adminId}}",
+							"raw": "{{url}}:{{port}}/admins",
 							"host": [
 								"{{url}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"admins",
-								"{{adminId}}"
+								"admins"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Delete Admin with Invalid Id",
+					"name": "Edit Admin with Invalid Authentication",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 500 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(500);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body should have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseJson.status).to.equal('fail');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "xxx",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"farismnrr_{{$timestamp}}\",\r\n  \"password\": \"pAssword123#\",\r\n  \"email\": \"jane.doe@example.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/users",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Admin with Admin Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 500 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(500);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body should have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseJson.status).to.equal('fail');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{refreshTokenUserFaris}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"farismnrr_{{$timestamp}}\",\r\n  \"password\": \"pAssword123#\",\r\n  \"email\": \"jane.doe@example.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/users",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Admin with User Authentication",
 					"event": [
 						{
 							"listen": "test",
@@ -2114,11 +2808,21 @@
 						}
 					],
 					"request": {
-						"method": "DELETE",
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessTokenUserFaris}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "",
+							"raw": "{\r\n  \"username\": \"farismnrr_{{$timestamp}}\",\r\n  \"password\": \"pAssword123#\",\r\n  \"email\": \"jane.doe@example.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2126,21 +2830,20 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}:{{port}}/admins/12345678-abcd-dcba-acbd-123456789abc",
+							"raw": "{{url}}:{{port}}/admins",
 							"host": [
 								"{{url}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"admins",
-								"12345678-abcd-dcba-acbd-123456789abc"
+								"admins"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Delete Admin with Valid Id",
+					"name": "Edit Admin with Faris Valid Admin Payload",
 					"event": [
 						{
 							"listen": "test",
@@ -2165,18 +2868,73 @@
 									"    pm.expect(responseJson.status).to.equal('success');\r",
 									"    pm.expect(responseJson.message).to.be.a('string');\r",
 									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessTokenAdminFaris}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"farismnrr_{{$timestamp}}\",\r\n  \"password\": \"pAssword123#\",\r\n  \"email\": \"jane.doe@example.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/admins",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"admins"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Admin with Nana Valid Admin Payload",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 200 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(200);\r",
+									"});\r",
 									"\r",
-									"pm.test('when GET detail admins', () => {\r",
-									"    const userId = pm.environment.get('adminId');\r",
-									"    const port = pm.environment.get('port');\r",
-									"    const url = pm.environment.get('url');\r",
-									"    pm.sendRequest(`${url}:${port}/admins/${adminId}`, (error, response) => {\r",
-									"        if (!error) {\r",
-									"            pm.test('it should response with not found', () => {\r",
-									"                pm.expect(response.code).to.equal(404);\r",
-									"            });\r",
-									"        }\r",
-									"    });\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body should have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseJson.status).to.equal('success');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
 									"});\r",
 									""
 								],
@@ -2186,6 +2944,251 @@
 						}
 					],
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessTokenAdminNana}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"nana_{{$timestamp}}\",\r\n  \"password\": \"pAssword123#\",\r\n  \"email\": \"jane.doe@example.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/admins",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"admins"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout Admin with Invalid Admin Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 400 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body should have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseJson.status).to.equal('fail');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"refreshToken\": \"xxx\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/admins/auth",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"admins",
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout Admin with Admin Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 401 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body should have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseJson.status).to.equal('fail');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"refreshToken\": \"{{refreshTokenUserFaris}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/admins/auth",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"admins",
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout Admin with Valid Authentication",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 200 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body should have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseJson.status).to.equal('success');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"refreshToken\": \"{{refreshTokenAdminFaris}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/admins/auth",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"admins",
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Admin without Authentication",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 500 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(500);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body should have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseJson.status).to.equal('fail');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "DELETE",
 						"header": [],
 						"body": {
@@ -2198,18 +3201,352 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}:{{port}}/admins/{{adminId}}",
+							"raw": "{{url}}:{{port}}/admins",
 							"host": [
 								"{{url}}"
 							],
 							"port": "{{port}}",
 							"path": [
-								"admins",
-								"{{adminId}}"
+								"admins"
 							]
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Delete Admin with Invalid Authentication",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 500 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(500);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body should have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseJson.status).to.equal('fail');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "xxx",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/admins",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"admins"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Admin with Admin Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 500 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(500);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body should have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseJson.status).to.equal('fail');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{refreshTokenAdminFaris}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/admins",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"admins"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Admin with User Authentication",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 500 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(500);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body should have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseJson.status).to.equal('fail');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{refreshTokenUserFaris}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/admins",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"admins"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Admin with Valid Authentication",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 200 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body should have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseJson.status).to.equal('success');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const port = pm.environment.get(\"port\");\r",
+									"const url = pm.environment.get(\"url\");\r",
+									"const accessTokenUser = pm.environment.get(\"accessTokenUserFaris\");\r",
+									"const accessTokenAdmin = pm.environment.get(\"accessTokenAdminFaris\");\r",
+									"\r",
+									"const requestParamsUser = {\r",
+									"    url: `${url}:${port}/users`,\r",
+									"    method: \"DELETE\",\r",
+									"    header: {\r",
+									"        Authorization: `Bearer ${accessTokenUser}`,\r",
+									"    },\r",
+									"};\r",
+									"\r",
+									"const requestParamsAdmin = {\r",
+									"    url: `${url}:${port}/admins`,\r",
+									"    method: \"DELETE\",\r",
+									"    header: {\r",
+									"        Authorization: `Bearer ${accessTokenAdmin}`,\r",
+									"    },\r",
+									"};\r",
+									"\r",
+									"pm.sendRequest(requestParamsUser, (_, error) => {\r",
+									"    if (error) {\r",
+									"        console.error(error);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"pm.sendRequest(requestParamsAdmin, (_, error) => {\r",
+									"    if (error) {\r",
+									"        console.error(error);\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessTokenAdminNana}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/admins",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"admins"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
 				}
 			]
 		}

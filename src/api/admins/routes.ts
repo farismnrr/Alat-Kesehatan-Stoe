@@ -7,13 +7,19 @@ const routes = (handler: any) => [
 	},
 	{
 		method: "PUT",
-		path: "/admins/{id}",
-		handler: handler.updateAdminHandler
+		path: "/admins",
+		handler: handler.updateAdminHandler,
+		options: {
+			auth: "admins"
+		}
 	},
 	{
 		method: "DELETE",
-		path: "/admins/{id}",
-		handler: handler.deleteAdminHandler
+		path: "/admins",
+		handler: handler.deleteAdminHandler,
+		options: {
+			auth: "admins"
+		}
 	},
 	// End Admin Routes
 

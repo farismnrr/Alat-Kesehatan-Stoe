@@ -4,7 +4,7 @@ import { Pool } from "pg";
 import { v4 as uuidv4 } from "uuid";
 import { NotFoundError } from "../../error/NotFoundError";
 import { InvariantError } from "../../error/InvariantError";
-import { AuthenticationError } from "../../error/AuthError";
+import { AuthenticationError, AuthorizationError } from "../../error/AuthError";
 
 class AdminService {
 	private _pool: Pool;
@@ -33,7 +33,7 @@ class AdminService {
 
 		const adminResult = await this._pool.query(adminQuery);
 		if (!adminResult.rowCount) {
-			throw new AuthenticationError("Username or password is incorrect");
+			throw new NotFoundError("Username not found");
 		}
 
 		const admin = adminResult.rows[0];
@@ -71,7 +71,7 @@ class AdminService {
 		return adminResult.rows[0].id;
 	}
 
-	async editAdminById(id: string, { username, password, email }: any) {
+	async editAdminById(id: string, role: string, { username, password, email }: any) {
 		const hashedPassword = await bcrypt.hash(password, 10);
 		const adminQuery = {
 			text: `
@@ -86,9 +86,13 @@ class AdminService {
 		if (!adminResult.rowCount) {
 			throw new NotFoundError("Admin not found");
 		}
+
+		if (role !== "admin") {
+			throw new AuthorizationError("Forbidden");
+		}
 	}
 
-	async deleteAdminById(id: string) {
+	async deleteAdminById(id: string, role: string) {
 		const adminQuery = {
 			text: "DELETE FROM admins WHERE id = $1 RETURNING id",
 			values: [id]
@@ -97,6 +101,10 @@ class AdminService {
 		const adminResult = await this._pool.query(adminQuery);
 		if (!adminResult.rowCount) {
 			throw new NotFoundError("Admin not found");
+		}
+
+		if (role !== "admin") {
+			throw new AuthorizationError("Forbidden");
 		}
 	}
 }
