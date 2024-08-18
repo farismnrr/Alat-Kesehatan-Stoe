@@ -3,15 +3,17 @@ import Hapi from "@hapi/hapi";
 import config from "./utils/config";
 
 import users from "./api/users";
-import UserService from "./service/postgres/UsersService";
+import UserService from "./service/database/UsersService";
 import UserValidator from "./validator/users";
 
 import admins from "./api/admins";
-import AdminService from "./service/postgres/AdminsService";
+import AdminService from "./service/database/AdminsService";
 import AdminValidator from "./validator/admins";
 
+import CacheService from "./service/cache/CacheService";
+
 import LogService from "./service/server/LogsService";
-import AuthService from "./service/postgres/AuthService";
+import AuthService from "./service/database/AuthService";
 import MigrationsService from "./service/server/MigrationsService";
 
 import ClientError from "./error/ClientError";
@@ -80,8 +82,9 @@ const externalPlugins = async (server: Hapi.Server) => {
 const registerPlugins = async (server: Hapi.Server) => {
 	const userService = new UserService();
 	const adminService = new AdminService();
-	const authService = new AuthService();
 	const tokenManager = new TokenManager();
+	const cacheService = new CacheService();
+	const authService = new AuthService(cacheService);
 
 	await server.register([
 		{
