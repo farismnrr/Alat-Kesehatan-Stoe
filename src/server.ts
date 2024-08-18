@@ -81,10 +81,10 @@ const externalPlugins = async (server: Hapi.Server) => {
 
 const registerPlugins = async (server: Hapi.Server) => {
 	const userService = new UserService();
+	const authService = new AuthService();
 	const adminService = new AdminService();
 	const tokenManager = new TokenManager();
 	const cacheService = new CacheService();
-	const authService = new AuthService(cacheService);
 
 	await server.register([
 		{

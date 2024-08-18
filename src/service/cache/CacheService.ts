@@ -14,7 +14,9 @@ class CacheService {
 			console.error(err);
 		});
 
-		this._client.connect();
+		this._client.on("connect", () => {
+			console.log("Connected to Redis");
+		});
 	}
 
 	async set(key: string, value: string, expirationInSeconds = 1800) {
