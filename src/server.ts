@@ -10,6 +10,14 @@ import admins from "./api/admins";
 import AdminService from "./service/database/AdminsService";
 import AdminValidator from "./validator/admins";
 
+import products from "./api/products";
+import ProductService from "./service/database/ProductsService";
+import ProductValidator from "./validator/products";
+
+import categories from "./api/categories";
+import CategoryService from "./service/database/CategoriesService";
+import CategoryValidator from "./validator/categories";
+
 import CacheService from "./service/cache/CacheService";
 
 import LogService from "./service/server/LogsService";
@@ -85,7 +93,8 @@ const registerPlugins = async (server: Hapi.Server) => {
 	const adminService = new AdminService();
 	const tokenManager = new TokenManager();
 	const cacheService = new CacheService();
-
+	const productService = new ProductService();
+	const categoryService = new CategoryService();
 	await server.register([
 		{
 			plugin: users,
@@ -103,6 +112,20 @@ const registerPlugins = async (server: Hapi.Server) => {
 				adminService,
 				tokenManager,
 				validator: AdminValidator
+			}
+		},
+		{
+			plugin: products,
+			options: {
+				productService,
+				validator: ProductValidator
+			}
+		},
+		{
+			plugin: categories,
+			options: {
+				categoryService,
+				validator: CategoryValidator
 			}
 		}
 	]);
