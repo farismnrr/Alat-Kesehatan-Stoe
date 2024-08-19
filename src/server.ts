@@ -1,36 +1,15 @@
-import Jwt from "@hapi/jwt";
 import Hapi from "@hapi/hapi";
-import config from "./utils/config";
-
-import users from "./api/users";
-import UserService from "./service/database/UsersService";
-import UserValidator from "./validator/users";
-
-import admins from "./api/admins";
-import AdminService from "./service/database/AdminsService";
-import AdminValidator from "./validator/admins";
-
-import products from "./api/products";
-import ProductService from "./service/database/ProductsService";
-import ProductValidator from "./validator/products";
-
-import categories from "./api/categories";
-import CategoryService from "./service/database/CategoriesService";
-import CategoryValidator from "./validator/categories";
-
-import CacheService from "./service/cache/CacheService";
-
-import LogService from "./service/server/LogsService";
-import AuthService from "./service/database/AuthService";
-import MigrationsService from "./service/server/MigrationsService";
-
-import ClientError from "./error/ClientError";
-import TokenManager from "./token/TokenManager";
+import Config from "./utils/config";
+import ClientError from "./Common/errors";
+import CustomPlugins from "./Infrastructure/plugins/custom.plugin";
+import ExternalPlugins from "./Infrastructure/plugins/external.plugin";
+import LogService from "./App/service/server/log.service";
+import MigrationsService from "./App/service/server/migration.service";
 
 const createServer = () => {
 	const server = new Hapi.Server({
-		port: config.server.port,
-		host: config.server.host,
+		port: Config.server.port,
+		host: Config.server.host,
 		routes: {
 			cors: {
 				origin: ["*"],
@@ -40,95 +19,6 @@ const createServer = () => {
 	});
 
 	return server;
-};
-
-const externalPlugins = async (server: Hapi.Server) => {
-	await server.register([
-		{
-			plugin: Jwt
-		}
-	]);
-
-	const adminJwtOptions = {
-		keys: config.jwt.accessTokenKey,
-		verify: {
-			aud: false,
-			iss: false,
-			sub: false,
-			maxAgeSec: config.jwt.accessTokenAge
-		},
-		validate: (payload: any) => ({
-			isValid: true,
-			credentials: {
-				id: payload.decoded.payload.adminId,
-				role: "admin"
-			}
-		})
-	};
-
-	const userJwtOptions = {
-		keys: config.jwt.accessTokenKey,
-		verify: {
-			aud: false,
-			iss: false,
-			sub: false,
-			maxAgeSec: config.jwt.accessTokenAge
-		},
-		validate: (payload: any) => ({
-			isValid: true,
-			credentials: {
-				id: payload.decoded.payload.userId,
-				role: "user"
-			}
-		})
-	};
-
-	server.auth.strategy("admins", "jwt", adminJwtOptions);
-	server.auth.strategy("users", "jwt", userJwtOptions);
-};
-
-const registerPlugins = async (server: Hapi.Server) => {
-	const userService = new UserService();
-	const authService = new AuthService();
-	const adminService = new AdminService();
-	const tokenManager = new TokenManager();
-	const cacheService = new CacheService();
-	const productService = new ProductService();
-	const categoryService = new CategoryService();
-	await server.register([
-		{
-			plugin: users,
-			options: {
-				authService,
-				userService,
-				tokenManager,
-				validator: UserValidator
-			}
-		},
-		{
-			plugin: admins,
-			options: {
-				authService,
-				adminService,
-				tokenManager,
-				validator: AdminValidator
-			}
-		},
-		{
-			plugin: products,
-			options: {
-				productService,
-				validator: ProductValidator
-			}
-		},
-		{
-			plugin: categories,
-			options: {
-				categoryService,
-				validator: CategoryValidator
-			}
-		}
-	]);
 };
 
 const handleClientError = (server: Hapi.Server) => {
@@ -166,8 +56,8 @@ const handleServerLog = (server: Hapi.Server) => {
 
 const startServer = async () => {
 	const server = createServer();
-	await externalPlugins(server);
-	await registerPlugins(server);
+	await ExternalPlugins(server);
+	await CustomPlugins(server);
 	handleClientError(server);
 	handleServerLog(server);
 
