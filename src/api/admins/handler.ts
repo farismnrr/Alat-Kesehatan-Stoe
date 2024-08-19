@@ -1,12 +1,31 @@
 import autoBind from "auto-bind";
 
-class AdminHandler {
+interface IAdminHandler {
+	postAdminHandler: (request: any, h: any) => Promise<any>;
+	updateAdminHandler: (request: any, h: any) => Promise<any>;
+	deleteAdminHandler: (request: any, h: any) => Promise<any>;
+}
+
+interface IAdminAuthHandler {
+	postAdminAuthHandler: (request: any, h: any) => Promise<any>;
+	putAdminAuthHandler: (request: any, h: any) => Promise<any>;
+	deleteAdminAuthHandler: (request: any, h: any) => Promise<any>;
+}
+
+interface IAdminPlugin {
+	authService: any;
+	adminService: any;
+	tokenManager: any;
+	validator: any;
+}
+
+class AdminHandler implements IAdminHandler, IAdminAuthHandler {
 	private _authService;
 	private _adminService;
 	private _tokenManager;
 	private _validator;
 
-	constructor(authService: any, adminService: any, tokenManager: any, validator: any) {
+	constructor({ authService, adminService, tokenManager, validator }: IAdminPlugin) {
 		autoBind(this);
 		this._authService = authService;
 		this._adminService = adminService;
@@ -32,7 +51,7 @@ class AdminHandler {
 	async updateAdminHandler(request: any, h: any) {
 		this._validator.validateAdminPayload(request.payload);
 		const { id: credentialId, role } = request.auth.credentials;
-		await this._adminService.editAdminById(credentialId, role, request.payload);
+		await this._adminService.editAdminById({ id: credentialId, role }, request.payload);
 		return h
 			.response({
 				status: "success",
@@ -43,7 +62,7 @@ class AdminHandler {
 
 	async deleteAdminHandler(request: any, h: any) {
 		const { id: credentialId, role } = request.auth.credentials;
-		await this._adminService.deleteAdminById(credentialId, role);
+		await this._adminService.deleteAdminById({ id: credentialId, role });
 		return h
 			.response({
 				status: "success",
@@ -57,7 +76,7 @@ class AdminHandler {
 	async postAdminAuthHandler(request: any, h: any) {
 		this._validator.validatePostAdminAuthPayload(request.payload);
 		const { username, password } = request.payload;
-		const adminId = await this._adminService.verifyAdminCredential(username, password);
+		const adminId = await this._adminService.verifyAdminCredential({ username, password });
 		const accessToken = this._tokenManager.generateAccessToken({ adminId });
 		const refreshToken = this._tokenManager.generateRefreshToken({ adminId });
 		await this._authService.addAdminRefreshToken(refreshToken, adminId);

@@ -1,22 +1,43 @@
 import bcrypt from "bcrypt";
-
 import { Pool } from "pg";
 import { v4 as uuidv4 } from "uuid";
 import { NotFoundError } from "../../error/NotFoundError";
 import { InvariantError } from "../../error/InvariantError";
 import { AuthenticationError, AuthorizationError } from "../../error/AuthError";
 
-class AdminService {
+interface Admin {
+	id: string;
+	username: string;
+	password: string;
+	email: string;
+}
+
+interface AdminRole {
+	id: string;
+	role: string;
+}
+
+// Interface untuk AdminService
+interface IAdminService {
+	verifyUsername(admin: Partial<Admin>): Promise<void>;
+	verifyAdminCredential(admin: Partial<Admin>): Promise<string>;
+	addAdmin(admin: Admin): Promise<string>;
+	editAdminById(adminRole: AdminRole, admin: Partial<Admin>): Promise<void>;
+	deleteAdminById(adminRole: AdminRole): Promise<void>;
+}
+
+// Implementasi AdminService
+class AdminService implements IAdminService {
 	private _pool: Pool;
 
 	constructor() {
 		this._pool = new Pool();
 	}
 
-	async verifyUsername(username: string) {
+	async verifyUsername(admin: Partial<Admin>): Promise<void> {
 		const adminQuery = {
 			text: "SELECT username FROM admins WHERE username = $1",
-			values: [username]
+			values: [admin.username]
 		};
 
 		const adminResult = await this._pool.query(adminQuery);
@@ -25,10 +46,10 @@ class AdminService {
 		}
 	}
 
-	async verifyAdminCredential(username: string, password: string) {
+	async verifyAdminCredential(admin: Partial<Admin>): Promise<string> {
 		const adminQuery = {
 			text: "SELECT id, password FROM admins WHERE username = $1",
-			values: [username]
+			values: [admin.username]
 		};
 
 		const adminResult = await this._pool.query(adminQuery);
@@ -36,25 +57,17 @@ class AdminService {
 			throw new NotFoundError("Username not found");
 		}
 
-		const admin = adminResult.rows[0];
-		const match = await bcrypt.compare(password, admin.password);
+		const adminData = adminResult.rows[0];
+		const match = await bcrypt.compare(admin.password || "", adminData.password);
 		if (!match) {
 			throw new AuthenticationError("Username or password is incorrect");
 		}
 
-		return admin.id;
+		return adminData.id;
 	}
 
-	async addAdmin({
-		username,
-		password,
-		email
-	}: {
-		username: string;
-		password: string;
-		email: string;
-	}) {
-		await this.verifyUsername(username);
+	async addAdmin({ username, password, email }: Admin): Promise<string> {
+		await this.verifyUsername({ username });
 
 		const id = uuidv4();
 		const hashedPassword = await bcrypt.hash(password, 10);
@@ -71,8 +84,11 @@ class AdminService {
 		return adminResult.rows[0].id;
 	}
 
-	async editAdminById(id: string, role: string, { username, password, email }: any) {
-		const hashedPassword = await bcrypt.hash(password, 10);
+	async editAdminById(
+		{ id, role }: AdminRole,
+		{ username, password, email }: Partial<Admin>
+	): Promise<void> {
+		const hashedPassword = password ? await bcrypt.hash(password, 10) : undefined;
 		const adminQuery = {
 			text: `
             UPDATE admins SET username = $1, password = $2, email = $3 
@@ -92,7 +108,7 @@ class AdminService {
 		}
 	}
 
-	async deleteAdminById(id: string, role: string) {
+	async deleteAdminById({ id, role }: AdminRole): Promise<void> {
 		const adminQuery = {
 			text: "DELETE FROM admins WHERE id = $1 RETURNING id",
 			values: [id]
