@@ -3,7 +3,6 @@ import type {
 	IAdmin,
 	IAuth,
 	ILoginRequest,
-	ILoginResponse,
 	IRefreshToken
 } from "../../../Domain/models/interface";
 import autoBind from "auto-bind";
@@ -68,7 +67,7 @@ class AdminHandler implements IAdminHandler {
 	async updateAdminHandler(request: Request, h: ResponseToolkit) {
 		const payload = request.payload as IAdmin;
 		this._validator.validateAdminPayload(payload);
-		const { id: credentialId } = request.auth.credentials as unknown as IAuth;
+		const { id: credentialId } = request.auth.credentials as unknown as IAdmin;
 		await this._adminService.editAdmin({ ...payload, id: credentialId });
 		return h
 			.response({

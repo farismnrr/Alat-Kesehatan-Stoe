@@ -91,7 +91,7 @@ class AdminService implements IAdminService {
 			throw new AuthenticationError("Access denied!");
 		}
 
-		const role = await this._authRepository.verifyRole({ id: payload.id });
+		const role = await this._authRepository.verifyAdminRole({ id: payload.id });
 		if (role !== "admin") {
 			throw new AuthorizationError("You are not authorized to edit this admin");
 		}
@@ -109,7 +109,7 @@ class AdminService implements IAdminService {
 			throw new AuthenticationError("Access denied!");
 		}
 
-		const role = await this._authRepository.verifyRole({ id: payload.id });
+		const role = await this._authRepository.verifyAdminRole({ id: payload.id });
 		if (role !== "admin") {
 			throw new AuthorizationError("You are not authorized to delete this admin");
 		}

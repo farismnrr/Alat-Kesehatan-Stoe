@@ -51,7 +51,6 @@ const PostUserAuthPayloadSchema = Joi.object({
 	username: Joi.string()
 		.min(3)
 		.max(30)
-		.required()
 		.pattern(new RegExp("^[a-zA-Z0-9_]+$"))
 		.error(
 			new Error(
@@ -67,7 +66,8 @@ const PostUserAuthPayloadSchema = Joi.object({
 			new Error(
 				"Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, one number, and one special character."
 			)
-		)
+		),
+	email: Joi.string().email().error(new Error("Invalid email format."))
 });
 
 const PutUserAuthPayloadSchema = Joi.object({

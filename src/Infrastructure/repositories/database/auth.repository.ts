@@ -11,7 +11,7 @@ interface IAuthRepository {
 
 	// Start Admin Auth Service
 	addAdminRefreshToken(auth: IAuth): Promise<void>;
-	verifyRole(auth: Partial<IAuth>): Promise<string>;
+	verifyAdminRole(auth: Partial<IAuth>): Promise<string>;
 	verifyAdminRefreshToken(auth: Partial<IAuth>): Promise<void>;
 	deleteAdminRefreshToken(auth: Partial<IAuth>): Promise<void>;
 	// End Admin Auth Service
@@ -54,6 +54,16 @@ class AuthRepository implements IAuthRepository {
 		if (!authUserResult.rowCount) {
 			throw new AuthenticationError("Unauthorized!");
 		}
+	}
+
+	async verifyUserRole(auth: Partial<IAuth>): Promise<string> {
+		const authQuery = {
+			text: "SELECT role FROM auth WHERE user_id = $1",
+			values: [auth.id]
+		};
+		
+		const authResult = await this._pool.query(authQuery);
+		return authResult.rows[0].role;
 	}
 
 	async deleteUserRefreshToken(auth: Partial<IAuth>) {
@@ -101,7 +111,7 @@ class AuthRepository implements IAuthRepository {
 		}
 	}
 
-	async verifyRole(auth: Partial<IAuth>): Promise<string> {
+	async verifyAdminRole(auth: Partial<IAuth>): Promise<string> {
 		const authQuery = {
 			text: "SELECT role FROM auth WHERE admin_id = $1",
 			values: [auth.id]

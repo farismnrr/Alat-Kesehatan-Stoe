@@ -1,7 +1,9 @@
 import Hapi from "@hapi/hapi";
+
 import users from "../../Interface/api/users";
 import UserRepository from "../repositories/database/user.repository";
 import UserValidator from "../../App/validator/users";
+import UserService from "../../App/service/user.service";
 
 import admins from "../../Interface/api/admins";
 import AdminRepository from "../repositories/database/admin.repository";
@@ -33,12 +35,18 @@ const CustomPlugins = async (server: Hapi.Server) => {
 		adminRepository,
 		tokenManager,
 	);
+	const userService = new UserService(
+		authRepository,
+		userRepository,
+		tokenManager,
+	);
 	await server.register([
 		{
 			plugin: users,
 			options: {
 				authRepository,
 				userRepository,
+				userService,
 				tokenManager,
 				validator: UserValidator
 			}
