@@ -29,7 +29,7 @@ class MigrationsService implements MigrationService {
 			];
 
 			for (const migration of migrations) {
-				const filePath = path.resolve(__dirname, `../../../../migrations/${migration}`);
+				const filePath = path.resolve(__dirname, `../../../migrations/${migration}`);
 				const fileContent = await fs.promises.readFile(filePath, "utf8");
 				const queries = fileContent.split(";");
 

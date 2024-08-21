@@ -1,4 +1,4 @@
-import type { IUser, IRole } from "../../../Domain/models/interface";
+import type { IUser, IAuth } from "../../../Domain/models/interface";
 import bcrypt from "bcrypt";
 import { Pool } from "pg";
 import { v4 as uuidv4 } from "uuid";
@@ -13,8 +13,8 @@ interface IUserRepository {
 	verifyUsername(user: Partial<IUser>): Promise<void>;
 	verifyUserCredential(user: Partial<IUser>): Promise<string>;
 	addUser(user: IUser): Promise<string>;
-	editUserById(userRole: IRole, user: IUser): Promise<void>;
-	deleteUserById(userRole: IRole): Promise<void>;
+	editUserById(userRole: IAuth, user: IUser): Promise<void>;
+	deleteUserById(userRole: IAuth): Promise<void>;
 }
 
 class UserRepository implements IUserRepository {
@@ -24,7 +24,7 @@ class UserRepository implements IUserRepository {
 		this._pool = new Pool();
 	}
 
-	async verifyUsername(user: Partial<IUser>) {
+	async verifyUsername(user: Partial<IUser>): Promise<void> {
 		const userQuery = {
 			text: "SELECT username FROM users WHERE username = $1",
 			values: [user.username]
@@ -36,7 +36,7 @@ class UserRepository implements IUserRepository {
 		}
 	}
 
-	async verifyUserCredential(user: Partial<IUser>) {
+	async verifyUserCredential(user: Partial<IUser>): Promise<string> {
 		const userQuery = {
 			text: "SELECT id, password FROM users WHERE username = $1",
 			values: [user.username]
@@ -56,7 +56,7 @@ class UserRepository implements IUserRepository {
 		return userData.id;
 	}
 
-	async addUser(user: IUser) {
+	async addUser(user: IUser): Promise<string> {
 		await this.verifyUsername(user);
 
 		const id = uuidv4();
@@ -84,7 +84,7 @@ class UserRepository implements IUserRepository {
 		return result.rows[0].id;
 	}
 
-	async editUserById(userRole: IRole, user: IUser) {
+	async editUserById(userRole: IAuth, user: IUser): Promise<void> {
 		const hashedPassword = await bcrypt.hash(user.password, 10);
 		const userQuery = {
 			text: `
@@ -122,7 +122,7 @@ class UserRepository implements IUserRepository {
 		}
 	}
 
-	async deleteUserById(userRole: IRole) {
+	async deleteUserById(userRole: IAuth): Promise<void> {
 		const userQuery = {
 			text: "DELETE FROM users WHERE id = $1 RETURNING id",
 			values: [userRole.id]

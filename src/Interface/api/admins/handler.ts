@@ -1,7 +1,14 @@
 import type { Request, ResponseToolkit } from "@hapi/hapi";
-import type { IAdmin, IRole, ILogin, IRefreshToken } from "../../../Domain/models/interface";
+import type {
+	IAdmin,
+	IAuth,
+	ILoginRequest,
+	ILoginResponse,
+	IRefreshToken
+} from "../../../Domain/models/interface";
 import autoBind from "auto-bind";
 import AdminValidator from "../../../App/validator/admins";
+import AdminService from "../../../App/service/admin.service";
 import TokenManager from "../../../Infrastructure/token/manager.token";
 import AdminRepository from "../../../Infrastructure/repositories/database/admin.repository";
 import AuthRepository from "../../../Infrastructure/repositories/database/auth.repository";
@@ -23,18 +30,21 @@ interface IAdminHandler {
 class AdminHandler implements IAdminHandler {
 	private _authRepository: AuthRepository;
 	private _adminRepository: AdminRepository;
+	private _adminService: AdminService;
 	private _tokenManager: TokenManager;
 	private _validator: typeof AdminValidator;
 
 	constructor(
 		authRepository: AuthRepository,
 		adminRepository: AdminRepository,
+		adminService: AdminService,
 		tokenManager: TokenManager,
 		validator: typeof AdminValidator
 	) {
 		autoBind(this);
 		this._authRepository = authRepository;
 		this._adminRepository = adminRepository;
+		this._adminService = adminService;
 		this._tokenManager = tokenManager;
 		this._validator = validator;
 	}
@@ -43,7 +53,7 @@ class AdminHandler implements IAdminHandler {
 	async postAdminHandler(request: Request, h: ResponseToolkit) {
 		const payload = request.payload as IAdmin;
 		this._validator.validateAdminPayload(payload);
-		const adminId = await this._adminRepository.addAdmin(payload);
+		const adminId = await this._adminService.registerAdmin(payload);
 		return h
 			.response({
 				status: "success",
@@ -58,8 +68,8 @@ class AdminHandler implements IAdminHandler {
 	async updateAdminHandler(request: Request, h: ResponseToolkit) {
 		const payload = request.payload as IAdmin;
 		this._validator.validateAdminPayload(payload);
-		const { id: credentialId, role } = request.auth.credentials as unknown as IRole;
-		await this._adminRepository.editAdminById({ id: credentialId, role }, payload);
+		const { id: credentialId } = request.auth.credentials as unknown as IAuth;
+		await this._adminService.editAdmin({ ...payload, id: credentialId });
 		return h
 			.response({
 				status: "success",
@@ -69,8 +79,8 @@ class AdminHandler implements IAdminHandler {
 	}
 
 	async deleteAdminHandler(request: Request, h: ResponseToolkit) {
-		const { id: credentialId, role } = request.auth.credentials as unknown as IRole;
-		await this._adminRepository.deleteAdminById({ id: credentialId, role });
+		const { id: credentialId } = request.auth.credentials as unknown as IAdmin;
+		await this._adminService.deleteAdmin({ id: credentialId });
 		return h
 			.response({
 				status: "success",
@@ -82,12 +92,13 @@ class AdminHandler implements IAdminHandler {
 
 	// Start Admin Auth Handler
 	async postAdminAuthHandler(request: Request, h: ResponseToolkit) {
-		this._validator.validatePostAdminAuthPayload(request.payload);
-		const { username, password } = request.payload as ILogin;
-		const adminId = await this._adminRepository.verifyAdminCredential({ username, password });
-		const accessToken = this._tokenManager.generateAccessToken({ adminId });
-		const refreshToken = this._tokenManager.generateRefreshToken({ adminId });
-		await this._authRepository.addAdminRefreshToken({ id: adminId, token: refreshToken });
+		const payload = request.payload as ILoginRequest;
+		this._validator.validatePostAdminAuthPayload(payload);
+		const {
+			id: adminId,
+			accessToken,
+			refreshToken
+		} = await this._adminService.loginAdmin(payload);
 		return h
 			.response({
 				status: "success",
@@ -103,9 +114,13 @@ class AdminHandler implements IAdminHandler {
 
 	async putAdminAuthHandler(request: Request, h: ResponseToolkit) {
 		this._validator.validatePutAdminAuthPayload(request.payload);
-		const { refreshToken } = request.payload as IRefreshToken;
+		const payload = request.payload as IRefreshToken;
+		const { refreshToken } = payload;
 		const { adminId } = this._tokenManager.verifyRefreshToken(refreshToken);
-		await this._authRepository.verifyAdminRefreshToken({ id: adminId, token: refreshToken });
+		await this._authRepository.verifyAdminRefreshToken({
+			id: adminId,
+			token: refreshToken
+		});
 		const accessToken = this._tokenManager.generateAccessToken({ adminId });
 		return h
 			.response({

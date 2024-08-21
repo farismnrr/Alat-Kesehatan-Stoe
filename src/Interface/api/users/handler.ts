@@ -1,5 +1,5 @@
 import type { Request, ResponseToolkit } from "@hapi/hapi";
-import type { IUser, IRole, IAuth, ILogin, IRefreshToken } from "../../../Domain/models/interface";
+import type { IUser, IRole, IAuth, ILoginRequest, IRefreshToken } from "../../../Domain/models/interface";
 import autoBind from "auto-bind";
 import UserValidator from "../../../App/validator/users";
 import TokenManager from "../../../Infrastructure/token/manager.token";
@@ -58,7 +58,7 @@ class UserHandler implements IUserHandler {
 	async updateUserHandler(request: Request, h: ResponseToolkit) {
 		const payload = request.payload as IUser;
 		this._validator.validateUserPayload(payload);
-		const { id: credentialId, role } = request.auth.credentials as unknown as IRole;
+		const { id: credentialId, role} = request.auth.credentials as unknown as IRole;
 		await this._userRepository.editUserById({ id: credentialId, role }, payload);
 		return h
 			.response({
@@ -83,11 +83,11 @@ class UserHandler implements IUserHandler {
 	// Start User Auth Handler
 	async postUserAuthHandler(request: Request, h: ResponseToolkit) {
 		this._validator.validatePostUserAuthPayload(request.payload);
-		const { username, password } = request.payload as ILogin;
+		const { username, password } = request.payload as ILoginRequest;
 		const userId = await this._userRepository.verifyUserCredential({ username, password });
 		const accessToken = this._tokenManager.generateAccessToken({ userId });
 		const refreshToken = this._tokenManager.generateRefreshToken({ userId });
-		await this._authRepository.addUserRefreshToken({ id: userId, token: refreshToken });
+		await this._authRepository.addUserRefreshToken({ id: userId, token: refreshToken, role: "user" });
 		return h
 			.response({
 				status: "success",

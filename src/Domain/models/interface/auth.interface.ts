@@ -1,15 +1,23 @@
 interface IAuth {
 	id: string;
 	token: string;
+	role: string;
 }
 
-interface ILogin {
+interface ILoginRequest {
+	email: string;
 	username: string;
 	password: string;
+}
+
+interface ILoginResponse {
+	id: string;
+	accessToken: string;
+	refreshToken: string;
 }
 
 interface IRefreshToken {
 	refreshToken: string;
 }
 
-export type { IAuth, ILogin, IRefreshToken };
+export type { IAuth, ILoginRequest, ILoginResponse, IRefreshToken };

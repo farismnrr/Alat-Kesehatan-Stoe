@@ -5,14 +5,15 @@ import { InvariantError, AuthenticationError } from "../../../Common/errors";
 interface IAuthRepository {
 	// Start User Auth Service
 	addUserRefreshToken(auth: IAuth): Promise<void>;
-	verifyUserRefreshToken(auth: IAuth): Promise<void>;
-	deleteUserRefreshToken(auth: IAuth): Promise<void>;
+	verifyUserRefreshToken(auth: Partial<IAuth>): Promise<void>;
+	deleteUserRefreshToken(auth: Partial<IAuth>): Promise<void>;
 	// End User Auth Service
 
 	// Start Admin Auth Service
 	addAdminRefreshToken(auth: IAuth): Promise<void>;
-	verifyAdminRefreshToken(auth: IAuth): Promise<void>;
-	deleteAdminRefreshToken(auth: IAuth): Promise<void>;
+	verifyRole(auth: Partial<IAuth>): Promise<string>;
+	verifyAdminRefreshToken(auth: Partial<IAuth>): Promise<void>;
+	deleteAdminRefreshToken(auth: Partial<IAuth>): Promise<void>;
 	// End Admin Auth Service
 }
 
@@ -33,8 +34,8 @@ class AuthRepository implements IAuthRepository {
 		await this._pool.query(deleteUserQuery);
 
 		const authUserQuery = {
-			text: "INSERT INTO auth (token, user_id) VALUES($1, $2)",
-			values: [auth.token, auth.id]
+			text: "INSERT INTO auth (token, user_id, role) VALUES($1, $2, $3)",
+			values: [auth.token, auth.id, auth.role]
 		};
 
 		const authUserResult = await this._pool.query(authUserQuery);
@@ -43,9 +44,9 @@ class AuthRepository implements IAuthRepository {
 		}
 	}
 
-	async verifyUserRefreshToken(auth: IAuth) {
+	async verifyUserRefreshToken(auth: Partial<IAuth>) {
 		const authUserQuery = {
-			text: "SELECT token FROM auth WHERE token = $1 AND user_id = $2",
+			text: "SELECT token, role FROM auth WHERE token = $1 AND user_id = $2",
 			values: [auth.token, auth.id]
 		};
 
@@ -55,7 +56,7 @@ class AuthRepository implements IAuthRepository {
 		}
 	}
 
-	async deleteUserRefreshToken(auth: IAuth) {
+	async deleteUserRefreshToken(auth: Partial<IAuth>) {
 		const authUserQuery = {
 			text: "DELETE FROM auth WHERE token = $1 AND user_id = $2",
 			values: [auth.token, auth.id]
@@ -78,8 +79,8 @@ class AuthRepository implements IAuthRepository {
 		await this._pool.query(deleteAdminQuery);
 
 		const authAdminQuery = {
-			text: "INSERT INTO auth (token, admin_id) VALUES($1, $2)",
-			values: [auth.token, auth.id]
+			text: "INSERT INTO auth (token, admin_id, role) VALUES($1, $2, $3)",
+			values: [auth.token, auth.id, auth.role]
 		};
 
 		const authAdminResult = await this._pool.query(authAdminQuery);
@@ -88,9 +89,9 @@ class AuthRepository implements IAuthRepository {
 		}
 	}
 
-	async verifyAdminRefreshToken(auth: IAuth) {
+	async verifyAdminRefreshToken(auth: Partial<IAuth>) {
 		const authAdminQuery = {
-			text: "SELECT token FROM auth WHERE token = $1 AND admin_id = $2",
+			text: "SELECT token, role FROM auth WHERE token = $1 AND admin_id = $2",
 			values: [auth.token, auth.id]
 		};
 
@@ -100,7 +101,17 @@ class AuthRepository implements IAuthRepository {
 		}
 	}
 
-	async deleteAdminRefreshToken(auth: IAuth) {
+	async verifyRole(auth: Partial<IAuth>): Promise<string> {
+		const authQuery = {
+			text: "SELECT role FROM auth WHERE admin_id = $1",
+			values: [auth.id]
+		};
+		
+		const authResult = await this._pool.query(authQuery);
+		return authResult.rows[0].role;
+	}
+
+	async deleteAdminRefreshToken(auth: Partial<IAuth>) {
 		const authAdminQuery = {
 			text: "DELETE FROM auth WHERE token = $1 AND admin_id = $2",
 			values: [auth.token, auth.id]
