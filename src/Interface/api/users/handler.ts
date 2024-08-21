@@ -1,10 +1,10 @@
 import type { Request, ResponseToolkit } from "@hapi/hapi";
-import type { IUser, IRole, IAuth, ILogin, IRefreshToken } from "../../../Domain/models";
+import type { IUser, IRole, IAuth, ILogin, IRefreshToken } from "../../../Domain/models/interface";
 import autoBind from "auto-bind";
-import UserService from "../../../Infrastructure/repositories/database/user.service";
-import AuthService from "../../../Infrastructure/repositories/database/auth.service";
-import TokenManager from "../../../Infrastructure/token/manager.token";
 import UserValidator from "../../../App/validator/users";
+import TokenManager from "../../../Infrastructure/token/manager.token";
+import UserRepository from "../../../Infrastructure/repositories/database/user.repository";
+import AuthRepository from "../../../Infrastructure/repositories/database/auth.repository";
 
 interface IUserHandler {
 	// Start User Handler
@@ -21,20 +21,20 @@ interface IUserHandler {
 }
 
 class UserHandler implements IUserHandler {
-	private _authService: AuthService;
-	private _userService: UserService;
+	private _authRepository: AuthRepository;
+	private _userRepository: UserRepository;
 	private _tokenManager: TokenManager;
 	private _validator: typeof UserValidator;
 
 	constructor(
-		authService: AuthService,
-		userService: UserService,
+		authRepository: AuthRepository,
+		userRepository: UserRepository,
 		tokenManager: TokenManager,
 		validator: typeof UserValidator
 	) {
 		autoBind(this);
-		this._authService = authService;
-		this._userService = userService;
+		this._authRepository = authRepository;
+		this._userRepository = userRepository;
 		this._tokenManager = tokenManager;
 		this._validator = validator;
 	}
@@ -43,7 +43,7 @@ class UserHandler implements IUserHandler {
 	async postUserHandler(request: Request, h: ResponseToolkit) {
 		const payload = request.payload as IUser;
 		this._validator.validateUserPayload(payload);
-		const userId = await this._userService.addUser(payload);
+		const userId = await this._userRepository.addUser(payload);
 		return h
 			.response({
 				status: "success",
@@ -59,7 +59,7 @@ class UserHandler implements IUserHandler {
 		const payload = request.payload as IUser;
 		this._validator.validateUserPayload(payload);
 		const { id: credentialId, role } = request.auth.credentials as unknown as IRole;
-		await this._userService.editUserById({ id: credentialId, role }, payload);
+		await this._userRepository.editUserById({ id: credentialId, role }, payload);
 		return h
 			.response({
 				status: "success",
@@ -70,7 +70,7 @@ class UserHandler implements IUserHandler {
 
 	async deleteUserHandler(request: Request, h: ResponseToolkit) {
 		const { id: credentialId, role } = request.auth.credentials as unknown as IRole;
-		await this._userService.deleteUserById({ id: credentialId, role });
+		await this._userRepository.deleteUserById({ id: credentialId, role });
 		return h
 			.response({
 				status: "success",
@@ -84,15 +84,16 @@ class UserHandler implements IUserHandler {
 	async postUserAuthHandler(request: Request, h: ResponseToolkit) {
 		this._validator.validatePostUserAuthPayload(request.payload);
 		const { username, password } = request.payload as ILogin;
-		const userId = await this._userService.verifyUserCredential({ username, password });
+		const userId = await this._userRepository.verifyUserCredential({ username, password });
 		const accessToken = this._tokenManager.generateAccessToken({ userId });
 		const refreshToken = this._tokenManager.generateRefreshToken({ userId });
-		await this._authService.addUserRefreshToken({ id: userId, token: refreshToken });
+		await this._authRepository.addUserRefreshToken({ id: userId, token: refreshToken });
 		return h
 			.response({
 				status: "success",
 				message: "User logged in successfully",
 				data: {
+					userId,
 					accessToken,
 					refreshToken
 				}
@@ -104,7 +105,7 @@ class UserHandler implements IUserHandler {
 		this._validator.validatePutUserAuthPayload(request.payload);
 		const { refreshToken } = request.payload as IRefreshToken;
 		const { userId } = this._tokenManager.verifyRefreshToken(refreshToken);
-		await this._authService.verifyUserRefreshToken({ id: userId, token: refreshToken });
+		await this._authRepository.verifyUserRefreshToken({ id: userId, token: refreshToken });
 		const accessToken = this._tokenManager.generateAccessToken({ userId });
 		return h
 			.response({
@@ -121,8 +122,8 @@ class UserHandler implements IUserHandler {
 		this._validator.validateDeleteUserAuthPayload(request.payload);
 		const { refreshToken } = request.payload as IRefreshToken;
 		const { userId } = this._tokenManager.verifyRefreshToken(refreshToken);
-		await this._authService.verifyUserRefreshToken({ id: userId, token: refreshToken });
-		await this._authService.deleteUserRefreshToken({ id: userId, token: refreshToken });
+		await this._authRepository.verifyUserRefreshToken({ id: userId, token: refreshToken });
+		await this._authRepository.deleteUserRefreshToken({ id: userId, token: refreshToken });
 		return h
 			.response({
 				status: "success",

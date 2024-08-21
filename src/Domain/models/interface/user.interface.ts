@@ -7,7 +7,7 @@ interface IUser {
 	gender: string;
 	address: string;
 	city: string;
-	contact_number: string;
+	contactNumber: string;
 }
 
 export type { IUser };

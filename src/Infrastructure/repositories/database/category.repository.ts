@@ -1,9 +1,10 @@
-import type { ICategory } from "../../../Domain/models";
+import type { ICategory } from "../../../Domain/models/interface";
 import { Pool } from "pg";
+import { MapProduct } from "../../../Domain/models/map";
 import { v4 as uuidv4 } from "uuid";
 import { NotFoundError, InvariantError } from "../../../Common/errors";
 
-interface ICategoryService {
+interface ICategoryRepository {
 	addCategory(category: Partial<ICategory>): Promise<string>;
 	getCategories(): Promise<ICategory[]>;
 	getCategoryById(category: Partial<ICategory>): Promise<any>;
@@ -11,7 +12,7 @@ interface ICategoryService {
 	deleteCategoryById(category: Partial<ICategory>): Promise<void>;
 }
 
-export class CategoryService implements ICategoryService {
+class CategoryRepository implements ICategoryRepository {
 	private _pool: Pool;
 
 	constructor() {
@@ -60,7 +61,10 @@ export class CategoryService implements ICategoryService {
 		};
 
 		const productResult = await this._pool.query(productQuery);
-		return { ...categoryData, products: productResult.rows };
+		return {
+			...categoryData,
+			products: productResult.rows.map(MapProduct)
+		};
 	}
 
 	async editCategoryById(category: ICategory) {
@@ -88,4 +92,4 @@ export class CategoryService implements ICategoryService {
 	}
 }
 
-export default CategoryService;
+export default CategoryRepository;

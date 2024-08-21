@@ -37,7 +37,7 @@ const UserSchema = Joi.object({
 		.max(50)
 		.required()
 		.error(new Error("City must be between 3 and 50 characters long.")),
-	contact_number: Joi.string()
+	contactNumber: Joi.string()
 		.pattern(new RegExp("^[0-9]{10,15}$"))
 		.required()
 		.error(

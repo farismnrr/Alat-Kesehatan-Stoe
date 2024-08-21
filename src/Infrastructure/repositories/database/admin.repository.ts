@@ -1,4 +1,4 @@
-import type { IAdmin, IRole } from "../../../Domain/models";
+import type { IAdmin, IRole } from "../../../Domain/models/interface";
 import bcrypt from "bcrypt";
 import { Pool } from "pg";
 import { v4 as uuidv4 } from "uuid";
@@ -9,7 +9,7 @@ import {
 	AuthorizationError
 } from "../../../Common/errors";
 
-interface IAdminService {
+interface IAdminRepository {
 	verifyUsername(admin: Partial<IAdmin>): Promise<void>;
 	verifyAdminCredential(admin: IAdmin): Promise<string>;
 	addAdmin(admin: IAdmin): Promise<string>;
@@ -17,7 +17,7 @@ interface IAdminService {
 	deleteAdminById(adminRole: IRole): Promise<void>;
 }
 
-class AdminService implements IAdminService {
+class AdminRepository implements IAdminRepository {
 	private _pool: Pool;
 
 	constructor() {
@@ -112,4 +112,4 @@ class AdminService implements IAdminService {
 	}
 }
 
-export default AdminService;
+export default AdminRepository;

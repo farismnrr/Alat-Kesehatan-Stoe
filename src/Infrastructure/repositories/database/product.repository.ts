@@ -1,32 +1,35 @@
+import type { IProductResponse } from "../../../Domain/models/interface";
 import { Pool } from "pg";
+import { MapProduct } from "../../../Domain/models/map";
 import { v4 as uuidv4 } from "uuid";
 import { NotFoundError, InvariantError } from "../../../Common/errors";
 
-interface IProduct {
-	id: string;
-	productName: string;
-	description: string;
-	price: number;
-	stock: number;
-	categoryId: string;
+interface IProductRepository {
+	addProduct(product: Partial<IProductResponse>): Promise<string>;
+	getProducts(product: Partial<IProductResponse>): Promise<IProductResponse[]>;
+	getProductById(product: Partial<IProductResponse>): Promise<IProductResponse>;
+	editProductById(product: IProductResponse): Promise<void>;
+	deleteProductById(product: Partial<IProductResponse>): Promise<void>;
 }
 
-interface IProductService {
-	addProduct(product: IProduct): Promise<string>;
-	getProducts(product: Partial<IProduct>): Promise<IProduct[]>;
-	getProductById(product: Partial<IProduct>): Promise<IProduct>;
-	editProductById(product: IProduct): Promise<void>;
-	deleteProductById(product: Partial<IProduct>): Promise<void>;
-}
-
-export class ProductService implements IProductService {
+class ProductRepository implements IProductRepository {
 	private _pool: Pool;
 
 	constructor() {
 		this._pool = new Pool();
 	}
 
-	async addProduct(product: Partial<IProduct>) {
+	async addProduct(product: Partial<IProductResponse>) {
+		const categoryQuery = {
+			text: `SELECT id FROM categories WHERE id = $1`,
+			values: [product.categoryId]
+		};
+
+		const categoryResult = await this._pool.query(categoryQuery);
+		if (!categoryResult.rowCount) {
+			throw new InvariantError("Category not found");
+		}
+
 		const id = uuidv4();
 		const productQuery = {
 			text: `
@@ -52,18 +55,17 @@ export class ProductService implements IProductService {
 		return productResult.rows[0].id;
 	}
 
-	async getProducts(product: Partial<IProduct>) {
+	async getProducts(product: Partial<IProductResponse>) {
 		const conditions = [];
 		const values = [];
 		if (product.productName) {
-			conditions.push("product_name ILIKE $1");
+			conditions.push(`product_name ILIKE $${conditions.length + 1}`);
 			values.push(`%${product.productName}%`);
 		}
 
+		const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 		const productsQuery = {
-			text: `SELECT id, product_name, description, price, stock FROM products WHERE ${conditions.join(
-				" AND "
-			)}`,
+			text: `SELECT id, product_name, description, price, stock, category_id FROM products ${whereClause}`,
 			values: values
 		};
 
@@ -72,30 +74,28 @@ export class ProductService implements IProductService {
 			throw new NotFoundError("Failed to get products");
 		}
 
-		const products = productsResult.rows;
-		return products;
+		return productsResult.rows.map(MapProduct);
 	}
 
-	async getProductById(product: Partial<IProduct>) {
+	async getProductById(product: Partial<IProductResponse>) {
 		const productQuery = {
 			text: `
 				SELECT id, product_name, description, price, stock, category_id 
 				FROM products 
-				WHERE id = $1 
-				RETURNING *
+				WHERE id = $1
 			`,
 			values: [product.id]
 		};
 
 		const productResult = await this._pool.query(productQuery);
 		if (!productResult.rowCount) {
-			throw new NotFoundError("Failed to get product");
+			throw new NotFoundError("Product not found");
 		}
 
-		return productResult.rows[0];
+		return MapProduct(productResult.rows[0]);
 	}
 
-	async editProductById(product: IProduct) {
+	async editProductById(product: IProductResponse) {
 		const productQuery = {
 			text: `
 				UPDATE products 
@@ -118,7 +118,7 @@ export class ProductService implements IProductService {
 		}
 	}
 
-	async deleteProductById(product: Partial<IProduct>) {
+	async deleteProductById(product: Partial<IProductResponse>) {
 		const productQuery = {
 			text: `DELETE FROM products WHERE id = $1`,
 			values: [product.id]
@@ -131,4 +131,4 @@ export class ProductService implements IProductService {
 	}
 }
 
-export default ProductService;
+export default ProductRepository;

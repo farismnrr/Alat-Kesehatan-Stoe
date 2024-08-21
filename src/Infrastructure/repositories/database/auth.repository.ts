@@ -1,8 +1,8 @@
-import type { IAuth } from "../../../Domain/models";
+import type { IAuth } from "../../../Domain/models/interface";
 import { Pool } from "pg";
 import { InvariantError, AuthenticationError } from "../../../Common/errors";
 
-interface IAuthService {
+interface IAuthRepository {
 	// Start User Auth Service
 	addUserRefreshToken(auth: IAuth): Promise<void>;
 	verifyUserRefreshToken(auth: IAuth): Promise<void>;
@@ -16,7 +16,7 @@ interface IAuthService {
 	// End Admin Auth Service
 }
 
-class AuthService implements IAuthService {
+class AuthRepository implements IAuthRepository {
 	private _pool: Pool;
 
 	constructor() {
@@ -114,4 +114,4 @@ class AuthService implements IAuthService {
 	// End Admin Auth Service
 }
 
-export default AuthService;
+export default AuthRepository;

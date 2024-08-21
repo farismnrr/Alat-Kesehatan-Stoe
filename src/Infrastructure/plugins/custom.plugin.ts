@@ -1,38 +1,38 @@
 import Hapi from "@hapi/hapi";
 import users from "../../Interface/api/users";
-import UserService from "../repositories/database/user.service";
+import UserRepository from "../repositories/database/user.repository";
 import UserValidator from "../../App/validator/users";
 
 import admins from "../../Interface/api/admins";
-import AdminService from "../repositories/database/admin.service";
+import AdminRepository from "../repositories/database/admin.repository";
 import AdminValidator from "../../App/validator/admins";
 
 import products from "../../Interface/api/products";
-import ProductService from "../repositories/database/product.service";
+import ProductRepository from "../repositories/database/product.repository";
 import ProductValidator from "../../App/validator/products";
 
 import categories from "../../Interface/api/categories";
-import CategoryService from "../repositories/database/category.service";
+import CategoryRepository from "../repositories/database/category.repository";
 import CategoryValidator from "../../App/validator/categories";
 
-import AuthService from "../repositories/database/auth.service";
+import AuthRepository from "../repositories/database/auth.repository";
 import TokenManager from "../token/manager.token";
-import CacheService from "../repositories/cache/cache.service";
+import CacheRepository from "../repositories/cache/cache.repository";
 
 const CustomPlugins = async (server: Hapi.Server) => {
-	const userService = new UserService();
-	const authService = new AuthService();
-	const adminService = new AdminService();
+	const userRepository = new UserRepository();
+	const authRepository = new AuthRepository();
+	const adminRepository = new AdminRepository();
 	const tokenManager = new TokenManager();
-	const cacheService = new CacheService();
-	const productService = new ProductService();
-	const categoryService = new CategoryService();
+	const cacheRepository = new CacheRepository();
+	const productRepository = new ProductRepository();
+	const categoryRepository = new CategoryRepository();
 	await server.register([
 		{
 			plugin: users,
 			options: {
-				authService,
-				userService,
+				authRepository,
+				userRepository,
 				tokenManager,
 				validator: UserValidator
 			}
@@ -40,8 +40,8 @@ const CustomPlugins = async (server: Hapi.Server) => {
 		{
 			plugin: admins,
 			options: {
-				authService,
-				adminService,
+				authRepository,
+				adminRepository,
 				tokenManager,
 				validator: AdminValidator
 			}
@@ -49,14 +49,14 @@ const CustomPlugins = async (server: Hapi.Server) => {
 		{
 			plugin: products,
 			options: {
-				productService,
+				productRepository,
 				validator: ProductValidator
 			}
 		},
 		{
 			plugin: categories,
 			options: {
-				categoryService,
+				categoryRepository,
 				validator: CategoryValidator
 			}
 		}

@@ -1,14 +1,14 @@
-import type { ICache } from "../../../Domain/models";
+import type { ICache } from "../../../Domain/models/interface";
 import Redis from "ioredis";
 import Config from "../../../utils/config";
 
-interface ICacheService {
+interface ICacheRepository {
 	set(cache: ICache): Promise<void>;
 	get(cache: Partial<ICache>): Promise<string>;
 	delete(cache: Partial<ICache>): Promise<void>;
 }
 
-class CacheService implements ICacheService {
+class CacheRepository implements ICacheRepository {
 	private _client: Redis;
 
 	constructor() {
@@ -54,4 +54,4 @@ class CacheService implements ICacheService {
 	}
 }
 
-export default CacheService;
+export default CacheRepository;

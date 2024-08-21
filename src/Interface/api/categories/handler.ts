@@ -1,8 +1,8 @@
 import type { Request, ResponseToolkit } from "@hapi/hapi";
-import type { ICategory } from "../../../Domain/models";
+import type { ICategory } from "../../../Domain/models/interface";
 import autoBind from "auto-bind";
-import CategoryService from "../../../Infrastructure/repositories/database/category.service";
 import CategoryValidator from "../../../App/validator/categories";
+import CategoryRepository from "../../../Infrastructure/repositories/database/category.repository";
 
 interface CategoryHandler {
 	postCategoryHandler(request: Request, h: ResponseToolkit): Promise<any>;
@@ -13,19 +13,19 @@ interface CategoryHandler {
 }
 
 class CategoryHandler implements CategoryHandler {
-	private _categoryService: CategoryService;
+	private _categoryRepository: CategoryRepository;
 	private _validator: typeof CategoryValidator;
 
-	constructor(categoryService: CategoryService, validator: typeof CategoryValidator) {
+	constructor(categoryRepository: CategoryRepository, validator: typeof CategoryValidator) {
 		autoBind(this);
-		this._categoryService = categoryService;
+		this._categoryRepository = categoryRepository;
 		this._validator = validator;
 	}
 
 	async postCategoryHandler(request: Request, h: ResponseToolkit) {
 		this._validator.validateCategoryPayload(request.payload);
 		const { name, description } = request.payload as ICategory;
-		const categoryId = await this._categoryService.addCategory({ name, description });
+		const categoryId = await this._categoryRepository.addCategory({ name, description });
 		return h
 			.response({
 				status: "success",
@@ -38,7 +38,7 @@ class CategoryHandler implements CategoryHandler {
 	}
 
 	async getCategoriesHandler(request: Request, h: ResponseToolkit) {
-		const categories = await this._categoryService.getCategories();
+		const categories = await this._categoryRepository.getCategories();
 		return h
 			.response({
 				status: "success",
@@ -50,7 +50,7 @@ class CategoryHandler implements CategoryHandler {
 
 	async getCategoryByIdHandler(request: Request, h: ResponseToolkit) {
 		const { id } = request.params;
-		const category = await this._categoryService.getCategoryById({ id });
+		const category = await this._categoryRepository.getCategoryById({ id });
 		return h
 			.response({
 				status: "success",
@@ -64,8 +64,8 @@ class CategoryHandler implements CategoryHandler {
 		this._validator.validateCategoryPayload(request.payload);
 		const { id } = request.params;
 		const { name, description } = request.payload as ICategory;
-		await this._categoryService.getCategoryById({ id });
-		await this._categoryService.editCategoryById({ id, name, description });
+		await this._categoryRepository.getCategoryById({ id });
+		await this._categoryRepository.editCategoryById({ id, name, description });
 		return h
 			.response({
 				status: "success",
@@ -76,8 +76,8 @@ class CategoryHandler implements CategoryHandler {
 
 	async deleteCategoryHandler(request: Request, h: ResponseToolkit) {
 		const { id } = request.params;
-		await this._categoryService.getCategoryById({ id });
-		await this._categoryService.deleteCategoryById({ id });
+		await this._categoryRepository.getCategoryById({ id });
+		await this._categoryRepository.deleteCategoryById({ id });
 		return h
 			.response({
 				status: "success",

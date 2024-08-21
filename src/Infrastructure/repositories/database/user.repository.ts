@@ -1,5 +1,5 @@
+import type { IUser, IRole } from "../../../Domain/models/interface";
 import bcrypt from "bcrypt";
-
 import { Pool } from "pg";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -8,9 +8,8 @@ import {
 	AuthenticationError,
 	AuthorizationError
 } from "../../../Common/errors";
-import type { IUser, IRole } from "../../../Domain/models";
 
-interface IUserService {
+interface IUserRepository {
 	verifyUsername(user: Partial<IUser>): Promise<void>;
 	verifyUserCredential(user: Partial<IUser>): Promise<string>;
 	addUser(user: IUser): Promise<string>;
@@ -18,7 +17,7 @@ interface IUserService {
 	deleteUserById(userRole: IRole): Promise<void>;
 }
 
-class UserService implements IUserService {
+class UserRepository implements IUserRepository {
 	private _pool: Pool;
 
 	constructor() {
@@ -77,7 +76,7 @@ class UserService implements IUserService {
 				user.gender,
 				user.address,
 				user.city,
-				user.contact_number
+				user.contactNumber
 			]
 		};
 
@@ -108,7 +107,7 @@ class UserService implements IUserService {
 				user.gender,
 				user.address,
 				user.city,
-				user.contact_number,
+				user.contactNumber,
 				userRole.id
 			]
 		};
@@ -140,4 +139,4 @@ class UserService implements IUserService {
 	}
 }
 
-export default UserService;
+export default UserRepository;
