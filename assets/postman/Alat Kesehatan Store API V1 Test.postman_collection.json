@@ -19,8 +19,17 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"const responseJson = pm.response.json();\r",
-											"pm.environment.set('userFarisId', responseJson.data.userId);"
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
 										],
 										"type": "text/javascript",
 										"packages": {}
@@ -32,7 +41,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n  \"username\": \"faris_user\",\r\n  \"password\": \"*Faris1234\",\r\n  \"email\": \"farismnrr.user@example.com\",\r\n  \"birthdate\": \"1990-01-01\",\r\n  \"gender\": \"male\",\r\n  \"address\": \"123 Street\",\r\n  \"city\": \"New York\",\r\n  \"contact_number\": \"081234567890\"\r\n}",
+									"raw": "{\r\n  \"username\": \"faris_user\",\r\n  \"password\": \"*Faris1234\",\r\n  \"email\": \"farismnrr.user@example.com\",\r\n  \"birthdate\": \"1990-01-01\",\r\n  \"gender\": \"male\",\r\n  \"address\": \"123 Street\",\r\n  \"city\": \"New York\",\r\n  \"contactNumber\": \"081234567890\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -59,8 +68,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"const responseJson = pm.response.json();\r",
-											"pm.environment.set('userNanaId', responseJson.data.userId);"
+											""
 										],
 										"type": "text/javascript",
 										"packages": {}
@@ -72,7 +80,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n  \"username\": \"nana_user\",\r\n  \"password\": \"*Nana1234\",\r\n  \"email\": \"nana.user@example.com\",\r\n  \"birthdate\": \"1990-01-01\",\r\n  \"gender\": \"female\",\r\n  \"address\": \"123 Street\",\r\n  \"city\": \"New York\",\r\n  \"contact_number\": \"081234567890\"\r\n}",
+									"raw": "{\r\n  \"username\": \"nana_user\",\r\n  \"password\": \"*Nana1234\",\r\n  \"email\": \"nana.user@example.com\",\r\n  \"birthdate\": \"1990-01-01\",\r\n  \"gender\": \"female\",\r\n  \"address\": \"123 Street\",\r\n  \"city\": \"New York\",\r\n  \"contactNumber\": \"081234567890\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -99,8 +107,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"const responseJson = pm.response.json();\r",
-											"pm.environment.set('adminFarisId', responseJson.data.adminId);"
+											""
 										],
 										"type": "text/javascript",
 										"packages": {}
@@ -139,9 +146,14 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"const responseJson = pm.response.json();\r",
-											"pm.environment.set('accessTokenAdminFaris', responseJson.data.accessToken);\r",
-											"pm.environment.set('refreshTokenAdminFaris', responseJson.data.refreshToken);"
+											"try {\r",
+											"  const responseJson = pm.response.json();\r",
+											"  pm.environment.set('adminFarisId', responseJson.data.adminId);\r",
+											"  pm.environment.set('accessTokenAdminFaris', responseJson.data.accessToken);\r",
+											"  pm.environment.set('refreshTokenAdminFaris', responseJson.data.refreshToken);\r",
+											"} catch (error) {\r",
+											"  console.log(\"Error occurred: \" + error.message);\r",
+											"}"
 										],
 										"type": "text/javascript",
 										"packages": {}
@@ -153,7 +165,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"username\": \"faris_admin\",\r\n    \"password\": \"#Faris1234\"\r\n}",
+									"raw": "{\r\n    // \"username\": \"faris_admin\",\r\n    \"email\": \"farismnrr.admin@example.com\",\r\n    \"password\": \"#Faris1234\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -214,7 +226,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"username\": \"test_{{$timestamp}}\",\r\n  \"password\": \"*Password123\",\r\n  \"email\": \"test@example.com\",\r\n  \"birthdate\": \"1990-01-01\",\r\n  \"gender\": \"male\",\r\n  \"address\": \"123 Street\",\r\n  \"city\": \"New York\",\r\n  \"contact_number\": \"081234567890\"\r\n}",
+							"raw": "{\r\n  \"username\": \"test_{{$timestamp}}\",\r\n  \"password\": \"*Password123\",\r\n  \"email\": \"test@example.com\",\r\n  \"birthdate\": \"1990-01-01\",\r\n  \"gender\": \"male\",\r\n  \"address\": \"123 Street\",\r\n  \"city\": \"New York\",\r\n  \"contactNumber\": \"081234567890\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -530,9 +542,11 @@
 									"\r",
 									"    pm.expect(responseJson.status).to.equal('success');\r",
 									"    pm.expect(responseJson.data).to.be.an('object');\r",
+									"    pm.expect(responseJson.data.userId).to.be.a('string');\r",
 									"    pm.expect(responseJson.data.accessToken).to.be.a('string');\r",
 									"    pm.expect(responseJson.data.refreshToken).to.be.a('string');\r",
 									"    \r",
+									"    pm.environment.set('userFarisId', responseJson.data.userId);\r",
 									"    pm.environment.set('accessTokenUserFaris', responseJson.data.accessToken);\r",
 									"    pm.environment.set('refreshTokenUserFaris', responseJson.data.refreshToken);\r",
 									"});"
@@ -593,9 +607,11 @@
 									"\r",
 									"    pm.expect(responseJson.status).to.equal('success');\r",
 									"    pm.expect(responseJson.data).to.be.an('object');\r",
+									"    pm.expect(responseJson.data.userId).to.be.a('string');\r",
 									"    pm.expect(responseJson.data.accessToken).to.be.a('string');\r",
 									"    pm.expect(responseJson.data.refreshToken).to.be.a('string');\r",
 									"    \r",
+									"    pm.environment.set('userNanaId', responseJson.data.userId);\r",
 									"    pm.environment.set('accessTokenUserNana', responseJson.data.accessToken);\r",
 									"    pm.environment.set('refreshTokenUserNana', responseJson.data.refreshToken);\r",
 									"});"
@@ -1009,8 +1025,8 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test('it should response 404 status code', () => {\r",
-									"    pm.expect(pm.response).to.have.status(404);\r",
+									"pm.test('it should response 401 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(401);\r",
 									"});\r",
 									"\r",
 									"pm.test('response Content-Type header should have application/json value', () => {\r",
@@ -1050,7 +1066,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"username\": \"farismnrr_{{$timestamp}}\",\r\n  \"password\": \"pAssword123*\",\r\n  \"email\": \"jane.doe@example.com\",\r\n  \"birthdate\": \"1991-01-02\",\r\n  \"gender\": \"female\",\r\n  \"address\": \"456 Street\",\r\n  \"city\": \"Los Angeles\",\r\n  \"contact_number\": \"081234567890\"\r\n}",
+							"raw": "{\r\n  \"username\": \"farismnrr_{{$timestamp}}\",\r\n  \"password\": \"pAssword123*\",\r\n  \"email\": \"jane.doe@example.com\",\r\n  \"birthdate\": \"1991-01-02\",\r\n  \"gender\": \"female\",\r\n  \"address\": \"456 Street\",\r\n  \"city\": \"Los Angeles\",\r\n  \"contactNumber\": \"081234567890\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1118,7 +1134,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"username\": \"farismnrr_{{$timestamp}}\",\r\n  \"password\": \"pAssword123*\",\r\n  \"email\": \"jane.doe@example.com\",\r\n  \"birthdate\": \"1991-01-02\",\r\n  \"gender\": \"male\",\r\n  \"address\": \"456 Street\",\r\n  \"city\": \"Los Angeles\",\r\n  \"contact_number\": \"081234567890\"\r\n}",
+							"raw": "{\r\n  \"username\": \"farismnrr_{{$timestamp}}\",\r\n  \"password\": \"pAssword123*\",\r\n  \"email\": \"jane.doe@example.com\",\r\n  \"birthdate\": \"1991-01-02\",\r\n  \"gender\": \"male\",\r\n  \"address\": \"456 Street\",\r\n  \"city\": \"Los Angeles\",\r\n  \"contactNumber\": \"081234567890\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1186,7 +1202,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"username\": \"nana_{{$timestamp}}\",\r\n  \"password\": \"pAssword123*\",\r\n  \"email\": \"jane.doe@example.com\",\r\n  \"birthdate\": \"1991-01-02\",\r\n  \"gender\": \"female\",\r\n  \"address\": \"456 Street\",\r\n  \"city\": \"Los Angeles\",\r\n  \"contact_number\": \"081234567890\"\r\n}",
+							"raw": "{\r\n  \"username\": \"nana_{{$timestamp}}\",\r\n  \"password\": \"pAssword123*\",\r\n  \"email\": \"jane.doe@example.com\",\r\n  \"birthdate\": \"1991-01-02\",\r\n  \"gender\": \"female\",\r\n  \"address\": \"456 Street\",\r\n  \"city\": \"Los Angeles\",\r\n  \"contactNumber\": \"081234567890\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1785,54 +1801,13 @@
 					"name": "[No Test] Requirements",
 					"item": [
 						{
-							"name": "Add Admin Nana",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"const responseJson = pm.response.json();\r",
-											"pm.environment.set('adminNanaId', responseJson.data.adminId);"
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								}
-							],
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n  \"username\": \"nana_admin\",\r\n  \"password\": \"#Nana1234\",\r\n  \"email\": \"nana.admin@example.com\"\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{url}}:{{port}}/admins",
-									"host": [
-										"{{url}}"
-									],
-									"port": "{{port}}",
-									"path": [
-										"admins"
-									]
-								}
-							},
-							"response": []
-						},
-						{
 							"name": "Add Admin Faris",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
 										"exec": [
-											"const responseJson = pm.response.json();\r",
-											"pm.environment.set('adminFarisId', responseJson.data.adminId);"
+											""
 										],
 										"type": "text/javascript",
 										"packages": {}
@@ -1865,14 +1840,13 @@
 							"response": []
 						},
 						{
-							"name": "Add User Faris",
+							"name": "Add Admin Nana",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
 										"exec": [
-											"const responseJson = pm.response.json();\r",
-											"pm.environment.set('userFarisId', responseJson.data.userId);"
+											""
 										],
 										"type": "text/javascript",
 										"packages": {}
@@ -1884,7 +1858,46 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n  \"username\": \"faris_user\",\r\n  \"password\": \"*Faris1234\",\r\n  \"email\": \"farismnrr.user@example.com\",\r\n  \"birthdate\": \"1990-01-01\",\r\n  \"gender\": \"male\",\r\n  \"address\": \"123 Street\",\r\n  \"city\": \"New York\",\r\n  \"contact_number\": \"081234567890\"\r\n}",
+									"raw": "{\r\n  \"username\": \"nana_admin\",\r\n  \"password\": \"#Nana1234\",\r\n  \"email\": \"nana.admin@example.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}:{{port}}/admins",
+									"host": [
+										"{{url}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"admins"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add User Faris",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"username\": \"faris_user\",\r\n  \"password\": \"*Faris1234\",\r\n  \"email\": \"farismnrr.user@example.com\",\r\n  \"birthdate\": \"1990-01-01\",\r\n  \"gender\": \"male\",\r\n  \"address\": \"123 Street\",\r\n  \"city\": \"New York\",\r\n  \"contactNumber\": \"081234567890\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1911,9 +1924,14 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"const responseJson = pm.response.json();\r",
-											"pm.environment.set('accessTokenUserFaris', responseJson.data.accessToken);\r",
-											"pm.environment.set('refreshTokenUserFaris', responseJson.data.refreshToken);"
+											"try {\r",
+											"  const responseJson = pm.response.json();\r",
+											"  pm.environment.set('userFarisId', responseJson.data.userId);\r",
+											"  pm.environment.set('accessTokenUserFaris', responseJson.data.accessToken);\r",
+											"  pm.environment.set('refreshTokenUserFaris', responseJson.data.refreshToken);\r",
+											"} catch (error) {\r",
+											"  console.log(\"Error occurred: \" + error.message);\r",
+											"}"
 										],
 										"type": "text/javascript",
 										"packages": {}
@@ -2302,9 +2320,11 @@
 									"\r",
 									"    pm.expect(responseJson.status).to.equal('success');\r",
 									"    pm.expect(responseJson.data).to.be.an('object');\r",
+									"    pm.expect(responseJson.data.adminId).to.be.a('string');\r",
 									"    pm.expect(responseJson.data.accessToken).to.be.a('string');\r",
 									"    pm.expect(responseJson.data.refreshToken).to.be.a('string');\r",
 									"    \r",
+									"    pm.environment.set('adminFarisId', responseJson.data.adminId);\r",
 									"    pm.environment.set('accessTokenAdminFaris', responseJson.data.accessToken);\r",
 									"    pm.environment.set('refreshTokenAdminFaris', responseJson.data.refreshToken);\r",
 									"});"
@@ -2365,9 +2385,11 @@
 									"\r",
 									"    pm.expect(responseJson.status).to.equal('success');\r",
 									"    pm.expect(responseJson.data).to.be.an('object');\r",
+									"    pm.expect(responseJson.data.adminId).to.be.a('string');\r",
 									"    pm.expect(responseJson.data.accessToken).to.be.a('string');\r",
 									"    pm.expect(responseJson.data.refreshToken).to.be.a('string');\r",
 									"    \r",
+									"    pm.environment.set('adminNanaId', responseJson.data.adminId);\r",
 									"    pm.environment.set('accessTokenAdminNana', responseJson.data.accessToken);\r",
 									"    pm.environment.set('refreshTokenAdminNana', responseJson.data.refreshToken);\r",
 									"});"
@@ -2781,8 +2803,8 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test('it should response 404 status code', () => {\r",
-									"    pm.expect(pm.response).to.have.status(404);\r",
+									"pm.test('it should response 401 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(401);\r",
 									"});\r",
 									"\r",
 									"pm.test('response Content-Type header should have application/json value', () => {\r",
@@ -3356,8 +3378,8 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test('it should response 500 status code', () => {\r",
-									"    pm.expect(pm.response).to.have.status(500);\r",
+									"pm.test('it should response 401 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(401);\r",
 									"});\r",
 									"\r",
 									"pm.test('response Content-Type header should have application/json value', () => {\r",
@@ -3388,7 +3410,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{refreshTokenUserFaris}}",
+									"value": "{{accessTokenUserNana}}",
 									"type": "string"
 								}
 							]
@@ -3549,6 +3571,1678 @@
 					}
 				}
 			]
+		},
+		{
+			"name": "Categories",
+			"item": [
+				{
+					"name": "[No Test] Requirements",
+					"item": [
+						{
+							"name": "Add Category",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"try {\r",
+											"  const responseJson = pm.response.json();\r",
+											"  pm.environment.set('categoryId', responseJson.data.categoryId);\r",
+											"} catch (error) {\r",
+											"  console.log(\"Error occurred: \" + error.message);\r",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const url = pm.environment.get('url');\r",
+											"const port = pm.environment.get('port');\r",
+											"\r",
+											"const requestParams = {\r",
+											"  url: `${url}:${port}/products`,\r",
+											"  method: 'POST',\r",
+											"  header: {\r",
+											"    'Content-Type': 'application/json',\r",
+											"  },\r",
+											"  body: {\r",
+											"    mode: 'raw',\r",
+											"    raw: JSON.stringify({ productName: 'Masker Medis 3 Ply 50pcs\"', description: 'Pack berisi 50 masker medis 3 lapis untuk perlindungan maksimal.', fullname: 'Dicoding Indonesia' })\r",
+											"  }\r",
+											"};\r",
+											"pm.sendRequest(requestParams, (_, error) => {\r",
+											"    if (error) {\r",
+											"        console.error(error);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Peralatan Medis\",\r\n    \"description\": \"Alat yang digunakan dalam prosedur medis dan perawatan pasien. Alat-alat ini esensial untuk menjaga kebersihan, mencegah infeksi, dan mendukung berbagai tindakan medis.\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}:{{port}}/categories",
+									"host": [
+										"{{url}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"categories"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Add Category with Invalid Payload",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 400 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseJson.status).to.equal('fail');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Peralatan Medis\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/categories",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Category with Valid Payload",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 201 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseJson.status).to.equal('success');\r",
+									"    pm.expect(responseJson.data).to.be.an('object');\r",
+									"    pm.expect(responseJson.data.categoryId).to.be.a('string');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const url = pm.environment.get(\"url\");\r",
+									"const port = pm.environment.get(\"port\");\r",
+									"const categoryId = pm.environment.get(\"categoryId\");\r",
+									"\r",
+									"const products = [\r",
+									"    {\r",
+									"        productName: \"Masker Medis 3 Ply 50pcs\",\r",
+									"        description:\r",
+									"            \"Pack berisi 50 masker medis 3 lapis untuk perlindungan maksimal.\",\r",
+									"        price: 15000,\r",
+									"        stock: 20,\r",
+									"        categoryId: categoryId,\r",
+									"    },\r",
+									"    {\r",
+									"        productName: \"Sarung Tangan Latex 50pcs\",\r",
+									"        description:\r",
+									"            \"Pack berisi 50 sarung tangan latex sekali pakai untuk keperluan medis.\",\r",
+									"        price: 40000,\r",
+									"        stock: 15,\r",
+									"        categoryId: categoryId,\r",
+									"    },\r",
+									"    {\r",
+									"        productName: \"Medicrepe Elastic Bandage\",\r",
+									"        description: \"Perban elastis untuk membalut luka dan cedera.\",\r",
+									"        price: 10000,\r",
+									"        stock: 30,\r",
+									"        categoryId: categoryId,\r",
+									"    },\r",
+									"];\r",
+									"\r",
+									"products.forEach((product) => {\r",
+									"    const requestParams = {\r",
+									"        url: `${url}:${port}/products`,\r",
+									"        method: \"POST\",\r",
+									"        header: {\r",
+									"            \"Content-Type\": \"application/json\",\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: \"raw\",\r",
+									"            raw: JSON.stringify(product),\r",
+									"        },\r",
+									"    };\r",
+									"\r",
+									"    pm.sendRequest(requestParams, (_, error) => {\r",
+									"        if (error) {\r",
+									"            console.error(error);\r",
+									"        }\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Alat Diagnostik\",\r\n    \"description\": \"Alat yang digunakan untuk mengukur dan memantau berbagai parameter kesehatan, seperti tekanan darah, denyut jantung, dan suhu tubuh, dapat membantu mendeteksi kondisi medis dan memberikan informasi penting yang dapat digunakan tenaga medis untuk diagnosis dan pengobatan.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/categories",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Categories",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 200 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseJson.status).to.equal('success');\r",
+									"    pm.expect(responseJson.message).to.equal('Categories successfully fetched');\r",
+									"    pm.expect(responseJson.data).to.be.an('array');\r",
+									"    \r",
+									"    responseJson.data.forEach(data => {\r",
+									"        pm.expect(data).to.be.an('object');\r",
+									"        pm.expect(data.id).to.be.a('string');\r",
+									"        pm.expect(data.name).to.be.a('string');\r",
+									"        pm.expect(data.description).to.be.a('string');\r",
+									"    });\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}:{{port}}/categories",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Category with Invalid Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 500 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(500);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseJson.status).to.equal('fail');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}:{{port}}/categories/xxx",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"categories",
+								"xxx"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Category with Not Found Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 404 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseJson.status).to.equal('fail');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}:{{port}}/categories/{{notFoundId}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"categories",
+								"{{notFoundId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Category with Valid Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 200 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseJson.status).to.equal('success');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"    pm.expect(responseJson.data).to.be.an('object');\r",
+									"\r",
+									"    pm.expect(responseJson.data.id).to.be.a('string');\r",
+									"    pm.expect(responseJson.data.name).to.be.a('string');\r",
+									"    pm.expect(responseJson.data.description).to.be.a('string');\r",
+									"    pm.expect(responseJson.data.products).to.be.an('array');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}:{{port}}/categories/{{categoryId}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"categories",
+								"{{categoryId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Category with Invalid Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 500 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(500);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body should have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseJson.status).to.equal('fail');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Peralatan Medis\",\r\n    \"description\": \"Peralatan yang digunakan dalam prosedur medis dan perawatan pasien sangat penting untuk menjaga kebersihan, mencegah infeksi, dan mendukung berbagai tindakan medis.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/categories/xxx",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"categories",
+								"xxx"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Category with Not Found Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 404 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body should have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseJson.status).to.equal('fail');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Peralatan Medis\",\r\n    \"description\": \"Peralatan yang digunakan dalam prosedur medis dan perawatan pasien sangat penting untuk menjaga kebersihan, mencegah infeksi, dan mendukung berbagai tindakan medis.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/categories/{{notFoundId}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"categories",
+								"{{notFoundId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Category with Valid Payload",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 200 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body should have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseJson.status).to.equal('success');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Peralatan Medis\",\r\n    \"description\": \"Peralatan yang digunakan dalam prosedur medis dan perawatan pasien sangat penting untuk menjaga kebersihan, mencegah infeksi, dan mendukung berbagai tindakan medis.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/categories/{{categoryId}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"categories",
+								"{{categoryId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Album with Invalid Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 500 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(500);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body should have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseJson.status).to.equal('fail');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}:{{port}}/categories/xxx",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"categories",
+								"xxx"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Album with Not Found Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 404 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body should have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseJson.status).to.equal('fail');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}:{{port}}/categories/{{notFoundId}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"categories",
+								"{{notFoundId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Album with Valid Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 200 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body should have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseJson.status).to.equal('success');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}:{{port}}/categories/{{categoryId}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"categories",
+								"{{categoryId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "[No Test] Requirements Copy",
+					"item": [
+						{
+							"name": "Add Category",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"try {\r",
+											"  const responseJson = pm.response.json();\r",
+											"  pm.environment.set('categoryId', responseJson.data.categoryId);\r",
+											"} catch (error) {\r",
+											"  console.log(\"Error occurred: \" + error.message);\r",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Peralatan Medis\",\r\n    \"description\": \"Alat yang digunakan dalam prosedur medis dan perawatan pasien. Alat-alat ini esensial untuk menjaga kebersihan, mencegah infeksi, dan mendukung berbagai tindakan medis.\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}:{{port}}/categories",
+									"host": [
+										"{{url}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"categories"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Add Product with Invalid Payload",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 400 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseJson.status).to.equal('fail');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"productName\": \"Masker Medis 3 Ply 50pcs\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/products",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Product with Valid Payload",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 201 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseJson.status).to.equal('success');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"    pm.expect(responseJson.data).to.be.an('object');\r",
+									"    pm.expect(responseJson.data.productId).to.be.a('string');\r",
+									"\r",
+									"    pm.environment.set('productId', responseJson.data.productId);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const url = pm.environment.get(\"url\");\r",
+									"const port = pm.environment.get(\"port\");\r",
+									"const categoryId = pm.environment.get(\"categoryId\");\r",
+									"\r",
+									"const products = [\r",
+									"    {\r",
+									"        productName: \"Masker Medis 3 Ply 50pcs\",\r",
+									"        description:\r",
+									"            \"Pack berisi 50 masker medis 3 lapis untuk perlindungan maksimal.\",\r",
+									"        price: 15000,\r",
+									"        stock: 20,\r",
+									"        categoryId: categoryId,\r",
+									"    },\r",
+									"    {\r",
+									"        productName: \"Sarung Tangan Latex 50pcs\",\r",
+									"        description:\r",
+									"            \"Pack berisi 50 sarung tangan latex sekali pakai untuk keperluan medis.\",\r",
+									"        price: 40000,\r",
+									"        stock: 15,\r",
+									"        categoryId: categoryId,\r",
+									"    },\r",
+									"    {\r",
+									"        productName: \"Medicrepe Elastic Bandage\",\r",
+									"        description: \"Perban elastis untuk membalut luka dan cedera.\",\r",
+									"        price: 10000,\r",
+									"        stock: 30,\r",
+									"        categoryId: categoryId,\r",
+									"    },\r",
+									"    {\r",
+									"      productName: \"Termometer Infrared Non Contact Digital Suhu Badan Tubuh Thermometer\",\r",
+									"      description: \"Pengukuran tubuh yang cepat dan akurat selalu menjadi tujuan kami, yuk kami perhatikan kesehatan Anda. Penyesuaian penyimpangan suhu, nyaman bagi pengguna untuk menyesuaikan setiap hari\",\r",
+									"      price: 49000,\r",
+									"      stock: 20,\r",
+									"      categoryId: categoryId\r",
+									"    },\r",
+									"];\r",
+									"\r",
+									"products.forEach((product) => {\r",
+									"    const requestParams = {\r",
+									"        url: `${url}:${port}/products`,\r",
+									"        method: \"POST\",\r",
+									"        header: {\r",
+									"            \"Content-Type\": \"application/json\",\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: \"raw\",\r",
+									"            raw: JSON.stringify(product),\r",
+									"        },\r",
+									"    };\r",
+									"\r",
+									"    pm.sendRequest(requestParams, (_, error) => {\r",
+									"        if (error) {\r",
+									"            console.error(error);\r",
+									"        }\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"productName\": \"Thermometer Digital Kaku\",\r\n    \"description\": \"Thermometer Digital (bebas mercury) merk OneMed EKONOMIS, yang mudah digunakan, dan mempunyai akurasi tinggi, Layar LCD lebar, mudah dibaca, waktu pengukuran 60 detik. Ada alarm pada akhir pengukuran suhu dan memori pengukuran terakhir. Mati otomatis sesaat setelah tidak digunakan.\",\r\n    \"price\": 17500,\r\n    \"stock\": 200,\r\n    \"categoryId\": \"{{categoryId}}\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/products",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Products",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 200 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseJson.status).to.equal('success');\r",
+									"    pm.expect(responseJson.data).to.be.an('object');\r",
+									"    pm.expect(responseJson.data.products).to.be.an('array');\r",
+									"    pm.expect(responseJson.data.products).to.length.least(5);\r",
+									"\r",
+									"    const products = responseJson.data.products;\r",
+									"    products.forEach((product) => {\r",
+									"        pm.expect(Object.keys(product)).to.length(6);\r",
+									"        pm.expect(product.id).to.be.ok;\r",
+									"        pm.expect(product.productName).to.be.ok;\r",
+									"        pm.expect(product.description).to.be.ok;\r",
+									"        pm.expect(product.price).to.be.ok;\r",
+									"        pm.expect(product.stock).to.be.ok;\r",
+									"        pm.expect(product.categoryId).to.be.ok;\r",
+									"    });\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}:{{port}}/products",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Detail Product with Invalid Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 500 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(500);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body should have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseJson.status).to.equal('fail');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}:{{port}}/products/xxx",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"products",
+								"xxx"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Detail Product with NotFound Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 404 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body should have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseJson.status).to.equal('fail');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}:{{port}}/products/{{notFoundId}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"products",
+								"{{notFoundId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Detail Product with Valid Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 200 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body should have correct property and value', () => {\r",
+									"    const productId = pm.environment.get('productId');\r",
+									"    const categoryId = pm.environment.get('categoryId');\r",
+									"    const responseJson = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseJson.status).to.equal('success');\r",
+									"    pm.expect(responseJson.data).to.be.a('object');\r",
+									"    pm.expect(responseJson.data.product).to.be.an('object');\r",
+									"    pm.expect(responseJson.data.product.id).to.equal(productId);\r",
+									"    pm.expect(responseJson.data.product.productName).to.equal('Thermometer Digital Kaku');\r",
+									"    pm.expect(responseJson.data.product.description).to.equal('Thermometer Digital (bebas mercury) merk OneMed EKONOMIS, yang mudah digunakan, dan mempunyai akurasi tinggi, Layar LCD lebar, mudah dibaca, waktu pengukuran 60 detik. Ada alarm pada akhir pengukuran suhu dan memori pengukuran terakhir. Mati otomatis sesaat setelah tidak digunakan.');\r",
+									"    pm.expect(responseJson.data.product.price).to.equal(17500);\r",
+									"    pm.expect(responseJson.data.product.stock).to.equal(200);\r",
+									"    pm.expect(responseJson.data.product.categoryId).to.equal(categoryId);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}:{{port}}/products/{{productId}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"products",
+								"{{productId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Product using Product Name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 200 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseJson.status).to.equal('success');\r",
+									"    pm.expect(responseJson.data).to.be.an('object');\r",
+									"    pm.expect(responseJson.data.products).to.be.an('array');\r",
+									"    pm.expect(responseJson.data.products).to.have.lengthOf.at.least(2);\r",
+									"\r",
+									"    const products = responseJson.data.products;\r",
+									"    products.forEach((product) => {\r",
+									"        pm.expect(Object.keys(product)).to.length(6);\r",
+									"        pm.expect(product.id).to.be.ok;\r",
+									"        pm.expect(product.productName).to.be.ok;\r",
+									"        pm.expect(product.description).to.be.ok;\r",
+									"        pm.expect(product.price).to.be.ok;\r",
+									"        pm.expect(product.stock).to.be.ok;\r",
+									"        pm.expect(product.categoryId).to.be.ok;\r",
+									"    });\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}:{{port}}/products?productName=Thermometer",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"products"
+							],
+							"query": [
+								{
+									"key": "productName",
+									"value": "Thermometer"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Product with Invalid Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 500 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(500);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body should have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseJson.status).to.equal('fail');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"productName\": \"Thermometer Digital Kaku Kualitas Terbaik\",\r\n    \"description\": \"Thermometer Digital (bebas mercury) merk OneMed EKONOMIS, yang mudah digunakan, dan mempunyai akurasi tinggi, Layar LCD lebar, mudah dibaca, waktu pengukuran 60 detik. Ada alarm pada akhir pengukuran suhu dan memori pengukuran terakhir. Mati otomatis sesaat setelah tidak digunakan.\",\r\n    \"price\": 17500,\r\n    \"stock\": 199,\r\n    \"categoryId\": \"{{categoryId}}\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/products/xxx",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"products",
+								"xxx"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Product with Not Found Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 404 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body should have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseJson.status).to.equal('fail');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"productName\": \"Thermometer Digital Kaku Kualitas Terbaik\",\r\n    \"description\": \"Thermometer Digital (bebas mercury) merk OneMed EKONOMIS, yang mudah digunakan, dan mempunyai akurasi tinggi, Layar LCD lebar, mudah dibaca, waktu pengukuran 60 detik. Ada alarm pada akhir pengukuran suhu dan memori pengukuran terakhir. Mati otomatis sesaat setelah tidak digunakan.\",\r\n    \"price\": 17500,\r\n    \"stock\": 199,\r\n    \"categoryId\": \"{{categoryId}}\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/products/{{notFoundId}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"products",
+								"{{notFoundId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Product with Valid Payload",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 200 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body should have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseJson.status).to.equal('success');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"productName\": \"Thermometer Digital Kaku Kualitas Terbaik\",\r\n    \"description\": \"Thermometer Digital (bebas mercury) merk OneMed EKONOMIS, yang mudah digunakan, dan mempunyai akurasi tinggi, Layar LCD lebar, mudah dibaca, waktu pengukuran 60 detik. Ada alarm pada akhir pengukuran suhu dan memori pengukuran terakhir. Mati otomatis sesaat setelah tidak digunakan.\",\r\n    \"price\": 17500,\r\n    \"stock\": 199,\r\n    \"categoryId\": \"{{categoryId}}\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/products/{{productId}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"products",
+								"{{productId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Product with Invalid Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 500 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(500);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body should have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseJson.status).to.equal('fail');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}:{{port}}/products/xxx",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"products",
+								"xxx"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Product with Not Found Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 404 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body should have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseJson.status).to.equal('fail');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}:{{port}}/products/{{notFoundId}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"products",
+								"{{notFoundId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Product with Valid Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 200 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('response Content-Type header should have application/json value', () => {\r",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');\r",
+									"}); \r",
+									"\r",
+									"pm.test('response body should an object', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test('response body should have correct property and value', () => {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseJson.status).to.equal('success');\r",
+									"    pm.expect(responseJson.message).to.be.a('string');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}:{{port}}/products/{{productId}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"products",
+								"{{productId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
@@ -3568,7 +5262,7 @@
 				"type": "text/javascript",
 				"packages": {},
 				"exec": [
-					""
+					"pm.environment.set('notFoundId', '12345678-abcd-abcd-abcd-123456789abc');"
 				]
 			}
 		}
