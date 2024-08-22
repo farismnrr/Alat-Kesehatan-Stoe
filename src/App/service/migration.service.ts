@@ -24,8 +24,10 @@ class MigrationsService implements MigrationService {
 				"create-categories-table.sql",
 				"create-products-table.sql",
 				"create-orders-table.sql",
-				"create-orders-items-table.sql",
-				"create-payments-table.sql"
+				"create-order-items-table.sql",
+				"create-order-users-table.sql",
+				"create-payments-table.sql",
+				"create-user-ratings.sql"
 			];
 
 			for (const migration of migrations) {

@@ -5,7 +5,7 @@ interface IUserRepository {
 	verifyUsername(user: Partial<IUser>): Promise<string>;
 	verifyEmail(user: Partial<IUser>): Promise<string>;
 	addUser(user: IUser): Promise<string>;
-	editUserById(user: IUser): Promise<string>;
+	editUserById(user: IUser): Promise<void>;
 	deleteUserById(user: Partial<IUser>): Promise<string>;
 }
 
@@ -70,35 +70,66 @@ class UserRepository implements IUserRepository {
 		return result.rows[0].id;
 	}
 
-	async editUserById(user: IUser): Promise<string> {
-		const userQuery = {
-			text: `
-				UPDATE users SET 
-					username = $1, 
-					password = $2, 
-					email = $3, 
-					birthdate = $4, 
-					gender = $5, 
-					address = $6, 
-					city = $7, 
-					contact_number = $8 
-				WHERE id = $9 RETURNING id
-            `,
-			values: [
-				user.username,
-				user.password,
-				user.email,
-				user.birthdate,
-				user.gender,
-				user.address,
-				user.city,
-				user.contactNumber,
-				user.id
-			]
-		};
+	async editUserById(user: IUser): Promise<void> {
+		let fields: string[] = [];
+		let values: any[] = [];
+		let index = 1;
 
-		const userResult = await this._pool.query(userQuery);
-		return userResult.rows[0];
+		if (user.username) {
+			fields.push(`username = $${index++}`);
+			values.push(user.username);
+		}
+
+		if (user.password) {
+			fields.push(`password = $${index++}`);
+			values.push(user.password);
+		}
+
+		if (user.email) {
+			fields.push(`email = $${index++}`);
+			values.push(user.email);
+		}
+
+		if (user.birthdate) {
+			fields.push(`birthdate = $${index++}`);
+			values.push(user.birthdate);
+		}
+
+		if (user.gender) {
+			fields.push(`gender = $${index++}`);
+			values.push(user.gender);
+		}
+
+		if (user.address) {
+			fields.push(`address = $${index++}`);
+			values.push(user.address);
+		}
+
+		if (user.city) {
+			fields.push(`city = $${index++}`);
+			values.push(user.city);
+		}
+
+		if (user.contactNumber) {
+			fields.push(`contact_number = $${index++}`);
+			values.push(user.contactNumber);
+		}
+
+		if (fields.length > 0) {
+			values.push(user.id);
+			const userQuery = {
+				text: `
+				UPDATE users 
+				SET ${fields.join(", ")}, updated_at = CURRENT_TIMESTAMP 
+				WHERE id = $${index}
+				RETURNING id
+				`,
+				values: values
+			};
+
+			const result = await this._pool.query(userQuery);
+			return result.rows[0].id;
+		}
 	}
 
 	async deleteUserById(user: Partial<IUser>): Promise<string> {

@@ -46,7 +46,7 @@ class AdminHandler implements IAdminHandler {
 
 	async updateAdminHandler(request: Request, h: ResponseToolkit) {
 		const payload = request.payload as IAdmin;
-		this._validator.validateAdminPayload(payload);
+		this._validator.validatePostAdminAuthPayload(payload);
 		const { id: credentialId } = request.auth.credentials as unknown as IAdmin;
 		await this._adminService.editAdmin({ ...payload, id: credentialId });
 		return h

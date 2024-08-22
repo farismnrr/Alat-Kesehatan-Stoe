@@ -69,7 +69,11 @@ class CategoryRepository implements ICategoryRepository {
 
 	async editCategoryById(category: ICategory) {
 		const categoryQuery = {
-			text: "UPDATE categories SET name = $1, description = $2 WHERE id = $3 RETURNING id",
+			text: `
+            UPDATE categories SET name = $1, description = $2, updated_at = CURRENT_TIMESTAMP 
+            WHERE id = $3 
+            RETURNING id
+            `,
 			values: [category.name, category.description, category.id]
 		};
 

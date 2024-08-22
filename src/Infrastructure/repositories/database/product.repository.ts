@@ -99,7 +99,7 @@ class ProductRepository implements IProductRepository {
 		const productQuery = {
 			text: `
 				UPDATE products 
-				SET product_name = $1, description = $2, price = $3, stock = $4, category_id = $5 
+				SET product_name = $1, description = $2, price = $3, stock = $4, category_id = $5, updated_at = CURRENT_TIMESTAMP 
 				WHERE id = $6
 			`,
 			values: [

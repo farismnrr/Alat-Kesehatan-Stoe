@@ -92,7 +92,7 @@ class AdminService implements IAdminService {
 
 	async editAdmin(payload: IAdmin): Promise<void> {
 		if (!payload.email && !payload.password && !payload.username) {
-			throw new InvariantError("Email, password, and username are required");
+			throw new InvariantError("Email, password, or username are required");
 		}
 		if (!payload.id) {
 			throw new AuthenticationError("Access denied!");
@@ -103,12 +103,11 @@ class AdminService implements IAdminService {
 			throw new AuthorizationError("You are not authorized to edit this admin");
 		}
 
-		await this._adminRepository.verifyEmail(payload);
-		const hashedPassword = await bcrypt.hash(payload.password, 10);
-		await this._adminRepository.editAdminById({
-			...payload,
-			password: hashedPassword
-		});
+		if (payload.password) {
+			payload.password = await bcrypt.hash(payload.password, 10);
+		}
+
+		await this._adminRepository.editAdminById(payload);
 	}
 
 	async updateToken(payload: IRefreshToken): Promise<string> {

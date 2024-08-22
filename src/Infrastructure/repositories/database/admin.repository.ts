@@ -5,7 +5,7 @@ interface IAdminRepository {
 	verifyUsername(admin: Partial<IAdmin>): Promise<string>;
 	verifyEmail(admin: Partial<IAdmin>): Promise<string>;
 	addAdmin(admin: IAdmin): Promise<string>;
-	editAdminById(admin: IAdmin): Promise<string>;
+	editAdminById(admin: IAdmin): Promise<void>;
 	deleteAdminById(admin: Partial<IAdmin>): Promise<string>;
 }
 
@@ -50,18 +50,41 @@ class AdminRepository implements IAdminRepository {
 		return adminResult.rows[0].id;
 	}
 
-	async editAdminById(admin: IAdmin): Promise<string> {
-		const adminQuery = {
-			text: `
-            UPDATE admins SET username = $1, password = $2, email = $3 
-            WHERE id = $4 
-            RETURNING id
-            `,
-			values: [admin.username, admin.password, admin.email, admin.id]
-		};
+	async editAdminById(admin: IAdmin): Promise<void> {
+		let fields: string[] = [];
+		let values: any[] = [];
+		let index = 1;
 
-		const adminResult = await this._pool.query(adminQuery);
-		return adminResult.rows[0];
+		if (admin.username) {
+			fields.push(`username = $${index++}`);
+			values.push(admin.username);
+		}
+
+		if (admin.password) {
+			fields.push(`password = $${index++}`);
+			values.push(admin.password);
+		}
+
+		if (admin.email) {
+			fields.push(`email = $${index++}`);
+			values.push(admin.email);
+		}
+
+		if (fields.length > 0) {
+			values.push(admin.id);
+			const adminQuery = {
+				text: `
+				UPDATE admins 
+				SET ${fields.join(", ")}, updated_at = CURRENT_TIMESTAMP 
+				WHERE id = $${index}
+				RETURNING id
+				`,
+				values: values
+			};
+
+			const adminResult = await this._pool.query(adminQuery);
+			return adminResult.rows[0].id;
+		}
 	}
 
 	async deleteAdminById(admin: Partial<IAdmin>): Promise<string> {

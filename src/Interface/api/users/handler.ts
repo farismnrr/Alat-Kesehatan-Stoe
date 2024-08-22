@@ -46,7 +46,7 @@ class UserHandler implements IUserHandler {
 
 	async updateUserHandler(request: Request, h: ResponseToolkit) {
 		const payload = request.payload as IUser;
-		this._validator.validateUserPayload(payload);
+		this._validator.validatePostUserAuthPayload(payload);
 		const { id: credentialId } = request.auth.credentials as unknown as IUser;
 		await this._userService.editUser({ ...payload, id: credentialId });
 		return h
