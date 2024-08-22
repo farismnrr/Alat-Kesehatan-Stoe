@@ -57,6 +57,9 @@ class AdminService implements IAdminService {
 			id,
 			password: hashedPassword
 		});
+		if (!adminId) {
+			throw new InvariantError("Failed to register admin");
+		}
 		return adminId;
 	}
 
@@ -156,10 +159,7 @@ class AdminService implements IAdminService {
 			throw new AuthorizationError("You are not authorized to delete this admin");
 		}
 
-		const adminId = await this._adminRepository.deleteAdminById(payload);
-		if (!adminId) {
-			throw new NotFoundError("Admin not found");
-		}
+		await this._adminRepository.deleteAdminById(payload);
 	}
 }
 

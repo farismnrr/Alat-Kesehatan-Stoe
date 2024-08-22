@@ -41,7 +41,7 @@ class UserService implements IUserService {
 	}
 
 	async registerUser(payload: IUser): Promise<string> {
-		if (payload.email === "" || payload.password === "" || payload.username === "") {
+		if (!payload.email || !payload.password || !payload.username) {
 			throw new InvariantError("Email, password, and username are required");
 		}
 
@@ -57,6 +57,9 @@ class UserService implements IUserService {
 			id,
 			password: hashedPassword
 		});
+		if (!userId) {
+			throw new InvariantError("Failed to register user");
+		}
 		return userId;
 	}
 

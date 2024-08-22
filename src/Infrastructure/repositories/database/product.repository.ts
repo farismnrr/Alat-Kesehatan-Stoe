@@ -1,4 +1,4 @@
-import type { IProductResponse } from "../../../Domain/models/interface";
+import type { IProduct, IProductResponse } from "../../../Domain/models/interface";
 import { Pool } from "pg";
 import { MapProduct } from "../../../Domain/models/map";
 import { v4 as uuidv4 } from "uuid";
@@ -8,6 +8,7 @@ interface IProductRepository {
 	addProduct(product: Partial<IProductResponse>): Promise<string>;
 	getProducts(product: Partial<IProductResponse>): Promise<IProductResponse[]>;
 	getProductById(product: Partial<IProductResponse>): Promise<IProductResponse>;
+	getProductsByCategoryId(product: Partial<IProductResponse>): Promise<any>;
 	editProductById(product: IProductResponse): Promise<void>;
 	deleteProductById(product: Partial<IProductResponse>): Promise<void>;
 }
@@ -93,6 +94,20 @@ class ProductRepository implements IProductRepository {
 		}
 
 		return MapProduct(productResult.rows[0]);
+	}
+
+	async getProductsByCategoryId(product: Partial<IProduct>): Promise<any> {
+		const productQuery = {
+			text: `
+				SELECT id, product_name, description, price, stock 
+				FROM products 
+				WHERE category_id = $1
+		  	`,
+			values: [product.id]
+		};
+
+		const productResult = await this._pool.query(productQuery);
+		return productResult.rows;
 	}
 
 	async editProductById(product: IProductResponse) {

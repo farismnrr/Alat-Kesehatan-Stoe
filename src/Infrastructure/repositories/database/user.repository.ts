@@ -115,21 +115,21 @@ class UserRepository implements IUserRepository {
 			values.push(user.contactNumber);
 		}
 
-		if (fields.length > 0) {
-			values.push(user.id);
-			const userQuery = {
-				text: `
+		if (fields.length === 0) {
+			throw new Error("Payload is empty");
+		}
+
+		const userQuery = {
+			text: `
 				UPDATE users 
 				SET ${fields.join(", ")}, updated_at = CURRENT_TIMESTAMP 
 				WHERE id = $${index}
 				RETURNING id
 				`,
-				values: values
-			};
+			values: [...values, user.id]
+		};
 
-			const result = await this._pool.query(userQuery);
-			return result.rows[0].id;
-		}
+		await this._pool.query(userQuery);
 	}
 
 	async deleteUserById(user: Partial<IUser>): Promise<string> {

@@ -20,7 +20,7 @@ class MigrationsService implements MigrationService {
 			const migrations = [
 				"create-users-table.sql",
 				"create-admins-table.sql",
-				"create-auth-table.sql",
+				"create-auths-table.sql",
 				"create-categories-table.sql",
 				"create-products-table.sql",
 				"create-orders-table.sql",

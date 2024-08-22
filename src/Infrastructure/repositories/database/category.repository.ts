@@ -1,11 +1,8 @@
 import type { ICategory } from "../../../Domain/models/interface";
 import { Pool } from "pg";
-import { MapProduct } from "../../../Domain/models/map";
-import { v4 as uuidv4 } from "uuid";
-import { NotFoundError, InvariantError } from "../../../Common/errors";
 
 interface ICategoryRepository {
-	addCategory(category: Partial<ICategory>): Promise<string>;
+	addCategory(category: ICategory): Promise<string>;
 	getCategories(): Promise<ICategory[]>;
 	getCategoryById(category: Partial<ICategory>): Promise<any>;
 	editCategoryById(category: ICategory): Promise<void>;
@@ -19,22 +16,21 @@ class CategoryRepository implements ICategoryRepository {
 		this._pool = new Pool();
 	}
 
-	async addCategory(category: Partial<ICategory>) {
-		const id = uuidv4();
+	async addCategory(category: ICategory): Promise<string> {
 		const categoryQuery = {
-			text: "INSERT INTO categories (id, name, description) VALUES ($1, $2, $3) RETURNING id",
-			values: [id, category.name, category.description]
+			text: `
+				INSERT INTO categories (name, description) 
+				VALUES ($1, $2) 
+				RETURNING id
+		  	`,
+			values: [category.name, category.description]
 		};
 
-		const result = await this._pool.query(categoryQuery);
-		if (!result.rowCount) {
-			throw new InvariantError("Category already exists");
-		}
-
-		return result.rows[0].id;
+		const categoryResult = await this._pool.query(categoryQuery);
+		return categoryResult.rows[0].id;
 	}
 
-	async getCategories() {
+	async getCategories(): Promise<ICategory[]> {
 		const categoriesQuery = {
 			text: "SELECT id, name, description FROM categories"
 		};
@@ -43,56 +39,50 @@ class CategoryRepository implements ICategoryRepository {
 		return result.rows;
 	}
 
-	async getCategoryById(category: Partial<ICategory>) {
+	async getCategoryById(category: Partial<ICategory>): Promise<ICategory[]> {
 		const categoryQuery = {
 			text: "SELECT id, name, description FROM categories WHERE id = $1",
 			values: [category.id]
 		};
 
 		const categoryResult = await this._pool.query(categoryQuery);
-		if (!categoryResult.rowCount) {
-			throw new NotFoundError("Category not found");
-		}
-
-		const categoryData = categoryResult.rows[0];
-		const productQuery = {
-			text: "SELECT id, product_name, description, price, stock FROM products WHERE category_id = $1",
-			values: [categoryData.id]
-		};
-
-		const productResult = await this._pool.query(productQuery);
-		return {
-			...categoryData,
-			products: productResult.rows.map(MapProduct)
-		};
+		return categoryResult.rows[0];
 	}
 
-	async editCategoryById(category: ICategory) {
+	async editCategoryById(category: ICategory): Promise<void> {
+		let fields: string[] = [];
+		let values: any[] = [];
+		let index = 1;
+
+		if (category.name) {
+			fields.push(`name = $${index++}`);
+			values.push(category.name);
+		}
+		
+		if (category.description) {
+			fields.push(`description = $${index++}`);
+			values.push(category.description);
+		}
+
+		if (fields.length === 0) {
+			throw new Error("Payload is empty");
+		}
+
 		const categoryQuery = {
-			text: `
-            UPDATE categories SET name = $1, description = $2, updated_at = CURRENT_TIMESTAMP 
-            WHERE id = $3 
-            RETURNING id
-            `,
-			values: [category.name, category.description, category.id]
+			text: `UPDATE categories SET ${fields.join(", ")}, updated_at = CURRENT_TIMESTAMP WHERE id = $${index}`,
+			values: [...values, category.id]
 		};
 
-		const result = await this._pool.query(categoryQuery);
-		if (!result.rowCount) {
-			throw new InvariantError("Failed to edit category");
-		}
+		await this._pool.query(categoryQuery);
 	}
 
-	async deleteCategoryById(category: Partial<ICategory>) {
+	async deleteCategoryById(category: Partial<ICategory>): Promise<void> {
 		const categoryQuery = {
 			text: "DELETE FROM categories WHERE id = $1 RETURNING id",
 			values: [category.id]
 		};
 
-		const result = await this._pool.query(categoryQuery);
-		if (!result.rowCount) {
-			throw new InvariantError("Failed to delete category");
-		}
+		await this._pool.query(categoryQuery);
 	}
 }
 

@@ -17,6 +17,7 @@ import ProductValidator from "../../App/validator/products";
 import categories from "../../Interface/api/categories";
 import CategoryRepository from "../repositories/database/category.repository";
 import CategoryValidator from "../../App/validator/categories";
+import CategoryService from "../../App/service/category.service";
 
 import AuthRepository from "../repositories/database/auth.repository";
 import TokenManager from "../token/manager.token";
@@ -32,6 +33,8 @@ const CustomPlugins = async (server: Hapi.Server) => {
 	const categoryRepository = new CategoryRepository();
 	const userService = new UserService(authRepository, userRepository, tokenManager);
 	const adminService = new AdminService(authRepository, adminRepository, tokenManager);
+	const categoryService = new CategoryService(categoryRepository, productRepository);
+
 	await server.register([
 		{
 			plugin: users,
@@ -57,7 +60,7 @@ const CustomPlugins = async (server: Hapi.Server) => {
 		{
 			plugin: categories,
 			options: {
-				categoryRepository,
+				categoryService,
 				validator: CategoryValidator
 			}
 		}
