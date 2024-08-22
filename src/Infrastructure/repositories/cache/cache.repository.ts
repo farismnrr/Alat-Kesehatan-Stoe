@@ -27,11 +27,7 @@ class CacheRepository implements ICacheRepository {
 	}
 
 	async set(cache: ICache) {
-		if (cache.expirationInSeconds) {
-			await this._client.set(cache.key, cache.value, "EX", cache.expirationInSeconds);
-		} else {
-			await this._client.set(cache.key, cache.value);
-		}
+		await this._client.set(cache.key, cache.value, "EX", cache.expirationInSeconds);
 	}
 
 	async get(cache: Partial<ICache>) {

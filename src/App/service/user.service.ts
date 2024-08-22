@@ -1,4 +1,9 @@
-import type { IUser, ILoginRequest, ILoginResponse } from "../../Domain/models/interface";
+import type {
+	IUser,
+	ILoginRequest,
+	ILoginResponse,
+	IRefreshToken
+} from "../../Domain/models/interface";
 import bcrypt from "bcrypt";
 import TokenManager from "../../Infrastructure/token/manager.token";
 import UserRepository from "../../Infrastructure/repositories/database/user.repository";
@@ -15,6 +20,8 @@ interface IUserService {
 	registerUser(payload: IUser): Promise<string>;
 	loginUser(payload: ILoginRequest): Promise<ILoginResponse>;
 	editUser(payload: IUser): Promise<void>;
+	updateToken(payload: IRefreshToken): Promise<string>;
+	logoutUser(payload: IRefreshToken): Promise<void>;
 	deleteUser(payload: Partial<IUser>): Promise<void>;
 }
 
@@ -98,6 +105,45 @@ class UserService implements IUserService {
 		await this._userRepository.editUserById({
 			...payload,
 			password: hashedPassword
+		});
+	}
+
+	async updateToken(payload: IRefreshToken): Promise<string> {
+		const { userId, expiresAt } = this._tokenManager.verifyRefreshToken(payload.refreshToken);
+		if (expiresAt < Date.now() / 1000) {
+			throw new AuthenticationError("Refresh token has expired!");
+		}
+		if (!userId) {
+			throw new AuthenticationError("Invalid user ID!");
+		}
+
+		await this._authRepository.verifyUserRefreshToken({
+			id: userId,
+			token: payload.refreshToken
+		});
+		const accessToken = this._tokenManager.generateAccessToken({ userId });
+		if (!accessToken) {
+			throw new AuthenticationError("Access denied!");
+		}
+		return accessToken;
+	}
+
+	async logoutUser(payload: IRefreshToken): Promise<void> {
+		const { userId, expiresAt } = this._tokenManager.verifyRefreshToken(payload.refreshToken);
+		if (expiresAt < Date.now() / 1000) {
+			throw new AuthenticationError("Refresh token has expired!");
+		}
+		if (!userId) {
+			throw new AuthenticationError("Invalid user ID!");
+		}
+
+		await this._authRepository.verifyUserRefreshToken({
+			id: userId,
+			token: payload.refreshToken
+		});
+		await this._authRepository.deleteUserRefreshToken({
+			id: userId,
+			token: payload.refreshToken
 		});
 	}
 

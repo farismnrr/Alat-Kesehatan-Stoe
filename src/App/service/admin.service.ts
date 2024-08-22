@@ -1,4 +1,9 @@
-import type { IAdmin, ILoginRequest, ILoginResponse } from "../../Domain/models/interface";
+import type {
+	IAdmin,
+	ILoginRequest,
+	ILoginResponse,
+	IRefreshToken
+} from "../../Domain/models/interface";
 import bcrypt from "bcrypt";
 import TokenManager from "../../Infrastructure/token/manager.token";
 import AdminRepository from "../../Infrastructure/repositories/database/admin.repository";
@@ -15,6 +20,8 @@ interface IAdminService {
 	registerAdmin(payload: IAdmin): Promise<string>;
 	loginAdmin(payload: ILoginRequest): Promise<ILoginResponse>;
 	editAdmin(payload: IAdmin): Promise<void>;
+	updateToken(payload: ILoginResponse): Promise<string>;
+	logoutAdmin(payload: ILoginResponse): Promise<void>;
 	deleteAdmin(payload: Partial<IAdmin>): Promise<void>;
 }
 
@@ -101,6 +108,42 @@ class AdminService implements IAdminService {
 		await this._adminRepository.editAdminById({
 			...payload,
 			password: hashedPassword
+		});
+	}
+
+	async updateToken(payload: IRefreshToken): Promise<string> {
+		const { adminId, expiresAt } = this._tokenManager.verifyRefreshToken(payload.refreshToken);
+		if (expiresAt < Date.now() / 1000) {
+			throw new AuthenticationError("Refresh token has expired!");
+		}
+		if (!adminId) {
+			throw new AuthenticationError("Invalid admin ID!");
+		}
+
+		const accessToken = this._tokenManager.generateAccessToken({ adminId });
+		if (!accessToken) {
+			throw new AuthenticationError("Access denied!");
+		}
+
+		return accessToken;
+	}
+
+	async logoutAdmin(payload: IRefreshToken): Promise<void> {
+		const { adminId, expiresAt } = this._tokenManager.verifyRefreshToken(payload.refreshToken);
+		if (expiresAt < Date.now() / 1000) {
+			throw new AuthenticationError("Refresh token has expired!");
+		}
+		if (!adminId) {
+			throw new AuthenticationError("Invalid admin ID!");
+		}
+
+		await this._authRepository.verifyAdminRefreshToken({
+			id: adminId,
+			token: payload.refreshToken
+		});
+		await this._authRepository.deleteAdminRefreshToken({
+			id: adminId,
+			token: payload.refreshToken
 		});
 	}
 

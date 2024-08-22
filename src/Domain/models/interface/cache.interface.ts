@@ -1,7 +1,7 @@
 interface ICache {
 	key: string;
 	value: string;
-	expirationInSeconds?: number;
+	expirationInSeconds: number;
 }
 
 export type { ICache };
