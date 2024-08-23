@@ -1,6 +1,6 @@
-import type { IProduct, IProductResponse } from "../../../Domain/models/interface";
+import type { IProduct, IProductResponse } from "../../../Common/models/interface";
 import { Pool } from "pg";
-import { MapProduct } from "../../../Domain/models/map";
+import { MapProduct } from "../../../Common/models/mapping";
 import { v4 as uuidv4 } from "uuid";
 import { NotFoundError, InvariantError } from "../../../Common/errors";
 

@@ -1025,8 +1025,8 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test('it should response 401 status code', () => {\r",
-									"    pm.expect(pm.response).to.have.status(401);\r",
+									"pm.test('it should response 403 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(403);\r",
 									"});\r",
 									"\r",
 									"pm.test('response Content-Type header should have application/json value', () => {\r",
@@ -2803,8 +2803,8 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test('it should response 401 status code', () => {\r",
-									"    pm.expect(pm.response).to.have.status(401);\r",
+									"pm.test('it should response 403 status code', () => {\r",
+									"    pm.expect(pm.response).to.have.status(403);\r",
 									"});\r",
 									"\r",
 									"pm.test('response Content-Type header should have application/json value', () => {\r",
@@ -2912,7 +2912,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"username\": \"farismnrr_{{$timestamp}}\",\r\n  \"password\": \"pAssword123#\",\r\n  \"email\": \"jane.doe@example.com\"\r\n}",
+							"raw": "{\r\n  \"username\": \"farismnrr_{{$timestamp}}\",\r\n  \"email\": \"jane.doe@example.com\",\r\n  \"password\": \"pAssword123#\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

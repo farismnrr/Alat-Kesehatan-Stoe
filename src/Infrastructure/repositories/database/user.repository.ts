@@ -1,9 +1,9 @@
-import type { IUser } from "../../../Domain/models/interface";
+import type { IUser } from "../../../Common/models/interface";
 import { Pool } from "pg";
 
 interface IUserRepository {
-	verifyUsername(user: Partial<IUser>): Promise<string>;
-	verifyEmail(user: Partial<IUser>): Promise<string>;
+	verifyUsername(user: Partial<IUser>): Promise<IUser>;
+	verifyEmail(user: Partial<IUser>): Promise<IUser>;
 	addUser(user: IUser): Promise<string>;
 	editUserById(user: IUser): Promise<void>;
 	deleteUserById(user: Partial<IUser>): Promise<string>;
@@ -16,7 +16,7 @@ class UserRepository implements IUserRepository {
 		this._pool = new Pool();
 	}
 
-	async verifyUsername(user: Partial<IUser>): Promise<string> {
+	async verifyUsername(user: Partial<IUser>): Promise<IUser> {
 		const userQuery = {
 			text: "SELECT id, username, password FROM users WHERE username = $1",
 			values: [user.username]
@@ -26,7 +26,7 @@ class UserRepository implements IUserRepository {
 		return userResult.rows[0];
 	}
 
-	async verifyEmail(user: Partial<IUser>): Promise<string> {
+	async verifyEmail(user: Partial<IUser>): Promise<IUser> {
 		const userQuery = {
 			text: "SELECT id, email, password FROM users WHERE email = $1",
 			values: [user.email]

@@ -1,11 +1,5 @@
-import type {
-	IAdmin,
-	ILoginRequest,
-	ILoginResponse,
-	IRefreshToken
-} from "../../Domain/models/interface";
+import type { IAdmin, IAdminAuth } from "../../Common/models/interface";
 import bcrypt from "bcrypt";
-import TokenManager from "../../Infrastructure/token/manager.token";
 import AdminRepository from "../../Infrastructure/repositories/database/admin.repository";
 import AuthRepository from "../../Infrastructure/repositories/database/auth.repository";
 import { v4 as uuidv4 } from "uuid";
@@ -18,26 +12,19 @@ import {
 
 interface IAdminService {
 	registerAdmin(payload: IAdmin): Promise<string>;
-	loginAdmin(payload: ILoginRequest): Promise<ILoginResponse>;
+	loginAdmin(payload: Partial<IAdminAuth>): Promise<string>;
+	addAdminAuth(payload: Partial<IAdminAuth>): Promise<void>;
 	editAdmin(payload: IAdmin): Promise<void>;
-	updateToken(payload: ILoginResponse): Promise<string>;
-	logoutAdmin(payload: ILoginResponse): Promise<void>;
+	logoutAdmin(payload: Partial<IAdminAuth>): Promise<void>;
 	deleteAdmin(payload: Partial<IAdmin>): Promise<void>;
 }
 
 class AdminService implements IAdminService {
 	private _authRepository: AuthRepository;
 	private _adminRepository: AdminRepository;
-	private _tokenManager: TokenManager;
-
-	constructor(
-		authRepository: AuthRepository,
-		adminRepository: AdminRepository,
-		tokenManager: TokenManager
-	) {
+	constructor(authRepository: AuthRepository, adminRepository: AdminRepository) {
 		this._authRepository = authRepository;
 		this._adminRepository = adminRepository;
-		this._tokenManager = tokenManager;
 	}
 
 	async registerAdmin(payload: IAdmin): Promise<string> {
@@ -63,45 +50,46 @@ class AdminService implements IAdminService {
 		return adminId;
 	}
 
-	async loginAdmin(payload: ILoginRequest): Promise<ILoginResponse> {
+	async loginAdmin(payload: Partial<IAdminAuth>): Promise<string> {
 		if (!payload.email && !payload.username) {
 			throw new InvariantError("Email or username are required");
 		}
 
-		const adminEmail = (await this._adminRepository.verifyEmail(payload)) as unknown as IAdmin;
-		const adminUsername = (await this._adminRepository.verifyUsername(
-			payload
-		)) as unknown as IAdmin;
-		if (!adminUsername && !adminEmail) {
+		let adminData: IAdmin | null = null;
+		if (payload.email) {
+			adminData = await this._adminRepository.verifyEmail({ email: payload.email });
+		}
+		if (payload.username) {
+			adminData = await this._adminRepository.verifyUsername({ username: payload.username });
+		}
+		if (!adminData) {
 			throw new NotFoundError("Admin not found");
 		}
 
-		const adminData = adminUsername || adminEmail;
-		const match = await bcrypt.compare(payload.password || "", adminData.password);
-		if (!match) {
+		const isValidPassword = await bcrypt.compare(payload.password || "", adminData.password);
+		if (!isValidPassword) {
 			throw new AuthenticationError("Username or password is incorrect");
 		}
 
-		const accessToken = this._tokenManager.generateAccessToken({ adminId: adminData.id });
-		const refreshToken = this._tokenManager.generateRefreshToken({ adminId: adminData.id });
+		return adminData.id;
+	}
+
+	async addAdminAuth(payload: Partial<IAdminAuth>): Promise<void> {
 		await this._authRepository.addAdminRefreshToken({
-			id: adminData.id,
-			token: refreshToken,
+			id: payload.id || "",
+			token: payload.refreshToken || "",
 			role: "admin"
 		});
-
-		return { id: adminData.id, accessToken, refreshToken };
 	}
 
 	async editAdmin(payload: IAdmin): Promise<void> {
-		if (!payload.email && !payload.password && !payload.username) {
-			throw new InvariantError("Email, password, or username are required");
-		}
 		if (!payload.id) {
 			throw new AuthenticationError("Access denied!");
 		}
 
-		const role = await this._authRepository.verifyAdminRole({ id: payload.id });
+		
+		const role = await this._authRepository.verifyRole({ id: payload.id });
+		console.log(role);
 		if (role !== "admin") {
 			throw new AuthorizationError("You are not authorized to edit this admin");
 		}
@@ -113,38 +101,21 @@ class AdminService implements IAdminService {
 		await this._adminRepository.editAdminById(payload);
 	}
 
-	async updateToken(payload: IRefreshToken): Promise<string> {
-		const { adminId, expiresAt } = this._tokenManager.verifyRefreshToken(payload.refreshToken);
-		if (expiresAt < Date.now() / 1000) {
-			throw new AuthenticationError("Refresh token has expired!");
-		}
-		if (!adminId) {
-			throw new AuthenticationError("Invalid admin ID!");
-		}
-
-		const accessToken = this._tokenManager.generateAccessToken({ adminId });
-		if (!accessToken) {
-			throw new AuthenticationError("Access denied!");
-		}
-
-		return accessToken;
+	async editToken(payload: Partial<IAdminAuth>): Promise<void> {
+		await this._authRepository.verifyAdminRefreshToken({
+			id: payload.id || "",
+			token: payload.refreshToken || ""
+		});
 	}
 
-	async logoutAdmin(payload: IRefreshToken): Promise<void> {
-		const { adminId, expiresAt } = this._tokenManager.verifyRefreshToken(payload.refreshToken);
-		if (expiresAt < Date.now() / 1000) {
-			throw new AuthenticationError("Refresh token has expired!");
-		}
-		if (!adminId) {
-			throw new AuthenticationError("Invalid admin ID!");
-		}
-
+	async logoutAdmin(payload: Partial<IAdminAuth>): Promise<void> {
 		await this._authRepository.verifyAdminRefreshToken({
-			id: adminId,
+			id: payload.id,
 			token: payload.refreshToken
 		});
+
 		await this._authRepository.deleteAdminRefreshToken({
-			id: adminId,
+			id: payload.id,
 			token: payload.refreshToken
 		});
 	}
@@ -154,7 +125,7 @@ class AdminService implements IAdminService {
 			throw new AuthenticationError("Access denied!");
 		}
 
-		const role = await this._authRepository.verifyAdminRole({ id: payload.id });
+		const role = await this._authRepository.verifyRole({ id: payload.id });
 		if (role !== "admin") {
 			throw new AuthorizationError("You are not authorized to delete this admin");
 		}

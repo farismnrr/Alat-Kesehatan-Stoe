@@ -31,22 +31,24 @@ const CustomPlugins = async (server: Hapi.Server) => {
 	const cacheRepository = new CacheRepository();
 	const productRepository = new ProductRepository();
 	const categoryRepository = new CategoryRepository();
-	const userService = new UserService(authRepository, userRepository, tokenManager);
-	const adminService = new AdminService(authRepository, adminRepository, tokenManager);
+	const userService = new UserService(authRepository, userRepository);
+	const adminService = new AdminService(authRepository, adminRepository);
 	const categoryService = new CategoryService(categoryRepository, productRepository);
 
 	await server.register([
 		{
 			plugin: users,
 			options: {
-				userService,
+				token: tokenManager,
+				service: userService,
 				validator: UserValidator
 			}
 		},
 		{
 			plugin: admins,
 			options: {
-				adminService,
+				token: tokenManager,
+				service: adminService,
 				validator: AdminValidator
 			}
 		},

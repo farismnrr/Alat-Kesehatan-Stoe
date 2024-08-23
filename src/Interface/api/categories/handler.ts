@@ -1,5 +1,5 @@
 import type { Request, ResponseToolkit } from "@hapi/hapi";
-import type { ICategory } from "../../../Domain/models/interface";
+import type { ICategory } from "../../../Common/models/interface";
 import autoBind from "auto-bind";
 import CategoryValidator from "../../../App/validator/categories";
 import CategoryService from "../../../App/service/category.service";
@@ -16,10 +16,7 @@ class CategoryHandler implements CategoryHandler {
 	private _categoryService: CategoryService;
 	private _validator: typeof CategoryValidator;
 
-	constructor(
-		categoryService: CategoryService,
-		validator: typeof CategoryValidator
-	) {
+	constructor(categoryService: CategoryService, validator: typeof CategoryValidator) {
 		autoBind(this);
 		this._categoryService = categoryService;
 		this._validator = validator;

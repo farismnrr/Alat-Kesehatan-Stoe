@@ -1,4 +1,4 @@
-import type { ICache } from "../../../Domain/models/interface";
+import type { ICache } from "../../../Common/models/interface";
 import Redis from "ioredis";
 import Config from "../../../utils/config";
 

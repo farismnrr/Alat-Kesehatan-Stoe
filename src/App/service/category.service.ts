@@ -1,5 +1,5 @@
-import type { ICategory } from "../../Domain/models/interface";
-import { MapProduct } from "../../Domain/models/map";
+import type { ICategory } from "../../Common/models/interface";
+import { MapProduct } from "../../Common/models/mapping";
 import ProductRepository from "../../Infrastructure/repositories/database/product.repository";
 import CategoryRepository from "../../Infrastructure/repositories/database/category.repository";
 import { v4 as uuidv4 } from "uuid";
@@ -40,7 +40,7 @@ class CategoryService implements ICategoryService {
 		if (!categories.length) {
 			throw new NotFoundError("No categories found");
 		}
-        
+
 		return categories;
 	}
 

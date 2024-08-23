@@ -20,7 +20,7 @@ const ExternalPlugins = async (server: Hapi.Server) => {
 		validate: (payload: any) => ({
 			isValid: true,
 			credentials: {
-				id: payload.decoded.payload.adminId,
+				id: payload.decoded.payload.id,
 				role: "admin"
 			}
 		})
@@ -37,7 +37,7 @@ const ExternalPlugins = async (server: Hapi.Server) => {
 		validate: (payload: any) => ({
 			isValid: true,
 			credentials: {
-				id: payload.decoded.payload.userId,
+				id: payload.decoded.payload.id,
 				role: "user"
 			}
 		})

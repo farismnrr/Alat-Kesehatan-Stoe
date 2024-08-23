@@ -80,6 +80,7 @@ const PutUserAuthPayloadSchema = Joi.object({
 		.required()
 		.trim()
 		.regex(/^[a-zA-Z0-9._\-\/+=]{1,}\.[a-zA-Z0-9._\-\/+=]{1,}\.[a-zA-Z0-9._\-\/+=]{1,}$/)
+		.error(new Error("Invalid refresh token format."))
 });
 
 const DeleteUserAuthPayloadSchema = Joi.object({
@@ -87,6 +88,7 @@ const DeleteUserAuthPayloadSchema = Joi.object({
 		.required()
 		.trim()
 		.regex(/^[a-zA-Z0-9._\-\/+=]{1,}\.[a-zA-Z0-9._\-\/+=]{1,}\.[a-zA-Z0-9._\-\/+=]{1,}$/)
+		.error(new Error("Invalid refresh token format."))
 });
 
 export {

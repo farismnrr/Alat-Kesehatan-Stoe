@@ -1,4 +1,4 @@
-import type { IAuth } from "../../../Domain/models/interface";
+import type { IAuth } from "../../../Common/models/interface";
 import { Pool } from "pg";
 import { InvariantError, AuthenticationError } from "../../../Common/errors";
 
@@ -11,10 +11,13 @@ interface IAuthRepository {
 
 	// Start Admin Auth Service
 	addAdminRefreshToken(auth: IAuth): Promise<void>;
-	verifyAdminRole(auth: Partial<IAuth>): Promise<string>;
 	verifyAdminRefreshToken(auth: Partial<IAuth>): Promise<void>;
 	deleteAdminRefreshToken(auth: Partial<IAuth>): Promise<void>;
 	// End Admin Auth Service
+
+	// Start Universal Repository
+	verifyRole(auth: Partial<IAuth>): Promise<string>;
+	// End Universal Repository
 }
 
 class AuthRepository implements IAuthRepository {
@@ -54,16 +57,6 @@ class AuthRepository implements IAuthRepository {
 		if (!authUserResult.rowCount) {
 			throw new AuthenticationError("Unauthorized!");
 		}
-	}
-
-	async verifyUserRole(auth: Partial<IAuth>): Promise<string> {
-		const authQuery = {
-			text: "SELECT role FROM auths WHERE user_id = $1",
-			values: [auth.id]
-		};
-		
-		const authResult = await this._pool.query(authQuery);
-		return authResult.rows[0].role;
 	}
 
 	async deleteUserRefreshToken(auth: Partial<IAuth>): Promise<void> {
@@ -111,16 +104,6 @@ class AuthRepository implements IAuthRepository {
 		}
 	}
 
-	async verifyAdminRole(auth: Partial<IAuth>): Promise<string> {
-		const authQuery = {
-			text: "SELECT role FROM auths WHERE admin_id = $1",
-			values: [auth.id]
-		};
-		
-		const authResult = await this._pool.query(authQuery);
-		return authResult.rows[0].role;
-	}
-
 	async deleteAdminRefreshToken(auth: Partial<IAuth>): Promise<void> {
 		const authAdminQuery = {
 			text: "DELETE FROM auths WHERE token = $1 AND admin_id = $2",
@@ -133,6 +116,31 @@ class AuthRepository implements IAuthRepository {
 		}
 	}
 	// End Admin Auth Service
+
+	// Start Universal Repository
+	async verifyRole(auth: Partial<IAuth>): Promise<string> {
+		const userQuery = {
+			text: "SELECT role FROM auths WHERE user_id = $1",
+			values: [auth.id]
+		};
+		
+		const adminQuery = {
+			text: "SELECT role FROM auths WHERE admin_id = $1",
+			values: [auth.id]
+		};
+		
+		const userResult = await this._pool.query(userQuery);
+		const adminResult = await this._pool.query(adminQuery);
+
+		if (userResult.rowCount) {
+			return userResult.rows[0].role;
+		} else if (adminResult.rowCount) {
+			return adminResult.rows[0].role;
+		} else {
+			throw new AuthenticationError("Unauthorized!");
+		}
+	}
+	// End Universal Repository
 }
 
 export default AuthRepository;

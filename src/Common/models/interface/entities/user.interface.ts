@@ -10,4 +10,9 @@ interface IUser {
 	contactNumber: string;
 }
 
-export type { IUser };
+interface IUserAuth extends IUser {
+	accessToken: string;
+	refreshToken: string;
+}
+
+export type { IUser, IUserAuth };

@@ -1,4 +1,4 @@
-import type { IProductRequest } from "../interface/product.interface";
+import type { IProductRequest } from "../interface/entities/product.interface";
 
 const MapProduct = (product: IProductRequest) => {
 	return {

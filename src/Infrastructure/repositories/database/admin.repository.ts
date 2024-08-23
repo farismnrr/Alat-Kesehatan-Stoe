@@ -1,9 +1,9 @@
-import type { IAdmin } from "../../../Domain/models/interface";
+import type { IAdmin } from "../../../Common/models/interface";
 import { Pool } from "pg";
 
 interface IAdminRepository {
-	verifyUsername(admin: Partial<IAdmin>): Promise<string>;
-	verifyEmail(admin: Partial<IAdmin>): Promise<string>;
+	verifyUsername(admin: Partial<IAdmin>): Promise<IAdmin>;
+	verifyEmail(admin: Partial<IAdmin>): Promise<IAdmin>;
 	addAdmin(admin: IAdmin): Promise<string>;
 	editAdminById(admin: IAdmin): Promise<void>;
 	deleteAdminById(admin: Partial<IAdmin>): Promise<void>;
@@ -16,7 +16,7 @@ class AdminRepository implements IAdminRepository {
 		this._pool = new Pool();
 	}
 
-	async verifyUsername(admin: Partial<IAdmin>): Promise<string> {
+	async verifyUsername(admin: Partial<IAdmin>): Promise<IAdmin> {
 		const adminQuery = {
 			text: "SELECT id, username, password FROM admins WHERE username = $1",
 			values: [admin.username]
@@ -26,7 +26,7 @@ class AdminRepository implements IAdminRepository {
 		return adminResult.rows[0];
 	}
 
-	async verifyEmail(admin: Partial<IAdmin>): Promise<string> {
+	async verifyEmail(admin: Partial<IAdmin>): Promise<IAdmin> {
 		const adminQuery = {
 			text: "SELECT id, email, password FROM admins WHERE email = $1",
 			values: [admin.email]
@@ -75,7 +75,7 @@ class AdminRepository implements IAdminRepository {
 		}
 
 		const adminQuery = {
-				text: `
+			text: `
 				UPDATE admins 
 				SET ${fields.join(", ")}, updated_at = CURRENT_TIMESTAMP 
 				WHERE id = $${index}

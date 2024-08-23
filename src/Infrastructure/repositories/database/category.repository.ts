@@ -1,4 +1,4 @@
-import type { ICategory } from "../../../Domain/models/interface";
+import type { ICategory } from "../../../Common/models/interface";
 import { Pool } from "pg";
 
 interface ICategoryRepository {
@@ -58,7 +58,7 @@ class CategoryRepository implements ICategoryRepository {
 			fields.push(`name = $${index++}`);
 			values.push(category.name);
 		}
-		
+
 		if (category.description) {
 			fields.push(`description = $${index++}`);
 			values.push(category.description);
@@ -69,7 +69,9 @@ class CategoryRepository implements ICategoryRepository {
 		}
 
 		const categoryQuery = {
-			text: `UPDATE categories SET ${fields.join(", ")}, updated_at = CURRENT_TIMESTAMP WHERE id = $${index}`,
+			text: `UPDATE categories SET ${fields.join(
+				", "
+			)}, updated_at = CURRENT_TIMESTAMP WHERE id = $${index}`,
 			values: [...values, category.id]
 		};
 

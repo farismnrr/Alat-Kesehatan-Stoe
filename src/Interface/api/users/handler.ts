@@ -1,8 +1,9 @@
 import type { Request, ResponseToolkit } from "@hapi/hapi";
-import type { IUser, ILoginRequest, IRefreshToken } from "../../../Domain/models/interface";
+import type { IUser, IUserAuth } from "../../../Common/models/interface";
 import autoBind from "auto-bind";
 import UserValidator from "../../../App/validator/users";
 import UserService from "../../../App/service/user.service";
+import TokenManager from "../../../Infrastructure/token/manager.token";
 
 interface IUserHandler {
 	// Start User Handler
@@ -19,11 +20,17 @@ interface IUserHandler {
 }
 
 class UserHandler implements IUserHandler {
+	private _tokenManager: TokenManager;
 	private _userService: UserService;
 	private _validator: typeof UserValidator;
 
-	constructor(userService: UserService, validator: typeof UserValidator) {
+	constructor(
+		tokenManager: TokenManager,
+		userService: UserService,
+		validator: typeof UserValidator
+	) {
 		autoBind(this);
+		this._tokenManager = tokenManager;
 		this._userService = userService;
 		this._validator = validator;
 	}
@@ -47,8 +54,8 @@ class UserHandler implements IUserHandler {
 	async updateUserHandler(request: Request, h: ResponseToolkit) {
 		const payload = request.payload as IUser;
 		this._validator.validatePostUserAuthPayload(payload);
-		const { id: credentialId } = request.auth.credentials as unknown as IUser;
-		await this._userService.editUser({ ...payload, id: credentialId });
+		const { id } = request.auth.credentials as unknown as IUser;
+		await this._userService.editUser({ ...payload, id });
 		return h
 			.response({
 				status: "success",
@@ -58,8 +65,8 @@ class UserHandler implements IUserHandler {
 	}
 
 	async deleteUserHandler(request: Request, h: ResponseToolkit) {
-		const { id: credentialId } = request.auth.credentials as unknown as IUser;
-		await this._userService.deleteUser({ id: credentialId });
+		const { id } = request.auth.credentials as unknown as IUser;
+		await this._userService.deleteUser({ id });
 		return h
 			.response({
 				status: "success",
@@ -71,13 +78,12 @@ class UserHandler implements IUserHandler {
 
 	// Start User Auth Handler
 	async postUserAuthHandler(request: Request, h: ResponseToolkit) {
-		const payload = request.payload as ILoginRequest;
+		const payload = request.payload as IUserAuth;
 		this._validator.validatePostUserAuthPayload(payload);
-		const {
-			id: userId,
-			accessToken,
-			refreshToken
-		} = await this._userService.loginUser(payload);
+		const userId = await this._userService.loginUser(payload);
+		const accessToken = this._tokenManager.generateAccessToken({ id: userId });
+		const refreshToken = this._tokenManager.generateRefreshToken({ id: userId });
+		await this._userService.addUserAuth({ id: userId, refreshToken });
 		return h
 			.response({
 				status: "success",
@@ -92,9 +98,14 @@ class UserHandler implements IUserHandler {
 	}
 
 	async putUserAuthHandler(request: Request, h: ResponseToolkit) {
-		const payload = request.payload as IRefreshToken;
+		const payload = request.payload as IUserAuth;
 		this._validator.validatePutUserAuthPayload(payload);
-		const accessToken = await this._userService.updateToken(payload);
+		const userId = this._tokenManager.verifyRefreshToken(payload.refreshToken);
+		await this._userService.editToken({
+			id: userId,
+			refreshToken: payload.refreshToken
+		});
+		const accessToken = this._tokenManager.generateAccessToken({ id: userId });
 		return h
 			.response({
 				status: "success",
@@ -107,9 +118,13 @@ class UserHandler implements IUserHandler {
 	}
 
 	async deleteUserAuthHandler(request: Request, h: ResponseToolkit) {
-		const payload = request.payload as IRefreshToken;
+		const payload = request.payload as IUserAuth;
 		this._validator.validateDeleteUserAuthPayload(payload);
-		await this._userService.logoutUser(payload);
+		const userId = this._tokenManager.verifyRefreshToken(payload.refreshToken);
+		await this._userService.logoutUser({
+			id: userId,
+			refreshToken: payload.refreshToken
+		});
 		return h
 			.response({
 				status: "success",
