@@ -3,8 +3,8 @@ import Config from "./Infrastructure/settings/config";
 import ClientError from "./Common/errors";
 import CustomPlugins from "./Infrastructure/plugins/custom.plugin";
 import ExternalPlugins from "./Infrastructure/plugins/external.plugin";
-import LogService from "./App/service/log.service";
-import MigrationsService from "./App/service/migration.service";
+import LogService from "./App/services/log.service";
+import MigrationsService from "./App/services/migration.service";
 
 const createServer = () => {
 	const server = new Hapi.Server({

@@ -8,7 +8,7 @@ interface ICacheRepository {
 	delete(cache: Partial<ICache>): Promise<void>;
 }
 
-class CacheRepository implements ICacheRepository {
+class CacheRepository {
 	private _client: Redis;
 
 	constructor() {
@@ -26,25 +26,29 @@ class CacheRepository implements ICacheRepository {
 		});
 	}
 
-	async set(cache: ICache) {
-		await this._client.set(cache.key, cache.value, "EX", cache.expirationInSeconds);
+	async set(cache: ICache, expirationInSeconds = 1800): Promise<void> {
+		await this._client.set(cache.key, cache.value, "EX", expirationInSeconds);
 	}
 
-	async get(cache: Partial<ICache>) {
+	async get(cache: Partial<ICache>): Promise<string> {
 		if (!cache.key) {
-			throw new Error("Key is required");
+			console.log("Key is required");
+			return "";
 		}
+
 		const result = await this._client.get(cache.key);
 		if (result == null) {
-			throw new Error("Cache not found");
+			console.log("Cache not found");
+			return "";
 		}
 
 		return result;
 	}
 
-	async delete(cache: Partial<ICache>) {
+	async delete(cache: Partial<ICache>): Promise<void> {
 		if (!cache.key) {
-			throw new Error("Key is required");
+			console.log("Key is required");
+			return;
 		}
 		await this._client.del(cache.key);
 	}

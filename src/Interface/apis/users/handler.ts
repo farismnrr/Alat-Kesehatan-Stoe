@@ -1,9 +1,9 @@
 import type { Request, ResponseToolkit } from "@hapi/hapi";
 import type { IUser, IUserAuth } from "../../../Common/models/interface";
 import autoBind from "auto-bind";
-import UserValidator from "../../../App/validator/users";
-import UserService from "../../../App/service/user.service";
-import TokenManager from "../../../Infrastructure/token/manager.token";
+import UserValidator from "../../../App/validators/users";
+import UserService from "../../../App/services/user.service";
+import TokenManager from "../../../Common/tokens/manager.token";
 
 interface IUserHandler {
 	// Start User Handler
@@ -20,13 +20,13 @@ interface IUserHandler {
 }
 
 class UserHandler implements IUserHandler {
-	private _tokenManager: TokenManager;
 	private _userService: UserService;
+	private _tokenManager: typeof TokenManager;
 	private _validator: typeof UserValidator;
 
 	constructor(
-		tokenManager: TokenManager,
 		userService: UserService,
+		tokenManager: typeof TokenManager,
 		validator: typeof UserValidator
 	) {
 		autoBind(this);

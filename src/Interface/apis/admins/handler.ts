@@ -1,9 +1,9 @@
 import type { Request, ResponseToolkit } from "@hapi/hapi";
 import type { IAdmin, IAdminAuth } from "../../../Common/models/interface";
 import autoBind from "auto-bind";
-import AdminValidator from "../../../App/validator/admins";
-import AdminService from "../../../App/service/admin.service";
-import TokenManager from "../../../Infrastructure/token/manager.token";
+import AdminValidator from "../../../App/validators/admins";
+import AdminService from "../../../App/services/admin.service";
+import TokenManager from "../../../Common/tokens/manager.token";
 
 interface IAdminHandler {
 	// Start Admin Handler
@@ -20,18 +20,18 @@ interface IAdminHandler {
 }
 
 class AdminHandler implements IAdminHandler {
-	private _tokenManager: TokenManager;
 	private _adminService: AdminService;
+	private _tokenManager: typeof TokenManager;
 	private _validator: typeof AdminValidator;
 
 	constructor(
-		tokenManager: TokenManager,
 		adminService: AdminService,
+		tokenManager: typeof TokenManager,
 		validator: typeof AdminValidator
 	) {
 		autoBind(this);
-		this._tokenManager = tokenManager;
 		this._adminService = adminService;
+		this._tokenManager = tokenManager;
 		this._validator = validator;
 	}
 

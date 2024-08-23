@@ -1,8 +1,8 @@
 import type { Request, ResponseToolkit } from "@hapi/hapi";
 import type { ICategory } from "../../../Common/models/interface";
 import autoBind from "auto-bind";
-import CategoryValidator from "../../../App/validator/categories";
-import CategoryService from "../../../App/service/category.service";
+import CategoryValidator from "../../../App/validators/categories";
+import CategoryService from "../../../App/services/category.service";
 
 interface CategoryHandler {
 	postCategoryHandler(request: Request, h: ResponseToolkit): Promise<any>;
@@ -63,8 +63,8 @@ class CategoryHandler implements CategoryHandler {
 	async putCategoryHandler(request: Request, h: ResponseToolkit) {
 		const payload = request.payload as ICategory;
 		this._validator.validateUpdateCategoryPayload(payload);
-		const id = request.params;
-		await this._categoryService.editCategory(id, payload);
+		const { id } = request.params;
+		await this._categoryService.editCategoryById({ id }, payload);
 		return h
 			.response({
 				status: "success",
@@ -74,8 +74,8 @@ class CategoryHandler implements CategoryHandler {
 	}
 
 	async deleteCategoryHandler(request: Request, h: ResponseToolkit) {
-		const id = request.params;
-		await this._categoryService.deleteCategory(id);
+		const { id } = request.params;
+		await this._categoryService.deleteCategoryById({ id });
 		return h
 			.response({
 				status: "success",

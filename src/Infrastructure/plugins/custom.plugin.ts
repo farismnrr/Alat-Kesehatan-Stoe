@@ -1,26 +1,26 @@
 import Hapi from "@hapi/hapi";
 
-import users from "../../Interface/api/users";
+import users from "../../Interface/apis/users";
 import UserRepository from "../repositories/database/user.repository";
-import UserValidator from "../../App/validator/users";
-import UserService from "../../App/service/user.service";
+import UserValidator from "../../App/validators/users";
+import UserService from "../../App/services/user.service";
 
-import admins from "../../Interface/api/admins";
+import admins from "../../Interface/apis/admins";
 import AdminRepository from "../repositories/database/admin.repository";
-import AdminService from "../../App/service/admin.service";
-import AdminValidator from "../../App/validator/admins";
+import AdminService from "../../App/services/admin.service";
+import AdminValidator from "../../App/validators/admins";
 
-import products from "../../Interface/api/products";
+import products from "../../Interface/apis/products";
 import ProductRepository from "../repositories/database/product.repository";
-import ProductService from "../../App/service/product.service";
-import ProductValidator from "../../App/validator/products";
+import ProductService from "../../App/services/product.service";
+import ProductValidator from "../../App/validators/products";
 
-import categories from "../../Interface/api/categories";
+import categories from "../../Interface/apis/categories";
 import CategoryRepository from "../repositories/database/category.repository";
-import CategoryService from "../../App/service/category.service";
-import CategoryValidator from "../../App/validator/categories";
+import CategoryService from "../../App/services/category.service";
+import CategoryValidator from "../../App/validators/categories";
 
-import TokenManager from "../../Common/token/manager.token";
+import TokenManager from "../../Common/tokens/manager.token";
 import AuthRepository from "../repositories/database/auth.repository";
 import CacheRepository from "../repositories/cache/cache.repository";
 
@@ -31,26 +31,34 @@ const CustomPlugins = async (server: Hapi.Server) => {
 	const cacheRepository = new CacheRepository();
 	const productRepository = new ProductRepository();
 	const categoryRepository = new CategoryRepository();
-	
+
 	const userService = new UserService(authRepository, userRepository);
 	const adminService = new AdminService(authRepository, adminRepository);
-	const productService = new ProductService(productRepository, categoryRepository);
-	const categoryService = new CategoryService(categoryRepository, productRepository);
+	const productService = new ProductService(
+		productRepository,
+		categoryRepository,
+		cacheRepository
+	);
+	const categoryService = new CategoryService(
+		categoryRepository,
+		productRepository,
+		cacheRepository
+	);
 
 	await server.register([
 		{
 			plugin: users,
 			options: {
-				token: TokenManager,
 				service: userService,
+				token: TokenManager,
 				validator: UserValidator
 			}
 		},
 		{
 			plugin: admins,
 			options: {
-				token: TokenManager,
 				service: adminService,
+				token: TokenManager,
 				validator: AdminValidator
 			}
 		},
@@ -64,7 +72,7 @@ const CustomPlugins = async (server: Hapi.Server) => {
 		{
 			plugin: categories,
 			options: {
-				categoryService,
+				service: categoryService,
 				validator: CategoryValidator
 			}
 		}

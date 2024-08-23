@@ -86,7 +86,6 @@ class AdminService implements IAdminService {
 		if (!payload.id) {
 			throw new AuthenticationError("Access denied!");
 		}
-
 		
 		const role = await this._authRepository.verifyRole({ id: payload.id });
 		if (role !== "admin") {

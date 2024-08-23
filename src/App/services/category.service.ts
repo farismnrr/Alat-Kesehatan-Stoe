@@ -1,5 +1,6 @@
 import type { ICategory } from "../../Common/models/interface";
 import { MapProduct } from "../../Common/models/mapping";
+import CacheRepository from "../../Infrastructure/repositories/cache/cache.repository";
 import ProductRepository from "../../Infrastructure/repositories/database/product.repository";
 import CategoryRepository from "../../Infrastructure/repositories/database/category.repository";
 import { v4 as uuidv4 } from "uuid";
@@ -9,17 +10,23 @@ interface ICategoryService {
 	addCategory(payload: ICategory): Promise<string>;
 	getCategories(): Promise<ICategory[]>;
 	getCategory(payload: Partial<ICategory>): Promise<any>;
-	editCategory(param: Partial<ICategory>, payload: ICategory): Promise<void>;
-	deleteCategory(param: Partial<ICategory>): Promise<void>;
+	editCategoryById(param: Partial<ICategory>, payload: ICategory): Promise<void>;
+	deleteCategoryById(param: Partial<ICategory>): Promise<void>;
 }
 
 class CategoryService implements ICategoryService {
 	private _categoryRepository: CategoryRepository;
 	private _productRepository: ProductRepository;
+	private _cacheRepository: CacheRepository;
 
-	constructor(categoryRepository: CategoryRepository, productRepository: ProductRepository) {
+	constructor(
+		categoryRepository: CategoryRepository,
+		productRepository: ProductRepository,
+		cacheRepository: CacheRepository
+	) {
 		this._categoryRepository = categoryRepository;
 		this._productRepository = productRepository;
+		this._cacheRepository = cacheRepository;
 	}
 	async addCategory(payload: ICategory): Promise<string> {
 		if (!payload.name || !payload.description) {
@@ -31,6 +38,8 @@ class CategoryService implements ICategoryService {
 		if (!categoryId) {
 			throw new InvariantError("Failed to add category");
 		}
+
+		await this._cacheRepository.delete({ key: `category:${categoryId}` });
 
 		return categoryId;
 	}
@@ -45,8 +54,18 @@ class CategoryService implements ICategoryService {
 	}
 
 	async getCategory(payload: Partial<ICategory>): Promise<any> {
-		if (!payload) {
+		if (!payload.id) {
 			throw new InvariantError("Please provide a valid category ID");
+		}
+
+		const cacheKey = `category:${payload.id}`;
+		const cachedData = await this._cacheRepository.get({ key: cacheKey });
+		const categoryResult = cachedData ? JSON.parse(cachedData) : null;
+		if (categoryResult) {
+			return {
+				...categoryResult,
+				source: "cache"
+			};
 		}
 
 		const categoryData = await this._categoryRepository.getCategoryById(payload);
@@ -55,18 +74,24 @@ class CategoryService implements ICategoryService {
 		}
 
 		const products = await this._productRepository.getProductsByCategoryId(payload);
-		if (!products.length) {
+		if (!products) {
 			throw new NotFoundError("No products found");
 		}
 
+		const dbData = { ...categoryData, products: products.map(MapProduct) };
+		await this._cacheRepository.set({
+			key: cacheKey,
+			value: JSON.stringify(dbData)
+		});
+
 		return {
-			...categoryData,
-			products: products.map(MapProduct)
+			...dbData,
+			source: "database"
 		};
 	}
 
-	async editCategory(param: Partial<ICategory>, payload: ICategory): Promise<void> {
-		if (!param) {
+	async editCategoryById(param: Partial<ICategory>, payload: ICategory): Promise<void> {
+		if (!param.id) {
 			throw new InvariantError("Please provide a valid category ID");
 		}
 
@@ -76,10 +101,11 @@ class CategoryService implements ICategoryService {
 		}
 
 		await this._categoryRepository.editCategoryById({ ...param, ...payload });
+		await this._cacheRepository.delete({ key: `category:${param.id}` });
 	}
 
-	async deleteCategory(param: Partial<ICategory>): Promise<void> {
-		if (!param) {
+	async deleteCategoryById(param: Partial<ICategory>): Promise<void> {
+		if (!param.id) {
 			throw new InvariantError("Please provide a valid category ID");
 		}
 
@@ -89,6 +115,7 @@ class CategoryService implements ICategoryService {
 		}
 
 		await this._categoryRepository.deleteCategoryById(param);
+		await this._cacheRepository.delete({ key: `category:${param.id}` });
 	}
 }
 

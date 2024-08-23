@@ -1,8 +1,8 @@
 import type { Request, ResponseToolkit } from "@hapi/hapi";
 import type { IProduct } from "../../../Common/models/interface";
 import autoBind from "auto-bind";
-import ProductValidator from "../../../App/validator/products";
-import ProductService from "../../../App/service/product.service";
+import ProductValidator from "../../../App/validators/products";
+import ProductService from "../../../App/services/product.service";
 
 interface ProductHandler {
 	postProductHandler(request: Request, h: ResponseToolkit): Promise<any>;
@@ -16,10 +16,7 @@ class ProductHandler implements ProductHandler {
 	private _productService: ProductService;
 	private _validator: typeof ProductValidator;
 
-	constructor(
-		productService: ProductService,
-		validator: typeof ProductValidator
-	) {
+	constructor(productService: ProductService, validator: typeof ProductValidator) {
 		autoBind(this);
 		this._productService = productService;
 		this._validator = validator;
@@ -70,8 +67,8 @@ class ProductHandler implements ProductHandler {
 
 	async updateProductByIdHandler(request: Request, h: ResponseToolkit) {
 		const payload = request.payload as IProduct;
-		const { id } = request.params;
 		this._validator.validateUpdateProductPayload(payload);
+		const { id } = request.params;
 		await this._productService.editProductById({ id }, payload);
 		return h
 			.response({

@@ -75,6 +75,7 @@ class CategoryRepository implements ICategoryRepository {
 			values: [...values, category.id]
 		};
 
+
 		await this._pool.query(categoryQuery);
 	}
 
