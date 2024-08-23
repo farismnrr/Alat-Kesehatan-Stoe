@@ -75,7 +75,7 @@ class CategoryService implements ICategoryService {
 
 		const products = await this._productRepository.getProductsByCategoryId(payload);
 		if (!products) {
-			throw new NotFoundError("No products found");
+			throw new NotFoundError("Products not found");
 		}
 
 		const dbData = { ...categoryData, products: products.map(MapProduct) };

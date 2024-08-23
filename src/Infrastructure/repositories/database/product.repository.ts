@@ -20,17 +20,17 @@ class ProductRepository implements IProductRepository {
 	async addProduct(product: Partial<IProduct>): Promise<string> {
 		const productQuery = {
 			text: `
-				INSERT INTO products (id, product_name, description, price, stock, category_id) 
+				INSERT INTO products (id, category_id, product_name, description, price, stock) 
 				VALUES ($1, $2, $3, $4, $5, $6) 
 				RETURNING id
 			`,
 			values: [
 				product.id,
+				product.categoryId,
 				product.productName,
 				product.description,
 				product.price,
-				product.stock,
-				product.categoryId
+				product.stock
 			]
 		};
 
@@ -48,7 +48,7 @@ class ProductRepository implements IProductRepository {
 
 		const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 		const productsQuery = {
-			text: `SELECT id, product_name, description, price, stock, category_id FROM products ${whereClause}`,
+			text: `SELECT id, category_id, product_name, description, price, stock FROM products ${whereClause}`,
 			values: values
 		};
 
@@ -59,7 +59,7 @@ class ProductRepository implements IProductRepository {
 	async getProductById(product: Partial<IProduct>): Promise<IProduct> {
 		const productQuery = {
 			text: `
-			SELECT id, product_name, description, price, stock, category_id 
+			SELECT id, category_id, product_name, description, price, stock 
 			FROM products 
 			WHERE id = $1
 			`,
@@ -89,6 +89,10 @@ class ProductRepository implements IProductRepository {
 		let values: any[] = [];
 		let index = 1;
 
+		if (product.categoryId) {
+			fields.push(`category_id = $${index++}`);
+			values.push(product.categoryId);
+		}
 		if (product.productName) {
 			fields.push(`product_name = $${index++}`);
 			values.push(product.productName);
@@ -104,10 +108,6 @@ class ProductRepository implements IProductRepository {
 		if (product.stock) {
 			fields.push(`stock = $${index++}`);
 			values.push(product.stock);
-		}
-		if (product.categoryId) {
-			fields.push(`category_id = $${index++}`);
-			values.push(product.categoryId);
 		}
 		if (fields.length === 0) {
 			throw new Error("Payload is empty");

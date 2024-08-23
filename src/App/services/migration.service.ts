@@ -15,7 +15,7 @@ class MigrationsService implements MigrationService {
 
 	async migrate() {
 		try {
-			await this.pool.query("BEGIN TRANSACTION");
+			await this.pool.query("BEGIN");
 
 			const migrations = [
 				"create-users-table.sql",
@@ -25,7 +25,6 @@ class MigrationsService implements MigrationService {
 				"create-products-table.sql",
 				"create-orders-table.sql",
 				"create-order-items-table.sql",
-				"create-order-users-table.sql",
 				"create-payments-table.sql",
 				"create-user-ratings.sql"
 			];
@@ -33,7 +32,9 @@ class MigrationsService implements MigrationService {
 			for (const migration of migrations) {
 				const filePath = path.resolve(__dirname, `../../../migrations/${migration}`);
 				const fileContent = await fs.promises.readFile(filePath, "utf8");
-				const queries = fileContent.split(";");
+				console.log(`Executing migration: ${migration}`);
+				// console.log(fileContent);
+				const queries = fileContent.split(`;`);
 
 				for (const query of queries) {
 					if (query.trim() !== "") {

@@ -83,7 +83,7 @@ class AdminHandler implements IAdminHandler {
 		const adminId = await this._adminService.loginAdmin(payload);
 		const accessToken = this._tokenManager.generateAccessToken({ id: adminId });
 		const refreshToken = this._tokenManager.generateRefreshToken({ id: adminId });
-		await this._adminService.addAdminAuth({ id: adminId, refreshToken });
+		await this._adminService.addAdminAuth({ id: adminId, refreshToken, accessToken });
 		return h
 			.response({
 				status: "success",
@@ -101,11 +101,15 @@ class AdminHandler implements IAdminHandler {
 		const payload = request.payload as IAdminAuth;
 		this._validator.validateAuthPayload(payload);
 		const adminId = this._tokenManager.verifyRefreshToken(payload.refreshToken);
-		await this._adminService.editToken({
+		await this._adminService.getAdminToken({
 			id: adminId,
 			refreshToken: payload.refreshToken
 		});
 		const accessToken = this._tokenManager.generateAccessToken({ id: adminId });
+		await this._adminService.editAdminToken({
+			id: adminId,
+			accessToken
+		});
 		return h
 			.response({
 				status: "success",

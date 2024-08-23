@@ -8,3 +8,6 @@ CREATE TABLE IF NOT EXISTS user_ratings (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX IF NOT EXISTS idx_user_id ON user_ratings(user_id);
+CREATE INDEX IF NOT EXISTS idx_product_id ON user_ratings(product_id);

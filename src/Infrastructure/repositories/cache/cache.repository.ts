@@ -30,24 +30,16 @@ class CacheRepository {
 		await this._client.set(cache.key, cache.value, "EX", expirationInSeconds);
 	}
 
-	async get(cache: Partial<ICache>): Promise<string> {
+	async get(cache: Partial<ICache>): Promise<string | null> {
 		if (!cache.key) {
-			console.log("Key is required");
-			return "";
+			return null;
 		}
-
 		const result = await this._client.get(cache.key);
-		if (result == null) {
-			console.log("Cache not found");
-			return "";
-		}
-
 		return result;
 	}
 
 	async delete(cache: Partial<ICache>): Promise<void> {
 		if (!cache.key) {
-			console.log("Key is required");
 			return;
 		}
 		await this._client.del(cache.key);

@@ -6,12 +6,14 @@ interface IAuthRepository {
 	// Start User Auth Service
 	addUserRefreshToken(auth: IAuth): Promise<void>;
 	verifyUserRefreshToken(auth: Partial<IAuth>): Promise<void>;
+	updateUserAccessToken(auth: Partial<IAuth>): Promise<void>;
 	deleteUserRefreshToken(auth: Partial<IAuth>): Promise<void>;
 	// End User Auth Service
 
 	// Start Admin Auth Service
 	addAdminRefreshToken(auth: IAuth): Promise<void>;
 	verifyAdminRefreshToken(auth: Partial<IAuth>): Promise<void>;
+	updateAdminAccessToken(auth: Partial<IAuth>): Promise<void>;
 	deleteAdminRefreshToken(auth: Partial<IAuth>): Promise<void>;
 	// End Admin Auth Service
 
@@ -37,8 +39,8 @@ class AuthRepository implements IAuthRepository {
 		await this._pool.query(deleteUserQuery);
 
 		const authUserQuery = {
-			text: "INSERT INTO auths (token, user_id, role) VALUES($1, $2, $3)",
-			values: [auth.token, auth.id, auth.role]
+			text: "INSERT INTO auths (refresh_token, access_token, user_id, role) VALUES($1, $2, $3, $4)",
+			values: [auth.refreshToken, auth.accessToken, auth.id, auth.role]
 		};
 
 		const authUserResult = await this._pool.query(authUserQuery);
@@ -49,8 +51,8 @@ class AuthRepository implements IAuthRepository {
 
 	async verifyUserRefreshToken(auth: Partial<IAuth>): Promise<void> {
 		const authUserQuery = {
-			text: "SELECT token, role FROM auths WHERE token = $1 AND user_id = $2",
-			values: [auth.token, auth.id]
+			text: "SELECT refresh_token, role FROM auths WHERE refresh_token = $1 AND user_id = $2",
+			values: [auth.refreshToken, auth.id]
 		};
 
 		const authUserResult = await this._pool.query(authUserQuery);
@@ -59,10 +61,25 @@ class AuthRepository implements IAuthRepository {
 		}
 	}
 
+	async updateUserAccessToken(auth: Partial<IAuth>): Promise<void> {
+		const authUserQuery = {
+			text: `
+				UPDATE auths SET access_token = $1, updated_at = CURRENT_TIMESTAMP 
+				WHERE user_id = $2
+			`,
+			values: [auth.accessToken, auth.id]
+		};
+
+		const authUserResult = await this._pool.query(authUserQuery);
+		if (!authUserResult.rowCount) {
+			throw new InvariantError("Failed to update access token");
+		}
+	}
+
 	async deleteUserRefreshToken(auth: Partial<IAuth>): Promise<void> {
 		const authUserQuery = {
-			text: "DELETE FROM auths WHERE token = $1 AND user_id = $2",
-			values: [auth.token, auth.id]
+			text: "DELETE FROM auths WHERE refresh_token = $1 AND user_id = $2",
+			values: [auth.refreshToken, auth.id]
 		};
 
 		const authUserResult = await this._pool.query(authUserQuery);
@@ -82,8 +99,8 @@ class AuthRepository implements IAuthRepository {
 		await this._pool.query(deleteAdminQuery);
 
 		const authAdminQuery = {
-			text: "INSERT INTO auths (token, admin_id, role) VALUES($1, $2, $3)",
-			values: [auth.token, auth.id, auth.role]
+			text: "INSERT INTO auths (refresh_token, access_token, admin_id, role) VALUES($1, $2, $3, $4)",
+			values: [auth.refreshToken, auth.accessToken, auth.id, auth.role]
 		};
 
 		const authAdminResult = await this._pool.query(authAdminQuery);
@@ -94,8 +111,8 @@ class AuthRepository implements IAuthRepository {
 
 	async verifyAdminRefreshToken(auth: Partial<IAuth>): Promise<void> {
 		const authAdminQuery = {
-			text: "SELECT token, role FROM auths WHERE token = $1 AND admin_id = $2",
-			values: [auth.token, auth.id]
+			text: "SELECT refresh_token, role FROM auths WHERE refresh_token = $1 AND admin_id = $2",
+			values: [auth.refreshToken, auth.id]
 		};
 
 		const authAdminResult = await this._pool.query(authAdminQuery);
@@ -104,10 +121,25 @@ class AuthRepository implements IAuthRepository {
 		}
 	}
 
+	async updateAdminAccessToken(auth: Partial<IAuth>): Promise<void> {
+		const authAdminQuery = {
+			text: `
+				UPDATE auths SET access_token = $1, updated_at = CURRENT_TIMESTAMP 
+				WHERE admin_id = $2
+			`,
+			values: [auth.accessToken, auth.id]
+		};
+
+		const authAdminResult = await this._pool.query(authAdminQuery);
+		if (!authAdminResult.rowCount) {
+			throw new InvariantError("Failed to update access token");
+		}
+	}
+
 	async deleteAdminRefreshToken(auth: Partial<IAuth>): Promise<void> {
 		const authAdminQuery = {
-			text: "DELETE FROM auths WHERE token = $1 AND admin_id = $2",
-			values: [auth.token, auth.id]
+			text: "DELETE FROM auths WHERE refresh_token = $1 AND admin_id = $2",
+			values: [auth.refreshToken, auth.id]
 		};
 
 		const authAdminResult = await this._pool.query(authAdminQuery);
@@ -123,12 +155,12 @@ class AuthRepository implements IAuthRepository {
 			text: "SELECT role FROM auths WHERE user_id = $1",
 			values: [auth.id]
 		};
-		
+
 		const adminQuery = {
 			text: "SELECT role FROM auths WHERE admin_id = $1",
 			values: [auth.id]
 		};
-		
+
 		const userResult = await this._pool.query(userQuery);
 		const adminResult = await this._pool.query(adminQuery);
 

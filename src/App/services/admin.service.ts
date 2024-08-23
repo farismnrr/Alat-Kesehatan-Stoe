@@ -14,6 +14,7 @@ interface IAdminService {
 	registerAdmin(payload: IAdmin): Promise<string>;
 	loginAdmin(payload: Partial<IAdminAuth>): Promise<string>;
 	addAdminAuth(payload: Partial<IAdminAuth>): Promise<void>;
+	getAdminToken(payload: Partial<IAdminAuth>): Promise<void>;
 	editAdmin(payload: IAdmin): Promise<void>;
 	logoutAdmin(payload: Partial<IAdminAuth>): Promise<void>;
 	deleteAdmin(payload: Partial<IAdmin>): Promise<void>;
@@ -77,8 +78,16 @@ class AdminService implements IAdminService {
 	async addAdminAuth(payload: Partial<IAdminAuth>): Promise<void> {
 		await this._authRepository.addAdminRefreshToken({
 			id: payload.id || "",
-			token: payload.refreshToken || "",
+			refreshToken: payload.refreshToken || "",
+			accessToken: payload.accessToken || "",
 			role: "admin"
+		});
+	}
+	
+	async getAdminToken(payload: Partial<IAdminAuth>): Promise<void> {
+		await this._authRepository.verifyAdminRefreshToken({
+			id: payload.id || "",
+			refreshToken: payload.refreshToken || ""
 		});
 	}
 
@@ -99,22 +108,22 @@ class AdminService implements IAdminService {
 		await this._adminRepository.editAdminById(payload);
 	}
 
-	async editToken(payload: Partial<IAdminAuth>): Promise<void> {
-		await this._authRepository.verifyAdminRefreshToken({
-			id: payload.id || "",
-			token: payload.refreshToken || ""
+	async editAdminToken(payload: Partial<IAdminAuth>): Promise<void> {
+		await this._authRepository.updateAdminAccessToken({
+			id: payload.id,
+			accessToken: payload.accessToken
 		});
 	}
 
 	async logoutAdmin(payload: Partial<IAdminAuth>): Promise<void> {
 		await this._authRepository.verifyAdminRefreshToken({
 			id: payload.id,
-			token: payload.refreshToken
+			refreshToken: payload.refreshToken
 		});
 
 		await this._authRepository.deleteAdminRefreshToken({
 			id: payload.id,
-			token: payload.refreshToken
+			refreshToken: payload.refreshToken
 		});
 	}
 

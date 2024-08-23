@@ -83,7 +83,7 @@ class UserHandler implements IUserHandler {
 		const userId = await this._userService.loginUser(payload);
 		const accessToken = this._tokenManager.generateAccessToken({ id: userId });
 		const refreshToken = this._tokenManager.generateRefreshToken({ id: userId });
-		await this._userService.addUserAuth({ id: userId, refreshToken });
+		await this._userService.addUserAuth({ id: userId, refreshToken, accessToken });
 		return h
 			.response({
 				status: "success",
@@ -101,11 +101,15 @@ class UserHandler implements IUserHandler {
 		const payload = request.payload as IUserAuth;
 		this._validator.validateAuthPayload(payload);
 		const userId = this._tokenManager.verifyRefreshToken(payload.refreshToken);
-		await this._userService.editToken({
+		await this._userService.getUserToken({
 			id: userId,
 			refreshToken: payload.refreshToken
 		});
 		const accessToken = this._tokenManager.generateAccessToken({ id: userId });
+		await this._userService.editUserToken({
+			id: userId,
+			accessToken
+		});
 		return h
 			.response({
 				status: "success",

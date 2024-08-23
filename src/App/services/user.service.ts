@@ -14,7 +14,9 @@ interface IUserService {
 	registerUser(payload: IUser): Promise<string>;
 	loginUser(payload: Partial<IUserAuth>): Promise<string>;
 	addUserAuth(payload: Partial<IUserAuth>): Promise<void>;
+	getUserToken(payload: Partial<IUserAuth>): Promise<void>;
 	editUser(payload: IUser): Promise<void>;
+	editUserToken(payload: Partial<IUserAuth>): Promise<void>;
 	logoutUser(payload: Partial<IUserAuth>): Promise<void>;
 	deleteUser(payload: Partial<IUser>): Promise<void>;
 }
@@ -78,8 +80,16 @@ class UserService implements IUserService {
 	async addUserAuth(payload: Partial<IUserAuth>): Promise<void> {
 		await this._authRepository.addUserRefreshToken({
 			id: payload.id || "",
-			token: payload.refreshToken || "",
+			refreshToken: payload.refreshToken || "",
+			accessToken: payload.accessToken || "",
 			role: "user"
+		});
+	}
+
+	async getUserToken(payload: Partial<IUserAuth>): Promise<void> {
+		await this._authRepository.verifyUserRefreshToken({
+			id: payload.id || "",
+			refreshToken: payload.refreshToken || ""
 		});
 	}
 
@@ -100,21 +110,21 @@ class UserService implements IUserService {
 		await this._userRepository.editUserById(payload);
 	}
 
-	async editToken(payload: Partial<IUserAuth>): Promise<void> {
-		await this._authRepository.verifyUserRefreshToken({
-			id: payload.id || "",
-			token: payload.refreshToken || ""
+	async editUserToken(payload: Partial<IUserAuth>): Promise<void> {
+		await this._authRepository.updateUserAccessToken({
+			id: payload.id,
+			accessToken: payload.accessToken
 		});
 	}
 
 	async logoutUser(payload: Partial<IUserAuth>): Promise<void> {
 		await this._authRepository.verifyUserRefreshToken({
 			id: payload.id,
-			token: payload.refreshToken
+			refreshToken: payload.refreshToken
 		});
 		await this._authRepository.deleteUserRefreshToken({
 			id: payload.id,
-			token: payload.refreshToken
+			refreshToken: payload.refreshToken
 		});
 	}
 
