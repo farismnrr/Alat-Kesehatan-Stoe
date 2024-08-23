@@ -1,5 +1,5 @@
 import Jwt from "@hapi/jwt";
-import config from "../../utils/config";
+import config from "../../Infrastructure/settings/config";
 import { InvariantError, AuthenticationError } from "../../Common/errors";
 import type { IAuthToken } from "../../Common/models/interface";
 
