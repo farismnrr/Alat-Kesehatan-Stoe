@@ -1,6 +1,6 @@
-import * as Hapi from "@hapi/hapi";
 import Jwt from "@hapi/jwt";
-import Config from "../../utils/config";
+import * as Hapi from "@hapi/hapi";
+import Config from "../settings/config";
 
 const ExternalPlugins = async (server: Hapi.Server) => {
 	await server.register([

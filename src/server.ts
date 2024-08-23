@@ -1,5 +1,5 @@
 import Hapi from "@hapi/hapi";
-import Config from "./utils/config";
+import Config from "./Infrastructure/settings/config";
 import ClientError from "./Common/errors";
 import CustomPlugins from "./Infrastructure/plugins/custom.plugin";
 import ExternalPlugins from "./Infrastructure/plugins/external.plugin";

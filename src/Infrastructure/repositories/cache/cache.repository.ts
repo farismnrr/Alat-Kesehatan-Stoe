@@ -1,6 +1,6 @@
 import type { ICache } from "../../../Common/models/interface";
 import Redis from "ioredis";
-import Config from "../../../utils/config";
+import Config from "../../settings/config";
 
 interface ICacheRepository {
 	set(cache: ICache): Promise<void>;

@@ -20,12 +20,11 @@ import CategoryRepository from "../repositories/database/category.repository";
 import CategoryService from "../../App/service/category.service";
 import CategoryValidator from "../../App/validator/categories";
 
+import TokenManager from "../../Common/token/manager.token";
 import AuthRepository from "../repositories/database/auth.repository";
-import TokenManager from "../token/manager.token";
 import CacheRepository from "../repositories/cache/cache.repository";
 
 const CustomPlugins = async (server: Hapi.Server) => {
-	const tokenManager = new TokenManager();
 	const userRepository = new UserRepository();
 	const authRepository = new AuthRepository();
 	const adminRepository = new AdminRepository();
@@ -35,14 +34,14 @@ const CustomPlugins = async (server: Hapi.Server) => {
 	
 	const userService = new UserService(authRepository, userRepository);
 	const adminService = new AdminService(authRepository, adminRepository);
-	const categoryService = new CategoryService(categoryRepository, productRepository);
 	const productService = new ProductService(productRepository, categoryRepository);
+	const categoryService = new CategoryService(categoryRepository, productRepository);
 
 	await server.register([
 		{
 			plugin: users,
 			options: {
-				token: tokenManager,
+				token: TokenManager,
 				service: userService,
 				validator: UserValidator
 			}
@@ -50,7 +49,7 @@ const CustomPlugins = async (server: Hapi.Server) => {
 		{
 			plugin: admins,
 			options: {
-				token: tokenManager,
+				token: TokenManager,
 				service: adminService,
 				validator: AdminValidator
 			}
