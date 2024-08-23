@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-const UserSchema = Joi.object({
+const AddUserPayloadSchema = Joi.object({
 	username: Joi.string()
 		.min(3)
 		.max(30)
@@ -47,7 +47,7 @@ const UserSchema = Joi.object({
 		)
 });
 
-const PostUserAuthPayloadSchema = Joi.object({
+const UpdateUserPayloadSchema = Joi.object({
 	username: Joi.string().min(3).max(30).pattern(new RegExp("^[a-zA-Z0-9_]+$")),
 	password: Joi.string()
 		.min(8)
@@ -75,7 +75,18 @@ const PostUserAuthPayloadSchema = Joi.object({
 		)
 });
 
-const PutUserAuthPayloadSchema = Joi.object({
+const LoginUserPayloadSchema = Joi.object({
+	username: Joi.string().min(3).max(30).pattern(new RegExp("^[a-zA-Z0-9_]+$")),
+	password: Joi.string()
+		.min(8)
+		.max(128)
+		.required()
+		.pattern(new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,}$"))
+		.error(new Error("Password is required.")),
+	email: Joi.string().email().error(new Error("Invalid email format."))
+});
+
+const AuthPayloadSchema = Joi.object({
 	refreshToken: Joi.string()
 		.required()
 		.trim()
@@ -83,17 +94,4 @@ const PutUserAuthPayloadSchema = Joi.object({
 		.error(new Error("Invalid refresh token format."))
 });
 
-const DeleteUserAuthPayloadSchema = Joi.object({
-	refreshToken: Joi.string()
-		.required()
-		.trim()
-		.regex(/^[a-zA-Z0-9._\-\/+=]{1,}\.[a-zA-Z0-9._\-\/+=]{1,}\.[a-zA-Z0-9._\-\/+=]{1,}$/)
-		.error(new Error("Invalid refresh token format."))
-});
-
-export {
-	UserSchema,
-	PostUserAuthPayloadSchema,
-	PutUserAuthPayloadSchema,
-	DeleteUserAuthPayloadSchema
-};
+export { AddUserPayloadSchema, UpdateUserPayloadSchema, LoginUserPayloadSchema, AuthPayloadSchema };

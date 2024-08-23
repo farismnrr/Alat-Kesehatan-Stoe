@@ -1,15 +1,16 @@
+import type { IProduct } from "../../../Common/models/interface";
 import { InvariantError } from "../../../Common/errors";
-import { ProductPayloadSchema, PostProductPayloadSchema } from "./schema";
+import { AddProductPayloadSchema, UpdateProductPayloadSchema } from "./schema";
 
 const ProductValidator = {
-	validateProductPayload: (payload: any) => {
-		const validationResult = ProductPayloadSchema.validate(payload);
+	validateAddProductPayload: (payload: Partial<IProduct>) => {
+		const validationResult = AddProductPayloadSchema.validate(payload);
 		if (validationResult.error) {
 			throw new InvariantError(validationResult.error.message);
 		}
 	},
-	validatePostProductPayload: (payload: any) => {
-		const validationResult = PostProductPayloadSchema.validate(payload);
+	validateUpdateProductPayload: (payload: Partial<IProduct>) => {
+		const validationResult = UpdateProductPayloadSchema.validate(payload);
 		if (validationResult.error) {
 			throw new InvariantError(validationResult.error.message);
 		}

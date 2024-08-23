@@ -38,7 +38,7 @@ class AdminHandler implements IAdminHandler {
 	// Start Admin Handler
 	async postAdminHandler(request: Request, h: ResponseToolkit) {
 		const payload = request.payload as IAdmin;
-		this._validator.validateAdminPayload(payload);
+		this._validator.validateAddAdminPayload(payload);
 		const adminId = await this._adminService.registerAdmin(payload);
 		return h
 			.response({
@@ -53,7 +53,7 @@ class AdminHandler implements IAdminHandler {
 
 	async updateAdminHandler(request: Request, h: ResponseToolkit) {
 		const payload = request.payload as IAdmin;
-		this._validator.validatePostAdminAuthPayload(payload);
+		this._validator.validateUpdateAdminPayload(payload);
 		const { id } = request.auth.credentials as unknown as IAdmin;
 		await this._adminService.editAdmin({ ...payload, id });
 		return h
@@ -79,7 +79,7 @@ class AdminHandler implements IAdminHandler {
 	// Start Admin Auth Handler
 	async postAdminAuthHandler(request: Request, h: ResponseToolkit) {
 		const payload = request.payload as IAdminAuth;
-		this._validator.validatePostAdminAuthPayload(payload);
+		this._validator.validateLoginAdminPayload(payload);
 		const adminId = await this._adminService.loginAdmin(payload);
 		const accessToken = this._tokenManager.generateAccessToken({ id: adminId });
 		const refreshToken = this._tokenManager.generateRefreshToken({ id: adminId });
@@ -99,7 +99,7 @@ class AdminHandler implements IAdminHandler {
 
 	async putAdminAuthHandler(request: Request, h: ResponseToolkit) {
 		const payload = request.payload as IAdminAuth;
-		this._validator.validatePutAdminAuthPayload(payload);
+		this._validator.validateAuthPayload(payload);
 		const adminId = this._tokenManager.verifyRefreshToken(payload.refreshToken);
 		await this._adminService.editToken({
 			id: adminId,
@@ -119,7 +119,7 @@ class AdminHandler implements IAdminHandler {
 
 	async deleteAdminAuthHandler(request: Request, h: ResponseToolkit) {
 		const payload = request.payload as IAdminAuth;
-		this._validator.validateDeleteAdminAuthPayload(payload);
+		this._validator.validateAuthPayload(payload);
 		const adminId = this._tokenManager.verifyRefreshToken(payload.refreshToken);
 		await this._adminService.logoutAdmin({
 			id: adminId,

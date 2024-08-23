@@ -1,32 +1,28 @@
-import InvariantError from "../../../Common/errors";
-import {
-	AdminSchema,
-	PostAdminAuthPayloadSchema,
-	PutAdminAuthPayloadSchema,
-	DeleteAdminAuthPayloadSchema
-} from "./schema";
+import type { IAdmin, IAdminAuth } from "../../../Common/models/interface/entities/admin.interface";
+import { InvariantError } from "../../../Common/errors";
+import { AddAdminPayloadSchema, UpdateAdminPayloadSchema, LoginAdminPayloadSchema, AuthPayloadSchema } from "./schema";
 
 const AdminValidator = {
-	validateAdminPayload: (payload: any) => {
-		const validationResult = AdminSchema.validate(payload);
+	validateAddAdminPayload: (payload: Partial<IAdmin>) => {
+		const validationResult = AddAdminPayloadSchema.validate(payload);
 		if (validationResult.error) {
 			throw new InvariantError(validationResult.error.message);
 		}
 	},
-	validatePostAdminAuthPayload: (payload: any) => {
-		const validationResult = PostAdminAuthPayloadSchema.validate(payload);
+	validateUpdateAdminPayload: (payload: Partial<IAdmin>) => {
+		const validationResult = UpdateAdminPayloadSchema.validate(payload);
 		if (validationResult.error) {
 			throw new InvariantError(validationResult.error.message);
 		}
 	},
-	validatePutAdminAuthPayload: (payload: any) => {
-		const validationResult = PutAdminAuthPayloadSchema.validate(payload);
+	validateLoginAdminPayload: (payload: Partial<IAdmin>) => {
+		const validationResult = LoginAdminPayloadSchema.validate(payload);
 		if (validationResult.error) {
 			throw new InvariantError(validationResult.error.message);
 		}
 	},
-	validateDeleteAdminAuthPayload: (payload: any) => {
-		const validationResult = DeleteAdminAuthPayloadSchema.validate(payload);
+	validateAuthPayload: (payload: Partial<IAdminAuth>) => {
+		const validationResult = AuthPayloadSchema.validate(payload);
 		if (validationResult.error) {
 			throw new InvariantError(validationResult.error.message);
 		}

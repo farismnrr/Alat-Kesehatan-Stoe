@@ -7,17 +7,18 @@ import UserService from "../../App/service/user.service";
 
 import admins from "../../Interface/api/admins";
 import AdminRepository from "../repositories/database/admin.repository";
-import AdminValidator from "../../App/validator/admins";
 import AdminService from "../../App/service/admin.service";
+import AdminValidator from "../../App/validator/admins";
 
 import products from "../../Interface/api/products";
 import ProductRepository from "../repositories/database/product.repository";
+import ProductService from "../../App/service/product.service";
 import ProductValidator from "../../App/validator/products";
 
 import categories from "../../Interface/api/categories";
 import CategoryRepository from "../repositories/database/category.repository";
-import CategoryValidator from "../../App/validator/categories";
 import CategoryService from "../../App/service/category.service";
+import CategoryValidator from "../../App/validator/categories";
 
 import AuthRepository from "../repositories/database/auth.repository";
 import TokenManager from "../token/manager.token";
@@ -31,9 +32,11 @@ const CustomPlugins = async (server: Hapi.Server) => {
 	const cacheRepository = new CacheRepository();
 	const productRepository = new ProductRepository();
 	const categoryRepository = new CategoryRepository();
+	
 	const userService = new UserService(authRepository, userRepository);
 	const adminService = new AdminService(authRepository, adminRepository);
 	const categoryService = new CategoryService(categoryRepository, productRepository);
+	const productService = new ProductService(productRepository, categoryRepository);
 
 	await server.register([
 		{
@@ -55,7 +58,7 @@ const CustomPlugins = async (server: Hapi.Server) => {
 		{
 			plugin: products,
 			options: {
-				productRepository,
+				service: productService,
 				validator: ProductValidator
 			}
 		},

@@ -38,7 +38,7 @@ class UserHandler implements IUserHandler {
 	// Start User Handler
 	async postUserHandler(request: Request, h: ResponseToolkit) {
 		const payload = request.payload as IUser;
-		this._validator.validateUserPayload(payload);
+		this._validator.validateAddUserPayload(payload);
 		const userId = await this._userService.registerUser(payload);
 		return h
 			.response({
@@ -53,7 +53,7 @@ class UserHandler implements IUserHandler {
 
 	async updateUserHandler(request: Request, h: ResponseToolkit) {
 		const payload = request.payload as IUser;
-		this._validator.validatePostUserAuthPayload(payload);
+		this._validator.validateUpdateUserPayload(payload);
 		const { id } = request.auth.credentials as unknown as IUser;
 		await this._userService.editUser({ ...payload, id });
 		return h
@@ -79,7 +79,7 @@ class UserHandler implements IUserHandler {
 	// Start User Auth Handler
 	async postUserAuthHandler(request: Request, h: ResponseToolkit) {
 		const payload = request.payload as IUserAuth;
-		this._validator.validatePostUserAuthPayload(payload);
+		this._validator.validateLoginUserPayload(payload);
 		const userId = await this._userService.loginUser(payload);
 		const accessToken = this._tokenManager.generateAccessToken({ id: userId });
 		const refreshToken = this._tokenManager.generateRefreshToken({ id: userId });
@@ -99,7 +99,7 @@ class UserHandler implements IUserHandler {
 
 	async putUserAuthHandler(request: Request, h: ResponseToolkit) {
 		const payload = request.payload as IUserAuth;
-		this._validator.validatePutUserAuthPayload(payload);
+		this._validator.validateAuthPayload(payload);
 		const userId = this._tokenManager.verifyRefreshToken(payload.refreshToken);
 		await this._userService.editToken({
 			id: userId,
@@ -119,7 +119,7 @@ class UserHandler implements IUserHandler {
 
 	async deleteUserAuthHandler(request: Request, h: ResponseToolkit) {
 		const payload = request.payload as IUserAuth;
-		this._validator.validateDeleteUserAuthPayload(payload);
+		this._validator.validateAuthPayload(payload);
 		const userId = this._tokenManager.verifyRefreshToken(payload.refreshToken);
 		await this._userService.logoutUser({
 			id: userId,

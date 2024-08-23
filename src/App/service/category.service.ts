@@ -17,9 +17,9 @@ class CategoryService implements ICategoryService {
 	private _categoryRepository: CategoryRepository;
 	private _productRepository: ProductRepository;
 
-	constructor(_categoryRepository: CategoryRepository, _productRepository: ProductRepository) {
-		this._categoryRepository = _categoryRepository;
-		this._productRepository = _productRepository;
+	constructor(categoryRepository: CategoryRepository, productRepository: ProductRepository) {
+		this._categoryRepository = categoryRepository;
+		this._productRepository = productRepository;
 	}
 	async addCategory(payload: ICategory): Promise<string> {
 		if (!payload.name || !payload.description) {

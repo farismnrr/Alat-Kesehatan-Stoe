@@ -89,7 +89,6 @@ class AdminService implements IAdminService {
 
 		
 		const role = await this._authRepository.verifyRole({ id: payload.id });
-		console.log(role);
 		if (role !== "admin") {
 			throw new AuthorizationError("You are not authorized to edit this admin");
 		}

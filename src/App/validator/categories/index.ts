@@ -1,15 +1,16 @@
+import type { ICategory } from "../../../Common/models/interface";
 import { InvariantError } from "../../../Common/errors";
-import { CategoryPayloadSchema, PostCategoryPayloadSchema } from "./schema";
+import { AddCategoryPayloadSchema, UpdateCategoryPayloadSchema } from "./schema";
 
 const CategoryValidator = {
-	validateCategoryPayload: (payload: any) => {
-		const validationResult = CategoryPayloadSchema.validate(payload);
+	validateAddCategoryPayload: (payload: Partial<ICategory>) => {
+		const validationResult = AddCategoryPayloadSchema.validate(payload);
 		if (validationResult.error) {
 			throw new InvariantError(validationResult.error.message);
 		}
 	},
-	validatePostCategoryPayload: (payload: any) => {
-		const validationResult = PostCategoryPayloadSchema.validate(payload);
+	validateUpdateCategoryPayload: (payload: Partial<ICategory>) => {
+		const validationResult = UpdateCategoryPayloadSchema.validate(payload);
 		if (validationResult.error) {
 			throw new InvariantError(validationResult.error.message);
 		}

@@ -24,7 +24,7 @@ class CategoryHandler implements CategoryHandler {
 
 	async postCategoryHandler(request: Request, h: ResponseToolkit) {
 		const payload = request.payload as ICategory;
-		this._validator.validateCategoryPayload(payload);
+		this._validator.validateAddCategoryPayload(payload);
 		const categoryId = await this._categoryService.addCategory(payload);
 		return h
 			.response({
@@ -62,7 +62,7 @@ class CategoryHandler implements CategoryHandler {
 
 	async putCategoryHandler(request: Request, h: ResponseToolkit) {
 		const payload = request.payload as ICategory;
-		this._validator.validatePostCategoryPayload(payload);
+		this._validator.validateUpdateCategoryPayload(payload);
 		const id = request.params;
 		await this._categoryService.editCategory(id, payload);
 		return h

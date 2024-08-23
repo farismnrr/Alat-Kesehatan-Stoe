@@ -8,7 +8,6 @@ class TokenManager {
 		if (!config.jwt.accessTokenKey) {
 			throw new InvariantError("Access token key is invalid.");
 		}
-		console.log(payload);
 		return Jwt.token.generate(payload, config.jwt.accessTokenKey);
 	}
 

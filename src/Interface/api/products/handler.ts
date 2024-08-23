@@ -1,8 +1,8 @@
 import type { Request, ResponseToolkit } from "@hapi/hapi";
-import type { IProductResponse } from "../../../Common/models/interface";
+import type { IProduct } from "../../../Common/models/interface";
 import autoBind from "auto-bind";
 import ProductValidator from "../../../App/validator/products";
-import ProductRepository from "../../../Infrastructure/repositories/database/product.repository";
+import ProductService from "../../../App/service/product.service";
 
 interface ProductHandler {
 	postProductHandler(request: Request, h: ResponseToolkit): Promise<any>;
@@ -13,26 +13,22 @@ interface ProductHandler {
 }
 
 class ProductHandler implements ProductHandler {
-	private _productRepository: ProductRepository;
+	private _productService: ProductService;
 	private _validator: typeof ProductValidator;
 
-	constructor(productRepository: ProductRepository, validator: typeof ProductValidator) {
+	constructor(
+		productService: ProductService,
+		validator: typeof ProductValidator
+	) {
 		autoBind(this);
-		this._productRepository = productRepository;
+		this._productService = productService;
 		this._validator = validator;
 	}
 
 	async postProductHandler(request: Request, h: ResponseToolkit) {
-		this._validator.validateProductPayload(request.payload);
-		const { productName, description, price, stock, categoryId } =
-			request.payload as IProductResponse;
-		const productId = await this._productRepository.addProduct({
-			productName,
-			description,
-			price,
-			stock,
-			categoryId
-		});
+		const payload = request.payload as IProduct;
+		this._validator.validateAddProductPayload(payload);
+		const productId = await this._productService.addProduct(payload);
 		return h
 			.response({
 				status: "success",
@@ -46,7 +42,7 @@ class ProductHandler implements ProductHandler {
 
 	async getProductsHandler(request: Request, h: ResponseToolkit) {
 		const { productName } = request.query;
-		const products = await this._productRepository.getProducts({ productName });
+		const products = await this._productService.getProducts({ productName });
 		return h
 			.response({
 				status: "success",
@@ -60,7 +56,7 @@ class ProductHandler implements ProductHandler {
 
 	async getProductByIdHandler(request: Request, h: ResponseToolkit) {
 		const { id } = request.params;
-		const product = await this._productRepository.getProductById({ id });
+		const product = await this._productService.getProductById({ id });
 		return h
 			.response({
 				status: "success",
@@ -73,19 +69,10 @@ class ProductHandler implements ProductHandler {
 	}
 
 	async updateProductByIdHandler(request: Request, h: ResponseToolkit) {
-		this._validator.validateProductPayload(request.payload);
+		const payload = request.payload as IProduct;
 		const { id } = request.params;
-		const { productName, description, price, stock, categoryId } =
-			request.payload as IProductResponse;
-		await this._productRepository.getProductById({ id });
-		await this._productRepository.editProductById({
-			id,
-			productName,
-			description,
-			price,
-			stock,
-			categoryId
-		});
+		this._validator.validateUpdateProductPayload(payload);
+		await this._productService.editProductById({ id }, payload);
 		return h
 			.response({
 				status: "success",
@@ -96,8 +83,7 @@ class ProductHandler implements ProductHandler {
 
 	async deleteProductByIdHandler(request: Request, h: ResponseToolkit) {
 		const { id } = request.params;
-		await this._productRepository.getProductById({ id });
-		await this._productRepository.deleteProductById({ id });
+		await this._productService.deleteProductById({ id });
 		return h
 			.response({
 				status: "success",

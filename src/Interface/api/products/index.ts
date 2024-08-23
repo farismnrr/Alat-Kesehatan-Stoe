@@ -1,19 +1,22 @@
 import type { Server } from "@hapi/hapi";
 import routes from "./routes";
 import ProductHandler from "./handler";
-import ProductRepository from "../../../Infrastructure/repositories/database/product.repository";
+import ProductService from "../../../App/service/product.service";
 import ProductValidator from "../../../App/validator/products";
 
 interface PluginOptions {
-	productRepository: ProductRepository;
+	service: ProductService;
 	validator: typeof ProductValidator;
 }
 
 export default {
 	name: "products",
 	version: "1.0.0",
-	register: async (server: Server, { productRepository, validator }: PluginOptions) => {
-		const productHandler = new ProductHandler(productRepository, validator);
+	register: async (
+		server: Server,
+		{ service, validator }: PluginOptions
+	) => {
+		const productHandler = new ProductHandler(service, validator);
 		server.route(routes(productHandler));
 	}
 };

@@ -1,16 +1,13 @@
-import type { IProduct, IProductResponse } from "../../../Common/models/interface";
+import type { IProduct } from "../../../Common/models/interface";
 import { Pool } from "pg";
-import { MapProduct } from "../../../Common/models/mapping";
-import { v4 as uuidv4 } from "uuid";
-import { NotFoundError, InvariantError } from "../../../Common/errors";
 
 interface IProductRepository {
-	addProduct(product: Partial<IProductResponse>): Promise<string>;
-	getProducts(product: Partial<IProductResponse>): Promise<IProductResponse[]>;
-	getProductById(product: Partial<IProductResponse>): Promise<IProductResponse>;
-	getProductsByCategoryId(product: Partial<IProductResponse>): Promise<any>;
-	editProductById(product: IProductResponse): Promise<void>;
-	deleteProductById(product: Partial<IProductResponse>): Promise<void>;
+	addProduct(product: Partial<IProduct>): Promise<string>;
+	getProducts(product: Partial<IProduct>): Promise<IProduct[]>;
+	getProductById(product: Partial<IProduct>): Promise<IProduct>;
+	getProductsByCategoryId(product: Partial<IProduct>): Promise<any>;
+	editProductById(product: IProduct): Promise<void>;
+	deleteProductById(product: Partial<IProduct>): Promise<void>;
 }
 
 class ProductRepository implements IProductRepository {
@@ -20,18 +17,7 @@ class ProductRepository implements IProductRepository {
 		this._pool = new Pool();
 	}
 
-	async addProduct(product: Partial<IProductResponse>) {
-		const categoryQuery = {
-			text: `SELECT id FROM categories WHERE id = $1`,
-			values: [product.categoryId]
-		};
-
-		const categoryResult = await this._pool.query(categoryQuery);
-		if (!categoryResult.rowCount) {
-			throw new InvariantError("Category not found");
-		}
-
-		const id = uuidv4();
+	async addProduct(product: Partial<IProduct>): Promise<string> {
 		const productQuery = {
 			text: `
 				INSERT INTO products (id, product_name, description, price, stock, category_id) 
@@ -39,7 +25,7 @@ class ProductRepository implements IProductRepository {
 				RETURNING id
 			`,
 			values: [
-				id,
+				product.id,
 				product.productName,
 				product.description,
 				product.price,
@@ -49,14 +35,10 @@ class ProductRepository implements IProductRepository {
 		};
 
 		const productResult = await this._pool.query(productQuery);
-		if (!productResult.rowCount) {
-			throw new InvariantError("Failed to add product");
-		}
-
 		return productResult.rows[0].id;
 	}
 
-	async getProducts(product: Partial<IProductResponse>) {
+	async getProducts(product: Partial<IProduct>): Promise<IProduct[]> {
 		const conditions = [];
 		const values = [];
 		if (product.productName) {
@@ -71,29 +53,21 @@ class ProductRepository implements IProductRepository {
 		};
 
 		const productsResult = await this._pool.query(productsQuery);
-		if (!productsResult.rowCount) {
-			throw new NotFoundError("Failed to get products");
-		}
-
-		return productsResult.rows.map(MapProduct);
+		return productsResult.rows;
 	}
 
-	async getProductById(product: Partial<IProductResponse>) {
+	async getProductById(product: Partial<IProduct>): Promise<IProduct> {
 		const productQuery = {
 			text: `
-				SELECT id, product_name, description, price, stock, category_id 
-				FROM products 
-				WHERE id = $1
+			SELECT id, product_name, description, price, stock, category_id 
+			FROM products 
+			WHERE id = $1
 			`,
 			values: [product.id]
 		};
 
 		const productResult = await this._pool.query(productQuery);
-		if (!productResult.rowCount) {
-			throw new NotFoundError("Product not found");
-		}
-
-		return MapProduct(productResult.rows[0]);
+		return productResult.rows[0];
 	}
 
 	async getProductsByCategoryId(product: Partial<IProduct>): Promise<any> {
@@ -110,39 +84,52 @@ class ProductRepository implements IProductRepository {
 		return productResult.rows;
 	}
 
-	async editProductById(product: IProductResponse) {
+	async editProductById(product: IProduct): Promise<void> {
+		let fields: string[] = [];
+		let values: any[] = [];
+		let index = 1;
+
+		if (product.productName) {
+			fields.push(`product_name = $${index++}`);
+			values.push(product.productName);
+		}
+		if (product.description) {
+			fields.push(`description = $${index++}`);
+			values.push(product.description);
+		}
+		if (product.price) {
+			fields.push(`price = $${index++}`);
+			values.push(product.price);
+		}
+		if (product.stock) {
+			fields.push(`stock = $${index++}`);
+			values.push(product.stock);
+		}
+		if (product.categoryId) {
+			fields.push(`category_id = $${index++}`);
+			values.push(product.categoryId);
+		}
+		if (fields.length === 0) {
+			throw new Error("Payload is empty");
+		}
+
 		const productQuery = {
-			text: `
-				UPDATE products 
-				SET product_name = $1, description = $2, price = $3, stock = $4, category_id = $5, updated_at = CURRENT_TIMESTAMP 
-				WHERE id = $6
-			`,
-			values: [
-				product.productName,
-				product.description,
-				product.price,
-				product.stock,
-				product.categoryId,
-				product.id
-			]
+			text: `UPDATE products SET ${fields.join(
+				", "
+			)}, updated_at = CURRENT_TIMESTAMP WHERE id = $${index}`,
+			values: [...values, product.id]
 		};
 
-		const productResult = await this._pool.query(productQuery);
-		if (!productResult.rowCount) {
-			throw new InvariantError("Failed to edit product");
-		}
+		await this._pool.query(productQuery);
 	}
 
-	async deleteProductById(product: Partial<IProductResponse>) {
+	async deleteProductById(product: Partial<IProduct>): Promise<void> {
 		const productQuery = {
 			text: `DELETE FROM products WHERE id = $1`,
 			values: [product.id]
 		};
 
-		const productResult = await this._pool.query(productQuery);
-		if (!productResult.rowCount) {
-			throw new InvariantError("Failed to delete product");
-		}
+		await this._pool.query(productQuery);
 	}
 }
 
