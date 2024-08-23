@@ -4,10 +4,10 @@
 	"type": "module",
 	"scripts": {
 		"build": "bun install && bun copy-env && bun generate-token",
-		"dev": "bun run build && bun src/server.ts --watch",
+		"dev": "bun run build && bun --watch src/server.ts",
 		"lint": "eslint '**/*.ts'",
 		"copy-env": "bun -e \"const fs = require('fs'); fs.copyFileSync('.env.example', '.env');\" || cp .env.example .env",
-		"generate-token": "bun src/token/TokenGenerator.ts"
+		"generate-token": "bun src/Infrastructure/token/generator.token.ts"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.9.0",
@@ -28,6 +28,8 @@
 		"@hapi/jwt": "^3.2.0",
 		"auto-bind": "^5.0.1",
 		"bcrypt": "^5.1.1",
+		"hapi-cors": "^1.0.3",
+		"hapi-rate-limit": "^7.1.0",
 		"ioredis": "^5.4.1",
 		"joi": "^17.13.3",
 		"pg": "^8.12.0",

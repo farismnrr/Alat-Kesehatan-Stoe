@@ -1,4 +1,4 @@
-const config = {
+const Config = {
 	server: {
 		host: process.env.HOST || "0.0.0.0",
 		port: process.env.PORT || 8080
@@ -14,4 +14,4 @@ const config = {
 	}
 };
 
-export default config;
+export default Config;
