@@ -1,16 +1,16 @@
 import Jwt from "@hapi/jwt";
 import config from "../../Infrastructure/settings/config";
 import { InvariantError, AuthenticationError } from "../../Common/errors";
-import type { IAuthToken } from "../../Common/models/interface";
+import type { IAuth } from "../../Common/models/interface";
 
 const TokenManager = {
-	generateAccessToken(payload: Partial<IAuthToken>): string {
+	generateAccessToken(payload: Partial<IAuth>): string {
 		if (!config.jwt.accessTokenKey) {
 			throw new InvariantError("Access token key is invalid.");
 		}
 		return Jwt.token.generate(payload, config.jwt.accessTokenKey);
 	},
-	generateRefreshToken(payload: Partial<IAuthToken>): string {
+	generateRefreshToken(payload: Partial<IAuth>): string {
 		if (!config.jwt.refreshTokenKey) {
 			throw new InvariantError("Refresh token key is invalid.");
 		}

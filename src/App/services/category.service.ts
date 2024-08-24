@@ -1,9 +1,9 @@
-import type { ICategory } from "../../Common/models/interface";
-import { MapProduct } from "../../Common/models/mapping";
+import type { ICategory, IProduct, IProductMap } from "../../Common/models/interface";
 import CacheRepository from "../../Infrastructure/repositories/cache/cache.repository";
 import ProductRepository from "../../Infrastructure/repositories/database/product.repository";
 import CategoryRepository from "../../Infrastructure/repositories/database/category.repository";
-import { v4 as uuidv4 } from "uuid";
+import { v7 as uuidv7 } from "uuid";
+import { MapProduct } from "../../Common/models/mapping";
 import { InvariantError, NotFoundError } from "../../Common/errors";
 
 interface ICategoryService {
@@ -33,7 +33,7 @@ class CategoryService implements ICategoryService {
 			throw new InvariantError("Name and description are required");
 		}
 
-		const id = uuidv4();
+		const id = uuidv7();
 		const categoryId = await this._categoryRepository.addCategory({ ...payload, id });
 		if (!categoryId) {
 			throw new InvariantError("Failed to add category");
@@ -78,7 +78,10 @@ class CategoryService implements ICategoryService {
 			throw new NotFoundError("Products not found");
 		}
 
-		const dbData = { ...categoryData, products: products.map(MapProduct) };
+		const dbData = {
+			...categoryData,
+			products: products.map((product: IProduct) => MapProduct(product as IProductMap))
+		};
 		await this._cacheRepository.set({
 			key: cacheKey,
 			value: JSON.stringify(dbData)

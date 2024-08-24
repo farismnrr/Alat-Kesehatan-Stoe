@@ -10,5 +10,5 @@ CREATE TABLE IF NOT EXISTS auths (
 );
 
 -- Index for user_id and admin_id to improve query performance
-CREATE INDEX IF NOT EXISTS idx_user_id ON auths(user_id);
-CREATE INDEX IF NOT EXISTS idx_admin_id ON auths(admin_id);
+CREATE INDEX IF NOT EXISTS idx_user_id ON auths USING HASH (user_id);
+CREATE INDEX IF NOT EXISTS idx_admin_id ON auths USING HASH (admin_id);

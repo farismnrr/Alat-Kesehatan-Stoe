@@ -11,4 +11,4 @@ CREATE TABLE IF NOT EXISTS products (
 );
 
 -- Index for category_id to improve query performance
-CREATE INDEX IF NOT EXISTS idx_category_id ON products(category_id);
+CREATE INDEX IF NOT EXISTS idx_category_id ON products USING HASH (category_id);

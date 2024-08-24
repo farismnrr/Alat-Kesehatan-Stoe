@@ -20,6 +20,11 @@ import CategoryRepository from "../repositories/database/category.repository";
 import CategoryService from "../../App/services/category.service";
 import CategoryValidator from "../../App/validators/categories";
 
+import orders from "../../Interface/apis/orders";
+import OrderRepository from "../repositories/database/order.repository";
+// import OrderService from "../../App/services/order.service";
+import OrderValidator from "../../App/validators/orders";
+
 import TokenManager from "../../Common/tokens/manager.token";
 import AuthRepository from "../repositories/database/auth.repository";
 import CacheRepository from "../repositories/cache/cache.repository";
@@ -29,6 +34,7 @@ const CustomPlugins = async (server: Hapi.Server) => {
 	const authRepository = new AuthRepository();
 	const adminRepository = new AdminRepository();
 	const cacheRepository = new CacheRepository();
+	const orderRepository = new OrderRepository();
 	const productRepository = new ProductRepository();
 	const categoryRepository = new CategoryRepository();
 
@@ -74,6 +80,13 @@ const CustomPlugins = async (server: Hapi.Server) => {
 			options: {
 				service: categoryService,
 				validator: CategoryValidator
+			}
+		},
+		{
+			plugin: orders,
+			options: {
+				service: orderRepository,
+				validator: OrderValidator
 			}
 		}
 	]);

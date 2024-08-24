@@ -5,7 +5,7 @@ interface IProductRepository {
 	addProduct(product: Partial<IProduct>): Promise<string>;
 	getProducts(product: Partial<IProduct>): Promise<IProduct[]>;
 	getProductById(product: Partial<IProduct>): Promise<IProduct>;
-	getProductsByCategoryId(product: Partial<IProduct>): Promise<any>;
+	getProductsByCategoryId(product: Partial<IProduct>): Promise<IProduct[]>;
 	editProductById(product: IProduct): Promise<void>;
 	deleteProductById(product: Partial<IProduct>): Promise<void>;
 }
@@ -59,9 +59,9 @@ class ProductRepository implements IProductRepository {
 	async getProductById(product: Partial<IProduct>): Promise<IProduct> {
 		const productQuery = {
 			text: `
-			SELECT id, category_id, product_name, description, price, stock 
-			FROM products 
-			WHERE id = $1
+				SELECT id, category_id, product_name, description, price, stock 
+				FROM products 
+				WHERE id = $1
 			`,
 			values: [product.id]
 		};
@@ -70,7 +70,7 @@ class ProductRepository implements IProductRepository {
 		return productResult.rows[0];
 	}
 
-	async getProductsByCategoryId(product: Partial<IProduct>): Promise<any> {
+	async getProductsByCategoryId(product: Partial<IProduct>): Promise<IProduct[]> {
 		const productQuery = {
 			text: `
 				SELECT id, product_name, description, price, stock 

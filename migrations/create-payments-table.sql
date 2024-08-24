@@ -11,5 +11,5 @@ CREATE TABLE IF NOT EXISTS payments (
 );
 
 -- Index for order_id and user_id to improve query performance
-CREATE INDEX IF NOT EXISTS idx_order_id ON payments(order_id);
-CREATE INDEX IF NOT EXISTS idx_user_id ON payments(user_id);
+CREATE INDEX IF NOT EXISTS idx_order_id ON payments USING HASH (order_id);
+CREATE INDEX IF NOT EXISTS idx_user_id ON payments USING HASH (user_id);

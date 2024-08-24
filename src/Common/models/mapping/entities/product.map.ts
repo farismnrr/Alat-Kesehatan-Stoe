@@ -1,6 +1,6 @@
-import type { IProductRequest } from "../interface/entities/product.interface";
+import type { IProduct, IProductMap } from "../../interface/entities/product.interface";
 
-const MapProduct = (product: IProductRequest) => {
+const MapProduct = (product: IProductMap): IProduct => {
 	return {
 		id: product.id,
 		productName: product.product_name,
