@@ -1,4 +1,4 @@
-import type { ICategory } from "../../Common/models/interface";
+import type { ICategory, ICategoryWithProducts } from "../../Common/models/types";
 import CacheRepository from "../../Infrastructure/repositories/cache/cache.repository";
 import ProductRepository from "../../Infrastructure/repositories/database/product.repository";
 import CategoryRepository from "../../Infrastructure/repositories/database/category.repository";
@@ -8,7 +8,7 @@ import { InvariantError, NotFoundError } from "../../Common/errors";
 interface ICategoryService {
 	addCategory(payload: ICategory): Promise<string>;
 	getCategories(): Promise<ICategory[]>;
-	getCategory(payload: Partial<ICategory>): Promise<any>;
+	getCategory(payload: Partial<ICategory>): Promise<ICategoryWithProducts>;
 	editCategoryById(param: Partial<ICategory>, payload: ICategory): Promise<void>;
 	deleteCategoryById(param: Partial<ICategory>): Promise<void>;
 }
@@ -52,7 +52,7 @@ class CategoryService implements ICategoryService {
 		return categories;
 	}
 
-	async getCategory(payload: Partial<ICategory>): Promise<any> {
+	async getCategory(payload: Partial<ICategory>): Promise<ICategoryWithProducts> {
 		if (!payload.id) {
 			throw new InvariantError("Please provide a valid category ID");
 		}

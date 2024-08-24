@@ -1,5 +1,5 @@
 import type { Request, ResponseToolkit } from "@hapi/hapi";
-import type { IUser, IUserAuth } from "../../../Common/models/interface";
+import type { IUser, IUserAuth } from "../../../Common/models/types";
 import autoBind from "auto-bind";
 import UserValidator from "../../../App/validators/users";
 import UserService from "../../../App/services/user.service";

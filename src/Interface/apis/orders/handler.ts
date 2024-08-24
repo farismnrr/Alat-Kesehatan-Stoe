@@ -1,5 +1,5 @@
 import type { Request, ResponseToolkit } from "@hapi/hapi";
-import type { IOrder } from "../../../Common/models/interface";
+import type { IOrder } from "../../../Common/models/types";
 import autoBind from "auto-bind";
 import OrderService from "../../../App/services/order.service";
 import OrderValidator from "../../../App/validators/orders";
@@ -8,10 +8,7 @@ class OrderHandler {
 	private _orderService: OrderService;
 	private _validator: typeof OrderValidator;
 
-	constructor(
-		orderService: OrderService,
-		validator: typeof OrderValidator
-	) {
+	constructor(orderService: OrderService, validator: typeof OrderValidator) {
 		autoBind(this);
 		this._orderService = orderService;
 		this._validator = validator;

@@ -1,4 +1,4 @@
-import type { RenameKeys } from "../utils/model.types";
+import type { RenameKeys } from "../../utils/model.types";
 
 interface IUser {
 	id: string;

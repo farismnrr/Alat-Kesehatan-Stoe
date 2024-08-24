@@ -1,14 +1,14 @@
-import type { ICache } from "../../../Common/models/interface";
+import type { ICache } from "../../../Common/models/types";
 import Redis from "ioredis";
 import Config from "../../settings/config";
 
 interface ICacheRepository {
 	set(cache: ICache): Promise<void>;
-	get(cache: Partial<ICache>): Promise<string>;
+	get(cache: Partial<ICache>): Promise<string | null>;
 	delete(cache: Partial<ICache>): Promise<void>;
 }
 
-class CacheRepository {
+class CacheRepository implements ICacheRepository {
 	private _client: Redis;
 
 	constructor() {

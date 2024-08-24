@@ -1,4 +1,4 @@
-import type { IOrder, IOrderMap, IUserMap, IOrderWithUser } from "../../interface";
+import type { IOrder, IOrderMap, IOrderWithUser, IUserMap } from "../../types";
 import { MapUser } from "./user.map";
 
 const MapOrder = (order: IOrderMap): IOrder => {

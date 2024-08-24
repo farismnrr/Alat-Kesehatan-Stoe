@@ -1,4 +1,4 @@
-import type { IAdmin } from "../../../Common/models/interface";
+import type { IAdmin } from "../../../Common/models/types";
 import { Pool } from "pg";
 
 interface IAdminRepository {

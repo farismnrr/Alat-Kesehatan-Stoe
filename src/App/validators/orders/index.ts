@@ -1,4 +1,4 @@
-import type { IOrder } from "../../../Common/models/interface";
+import type { IOrder } from "../../../Common/models/types";
 import { InvariantError } from "../../../Common/errors";
 import { AddOrderPayloadSchema } from "./schema";
 

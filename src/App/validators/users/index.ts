@@ -1,4 +1,4 @@
-import type { IUser, IUserAuth } from "../../../Common/models/interface/entities/user.interface";
+import type { IUser, IUserAuth } from "../../../Common/models/types/entities/user.types";
 import { InvariantError } from "../../../Common/errors";
 import {
 	AddUserPayloadSchema,

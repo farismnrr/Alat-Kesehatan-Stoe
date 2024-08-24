@@ -1,4 +1,4 @@
-import type { IUser } from "../../../Common/models/interface";
+import type { IUser } from "../../../Common/models/types";
 import { MapUser } from "../../../Common/models/mapping";
 import { Pool } from "pg";
 

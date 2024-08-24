@@ -1,10 +1,10 @@
-import type { ICategory } from "../../../Common/models/interface";
+import type { ICategory } from "../../../Common/models/types";
 import { Pool } from "pg";
 
 interface ICategoryRepository {
 	addCategory(category: ICategory): Promise<string>;
 	getCategories(): Promise<ICategory[]>;
-	getCategoryById(category: Partial<ICategory>): Promise<any>;
+	getCategoryById(category: Partial<ICategory>): Promise<ICategory>;
 	editCategoryById(category: ICategory): Promise<void>;
 	deleteCategoryById(category: Partial<ICategory>): Promise<void>;
 }
@@ -74,7 +74,6 @@ class CategoryRepository implements ICategoryRepository {
 			)}, updated_at = CURRENT_TIMESTAMP WHERE id = $${index}`,
 			values: [...values, category.id]
 		};
-
 
 		await this._pool.query(categoryQuery);
 	}

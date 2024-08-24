@@ -40,7 +40,7 @@ const CustomPlugins = async (server: Hapi.Server) => {
 
 	const userService = new UserService(authRepository, userRepository);
 	const adminService = new AdminService(authRepository, adminRepository);
-	const orderService = new OrderService(authRepository, userRepository, orderRepository);
+	const orderService = new OrderService(authRepository, orderRepository);
 	const productService = new ProductService(
 		productRepository,
 		categoryRepository,
