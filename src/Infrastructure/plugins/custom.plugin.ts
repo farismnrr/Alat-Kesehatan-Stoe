@@ -22,7 +22,7 @@ import CategoryValidator from "../../App/validators/categories";
 
 import orders from "../../Interface/apis/orders";
 import OrderRepository from "../repositories/database/order.repository";
-// import OrderService from "../../App/services/order.service";
+import OrderService from "../../App/services/order.service";
 import OrderValidator from "../../App/validators/orders";
 
 import TokenManager from "../../Common/tokens/manager.token";
@@ -40,6 +40,7 @@ const CustomPlugins = async (server: Hapi.Server) => {
 
 	const userService = new UserService(authRepository, userRepository);
 	const adminService = new AdminService(authRepository, adminRepository);
+	const orderService = new OrderService(authRepository, userRepository, orderRepository);
 	const productService = new ProductService(
 		productRepository,
 		categoryRepository,
@@ -50,7 +51,6 @@ const CustomPlugins = async (server: Hapi.Server) => {
 		productRepository,
 		cacheRepository
 	);
-
 	await server.register([
 		{
 			plugin: users,
@@ -85,7 +85,7 @@ const CustomPlugins = async (server: Hapi.Server) => {
 		{
 			plugin: orders,
 			options: {
-				service: orderRepository,
+				service: orderService,
 				validator: OrderValidator
 			}
 		}

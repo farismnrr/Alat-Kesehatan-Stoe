@@ -54,8 +54,8 @@ class UserHandler implements IUserHandler {
 	async updateUserHandler(request: Request, h: ResponseToolkit) {
 		const payload = request.payload as IUser;
 		this._validator.validateUpdateUserPayload(payload);
-		const { id } = request.auth.credentials as unknown as IUser;
-		await this._userService.editUser({ ...payload, id });
+		const user = request.auth.credentials as unknown as IUser;
+		await this._userService.editUser({ ...payload, id: user.id });
 		return h
 			.response({
 				status: "success",
@@ -65,8 +65,8 @@ class UserHandler implements IUserHandler {
 	}
 
 	async deleteUserHandler(request: Request, h: ResponseToolkit) {
-		const { id } = request.auth.credentials as unknown as IUser;
-		await this._userService.deleteUser({ id });
+		const user = request.auth.credentials as unknown as IUser;
+		await this._userService.deleteUser({ id: user.id });
 		return h
 			.response({
 				status: "success",

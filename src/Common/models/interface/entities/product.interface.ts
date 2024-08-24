@@ -1,4 +1,4 @@
-import type { RenameKeys } from "../";
+import type { RenameKeys } from "../utils/model.types";
 
 interface IProduct {
 	id: string;

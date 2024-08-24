@@ -1,9 +1,8 @@
-import type { IProduct, IProductMap, IProductCache } from "../../Common/models/interface";
+import type { IProduct, IProductCache } from "../../Common/models/interface";
 import CacheRepository from "../../Infrastructure/repositories/cache/cache.repository";
 import ProductRepository from "../../Infrastructure/repositories/database/product.repository";
 import CategoryRepository from "../../Infrastructure/repositories/database/category.repository";
-import { v4 as uuidv4 } from "uuid";
-import { MapProduct } from "../../Common/models/mapping";
+import { v7 as uuidv7 } from "uuid";
 import { InvariantError, NotFoundError } from "../../Common/errors";
 
 interface IProductService {
@@ -42,12 +41,12 @@ class ProductService implements IProductService {
 			);
 		}
 
-		const id = uuidv4();
+		const id = uuidv7();
 		const categoryId = await this._categoryRepository.getCategoryById({
 			id: payload.categoryId
 		});
 		if (!categoryId) {
-			throw new InvariantError("Category not found");
+			throw new NotFoundError("Category not found");
 		}
 
 		const productId = await this._productRepository.addProduct({ ...payload, id });
@@ -62,8 +61,7 @@ class ProductService implements IProductService {
 	}
 
 	async getProducts(payload: Partial<IProduct>): Promise<IProduct[]> {
-		const products = await this._productRepository.getProducts(payload);
-		return products.map((product: IProduct) => MapProduct(product as IProductMap));
+		return await this._productRepository.getProducts(payload);
 	}
 
 	async getProductById(payload: Partial<IProduct>): Promise<IProductCache> {
@@ -86,11 +84,10 @@ class ProductService implements IProductService {
 			throw new NotFoundError("Product not found");
 		}
 
-		const dbData = MapProduct(product as IProductMap);
-		await this._cacheRepository.set({ key: cacheKey, value: JSON.stringify(dbData) });
+		await this._cacheRepository.set({ key: cacheKey, value: JSON.stringify(product) });
 
 		return {
-			...dbData,
+			...product,
 			source: "database"
 		};
 	}

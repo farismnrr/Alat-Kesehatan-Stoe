@@ -1,4 +1,5 @@
 import type { IUser } from "../../../Common/models/interface";
+import { MapUser } from "../../../Common/models/mapping";
 import { Pool } from "pg";
 
 interface IUserRepository {
@@ -34,6 +35,16 @@ class UserRepository implements IUserRepository {
 
 		const userResult = await this._pool.query(userQuery);
 		return userResult.rows[0];
+	}
+
+	async getUserById(user: Partial<IUser>): Promise<IUser> {
+		const userQuery = {
+			text: "SELECT id, username, email, birthdate, gender, address, city, contact_number FROM users WHERE id = $1",
+			values: [user.id]
+		};
+
+		const userResult = await this._pool.query(userQuery);
+		return MapUser(userResult.rows[0]);
 	}
 
 	async addUser(user: IUser): Promise<string> {
