@@ -1,22 +1,21 @@
-import type { IOrder } from "../../Common/models/interface";
+import type { IOrder, IOrderWithUser } from "../../Common/models/types";
 import AuthRepository from "../../Infrastructure/repositories/database/auth.repository";
-import UserRepository from "../../Infrastructure/repositories/database/user.repository";
 import OrderRepository from "../../Infrastructure/repositories/database/order.repository";
 import { v7 as uuidv7 } from "uuid";
 import { InvariantError, AuthorizationError, NotFoundError } from "../../Common/errors";
 
-class OrderService {
+interface IOrderService {
+	addOrder(payload: IOrder): Promise<string>;
+	getOrders(payload: Partial<IOrder>): Promise<IOrderWithUser[]>;
+	deleteOrder(payload: Partial<IOrder>): Promise<void>;
+}
+
+class OrderService implements IOrderService {
 	private _authRepository: AuthRepository;
-	private _userRepository: UserRepository;
 	private _orderRepository: OrderRepository;
 
-	constructor(
-		authRepository: AuthRepository,
-		userRepository: UserRepository,
-		orderRepository: OrderRepository
-	) {
+	constructor(authRepository: AuthRepository, orderRepository: OrderRepository) {
 		this._authRepository = authRepository;
-		this._userRepository = userRepository;
 		this._orderRepository = orderRepository;
 	}
 
@@ -39,7 +38,7 @@ class OrderService {
 		return orderId;
 	}
 
-	async getOrders(payload: Partial<IOrder>): Promise<any> {
+	async getOrders(payload: Partial<IOrder>): Promise<IOrderWithUser[]> {
 		if (!payload.userId) {
 			throw new InvariantError("User ID is required");
 		}

@@ -1,4 +1,4 @@
-import type { IProduct } from "../../../Common/models/interface";
+import type { IProduct } from "../../../Common/models/types";
 import { MapProduct } from "../../../Common/models/mapping";
 import { Pool } from "pg";
 
@@ -82,7 +82,7 @@ class ProductRepository implements IProductRepository {
 		};
 
 		const productResult = await this._pool.query(productQuery);
-		return productResult.rows.map((product) => MapProduct(product));
+		return productResult.rows.map(product => MapProduct(product));
 	}
 
 	async editProductById(product: IProduct): Promise<void> {

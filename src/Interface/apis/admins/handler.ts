@@ -1,5 +1,5 @@
 import type { Request, ResponseToolkit } from "@hapi/hapi";
-import type { IAdmin, IAdminAuth } from "../../../Common/models/interface";
+import type { IAdmin, IAdminAuth } from "../../../Common/models/types";
 import autoBind from "auto-bind";
 import AdminValidator from "../../../App/validators/admins";
 import AdminService from "../../../App/services/admin.service";

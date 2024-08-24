@@ -1,7 +1,7 @@
 import Jwt from "@hapi/jwt";
 import config from "../../Infrastructure/settings/config";
 import { InvariantError, AuthenticationError } from "../../Common/errors";
-import type { IAuth } from "../../Common/models/interface";
+import type { IAuth } from "../models/types";
 
 const TokenManager = {
 	generateAccessToken(payload: Partial<IAuth>): string {
@@ -16,7 +16,7 @@ const TokenManager = {
 		}
 		return Jwt.token.generate(payload, config.jwt.refreshTokenKey);
 	},
-	verifyRefreshToken(refreshToken: string): any {
+	verifyRefreshToken(refreshToken: string): string {
 		try {
 			const artifacts = Jwt.token.decode(refreshToken);
 			Jwt.token.verifySignature(artifacts, config.jwt.refreshTokenKey as string);
@@ -26,6 +26,6 @@ const TokenManager = {
 			throw new AuthenticationError("Access denied!");
 		}
 	}
-}
+};
 
 export default TokenManager;

@@ -1,4 +1,4 @@
-import type { IProduct, IProductCache } from "../../Common/models/interface";
+import type { IProduct, IProductCache } from "../../Common/models/types";
 import CacheRepository from "../../Infrastructure/repositories/cache/cache.repository";
 import ProductRepository from "../../Infrastructure/repositories/database/product.repository";
 import CategoryRepository from "../../Infrastructure/repositories/database/category.repository";

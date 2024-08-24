@@ -1,5 +1,5 @@
 import type { Request, ResponseToolkit } from "@hapi/hapi";
-import type { IProduct } from "../../../Common/models/interface";
+import type { IProduct } from "../../../Common/models/types";
 import autoBind from "auto-bind";
 import ProductValidator from "../../../App/validators/products";
 import ProductService from "../../../App/services/product.service";

@@ -1,4 +1,4 @@
-import type { IProduct } from "../../../Common/models/interface";
+import type { IProduct } from "../../../Common/models/types";
 import { InvariantError } from "../../../Common/errors";
 import { AddProductPayloadSchema, UpdateProductPayloadSchema } from "./schema";
 

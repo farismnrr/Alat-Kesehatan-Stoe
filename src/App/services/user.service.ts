@@ -1,4 +1,4 @@
-import type { IUser, IUserAuth } from "../../Common/models/interface";
+import type { IUser, IUserAuth } from "../../Common/models/types";
 import bcrypt from "bcrypt";
 import UserRepository from "../../Infrastructure/repositories/database/user.repository";
 import AuthRepository from "../../Infrastructure/repositories/database/auth.repository";
@@ -97,7 +97,7 @@ class UserService implements IUserService {
 		if (!payload.id) {
 			throw new AuthenticationError("Access denied!");
 		}
-		
+
 		const role = await this._authRepository.verifyRole({ id: payload.id });
 		if (role !== "user") {
 			throw new AuthorizationError("You are not authorized to edit this user");

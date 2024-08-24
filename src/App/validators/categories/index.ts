@@ -1,4 +1,4 @@
-import type { ICategory } from "../../../Common/models/interface";
+import type { ICategory } from "../../../Common/models/types";
 import { InvariantError } from "../../../Common/errors";
 import { AddCategoryPayloadSchema, UpdateCategoryPayloadSchema } from "./schema";
 

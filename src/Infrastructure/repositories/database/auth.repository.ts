@@ -1,25 +1,25 @@
-import type { IAuth } from "../../../Common/models/interface";
+import type { IAuth } from "../../../Common/models/types";
 import { Pool } from "pg";
 import { InvariantError, AuthenticationError } from "../../../Common/errors";
 
 interface IAuthRepository {
-	// Start User Auth Service
+	// Start User Auth Repository
 	addUserRefreshToken(auth: IAuth): Promise<void>;
 	verifyUserRefreshToken(auth: Partial<IAuth>): Promise<void>;
 	updateUserAccessToken(auth: Partial<IAuth>): Promise<void>;
 	deleteUserRefreshToken(auth: Partial<IAuth>): Promise<void>;
-	// End User Auth Service
+	// End User Auth Repository
 
-	// Start Admin Auth Service
+	// Start Admin Auth Repository
 	addAdminRefreshToken(auth: IAuth): Promise<void>;
 	verifyAdminRefreshToken(auth: Partial<IAuth>): Promise<void>;
 	updateAdminAccessToken(auth: Partial<IAuth>): Promise<void>;
 	deleteAdminRefreshToken(auth: Partial<IAuth>): Promise<void>;
-	// End Admin Auth Service
+	// End Admin Auth Repository
 
-	// Start Universal Repository
+	// Start Universal Auth Repository
 	verifyRole(auth: Partial<IAuth>): Promise<string>;
-	// End Universal Repository
+	// End Universal Auth Repository
 }
 
 class AuthRepository implements IAuthRepository {
@@ -29,7 +29,7 @@ class AuthRepository implements IAuthRepository {
 		this._pool = new Pool();
 	}
 
-	// Start User Auth Service
+	// Start User Auth Repository
 	async addUserRefreshToken(auth: IAuth): Promise<void> {
 		const deleteUserQuery = {
 			text: "DELETE FROM auths WHERE user_id = $1",
@@ -87,9 +87,9 @@ class AuthRepository implements IAuthRepository {
 			throw new InvariantError("Refresh token is not valid");
 		}
 	}
-	// End User Auth Service
+	// End User Auth Repository
 
-	// Start Admin Auth Service
+	// Start Admin Auth Repository
 	async addAdminRefreshToken(auth: IAuth): Promise<void> {
 		const deleteAdminQuery = {
 			text: "DELETE FROM auths WHERE admin_id = $1",
@@ -147,9 +147,9 @@ class AuthRepository implements IAuthRepository {
 			throw new AuthenticationError("Unauthorized!");
 		}
 	}
-	// End Admin Auth Service
+	// End Admin Auth Repository
 
-	// Start Universal Repository
+	// Start Universal Auth Repository
 	async verifyRole(auth: Partial<IAuth>): Promise<string> {
 		const userQuery = {
 			text: "SELECT role FROM auths WHERE user_id = $1",

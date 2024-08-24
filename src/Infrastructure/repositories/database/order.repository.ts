@@ -1,4 +1,4 @@
-import type { IOrder, IOrderWithUser } from "../../../Common/models/interface";
+import type { IOrder, IOrderWithUser } from "../../../Common/models/types";
 import { MapOrder, MapOrderWithUser } from "../../../Common/models/mapping";
 import { Pool } from "pg";
 

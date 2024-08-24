@@ -1,4 +1,4 @@
-import type { RenameKeys } from "../utils/model.types";
+import type { RenameKeys } from "../../utils/model.types";
 
 interface IProduct {
 	id: string;
@@ -16,4 +16,5 @@ interface IProductCache extends IProduct {
 type IProductMap = RenameKeys<IProduct, "productName", "product_name"> &
 	RenameKeys<IProduct, "categoryId", "category_id">;
 
-export type { IProduct, IProductMap, IProductCache };
+export type { IProduct, IProductCache, IProductMap };
+

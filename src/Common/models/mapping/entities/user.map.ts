@@ -1,6 +1,6 @@
-import type { IUser, IUserMap } from "../../interface";
+import type { IUser, IUserMap } from "../../types";
 
-export const MapUser = (user: IUserMap): IUser => {
+const MapUser = (user: IUserMap): IUser => {
 	return {
 		id: user.id,
 		username: user.username,
@@ -13,3 +13,5 @@ export const MapUser = (user: IUserMap): IUser => {
 		contactNumber: user.contact_number
 	};
 };
+
+export { MapUser };

@@ -1,6 +1,11 @@
-import type { IAdmin, IAdminAuth } from "../../../Common/models/interface/entities/admin.interface";
+import type { IAdmin, IAdminAuth } from "../../../Common/models/types/entities/admin.types";
 import { InvariantError } from "../../../Common/errors";
-import { AddAdminPayloadSchema, UpdateAdminPayloadSchema, LoginAdminPayloadSchema, AuthPayloadSchema } from "./schema";
+import {
+	AddAdminPayloadSchema,
+	UpdateAdminPayloadSchema,
+	LoginAdminPayloadSchema,
+	AuthPayloadSchema
+} from "./schema";
 
 const AdminValidator = {
 	validateAddAdminPayload: (payload: Partial<IAdmin>) => {

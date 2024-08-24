@@ -1,4 +1,4 @@
-import type { IAdmin, IAdminAuth } from "../../Common/models/interface";
+import type { IAdmin, IAdminAuth } from "../../Common/models/types";
 import bcrypt from "bcrypt";
 import AdminRepository from "../../Infrastructure/repositories/database/admin.repository";
 import AuthRepository from "../../Infrastructure/repositories/database/auth.repository";
@@ -83,7 +83,7 @@ class AdminService implements IAdminService {
 			role: "admin"
 		});
 	}
-	
+
 	async getAdminToken(payload: Partial<IAdminAuth>): Promise<void> {
 		await this._authRepository.verifyAdminRefreshToken({
 			id: payload.id || "",
@@ -95,7 +95,7 @@ class AdminService implements IAdminService {
 		if (!payload.id) {
 			throw new AuthenticationError("Access denied!");
 		}
-		
+
 		const role = await this._authRepository.verifyRole({ id: payload.id });
 		if (role !== "admin") {
 			throw new AuthorizationError("You are not authorized to edit this admin");

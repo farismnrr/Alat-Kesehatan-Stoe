@@ -1,5 +1,5 @@
 import type { Request, ResponseToolkit } from "@hapi/hapi";
-import type { ICategory } from "../../../Common/models/interface";
+import type { ICategory } from "../../../Common/models/types";
 import autoBind from "auto-bind";
 import CategoryValidator from "../../../App/validators/categories";
 import CategoryService from "../../../App/services/category.service";

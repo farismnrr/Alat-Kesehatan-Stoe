@@ -1,4 +1,4 @@
-import type { IProduct, IProductMap } from "../../interface/entities/product.interface";
+import type { IProduct, IProductMap } from "../../types";
 
 const MapProduct = (product: IProductMap): IProduct => {
 	return {
@@ -7,7 +7,7 @@ const MapProduct = (product: IProductMap): IProduct => {
 		productName: product.product_name,
 		description: product.description,
 		price: parseFloat(product.price.toString()),
-		stock: product.stock,
+		stock: product.stock
 	};
 };
 
