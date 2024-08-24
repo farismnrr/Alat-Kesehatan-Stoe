@@ -1,10 +1,11 @@
 import type { IProduct } from "../../../Common/models/interface";
+import { MapProduct } from "../../../Common/models/mapping";
 import { Pool } from "pg";
 
 interface IProductRepository {
 	addProduct(product: Partial<IProduct>): Promise<string>;
 	getProducts(product: Partial<IProduct>): Promise<IProduct[]>;
-	getProductById(product: Partial<IProduct>): Promise<IProduct>;
+	getProductById(product: Partial<IProduct>): Promise<IProduct | null>;
 	getProductsByCategoryId(product: Partial<IProduct>): Promise<IProduct[]>;
 	editProductById(product: IProduct): Promise<void>;
 	deleteProductById(product: Partial<IProduct>): Promise<void>;
@@ -53,10 +54,10 @@ class ProductRepository implements IProductRepository {
 		};
 
 		const productsResult = await this._pool.query(productsQuery);
-		return productsResult.rows;
+		return productsResult.rows.map(product => MapProduct(product));
 	}
 
-	async getProductById(product: Partial<IProduct>): Promise<IProduct> {
+	async getProductById(product: Partial<IProduct>): Promise<IProduct | null> {
 		const productQuery = {
 			text: `
 				SELECT id, category_id, product_name, description, price, stock 
@@ -67,7 +68,7 @@ class ProductRepository implements IProductRepository {
 		};
 
 		const productResult = await this._pool.query(productQuery);
-		return productResult.rows[0];
+		return productResult.rows[0] ? MapProduct(productResult.rows[0]) : null;
 	}
 
 	async getProductsByCategoryId(product: Partial<IProduct>): Promise<IProduct[]> {
@@ -81,7 +82,7 @@ class ProductRepository implements IProductRepository {
 		};
 
 		const productResult = await this._pool.query(productQuery);
-		return productResult.rows;
+		return productResult.rows.map((product) => MapProduct(product));
 	}
 
 	async editProductById(product: IProduct): Promise<void> {

@@ -54,8 +54,8 @@ class AdminHandler implements IAdminHandler {
 	async updateAdminHandler(request: Request, h: ResponseToolkit) {
 		const payload = request.payload as IAdmin;
 		this._validator.validateUpdateAdminPayload(payload);
-		const { id } = request.auth.credentials as unknown as IAdmin;
-		await this._adminService.editAdmin({ ...payload, id });
+		const admin = request.auth.credentials as unknown as IAdmin;
+		await this._adminService.editAdmin({ ...payload, id: admin.id });
 		return h
 			.response({
 				status: "success",
@@ -65,8 +65,8 @@ class AdminHandler implements IAdminHandler {
 	}
 
 	async deleteAdminHandler(request: Request, h: ResponseToolkit) {
-		const { id } = request.auth.credentials as unknown as IAdmin;
-		await this._adminService.deleteAdmin({ id });
+		const admin = request.auth.credentials as unknown as IAdmin;
+		await this._adminService.deleteAdmin({ id: admin.id });
 		return h
 			.response({
 				status: "success",

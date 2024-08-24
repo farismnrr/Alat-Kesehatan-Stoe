@@ -1,12 +1,11 @@
 import type { Server } from "@hapi/hapi";
 import OrderHandler from "./handler";
-// import OrderService from "../../../App/services/order.service";
-import OrderRepository from "../../../Infrastructure/repositories/database/order.repository";
+import OrderService from "../../../App/services/order.service";
 import OrderValidator from "../../../App/validators/orders";
 import routes from "./routes";
 
 interface PluginOptions {
-	service: OrderRepository;
+	service: OrderService;
 	validator: typeof OrderValidator;
 }
 

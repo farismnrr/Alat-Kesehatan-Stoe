@@ -1,3 +1,5 @@
+import type { RenameKeys } from "../utils/model.types";
+
 interface IUser {
 	id: string;
 	username: string;
@@ -15,4 +17,6 @@ interface IUserAuth extends IUser {
 	refreshToken: string;
 }
 
-export type { IUser, IUserAuth };
+type IUserMap = RenameKeys<IUser, "contactNumber", "contact_number">;
+
+export type { IUser, IUserAuth, IUserMap };

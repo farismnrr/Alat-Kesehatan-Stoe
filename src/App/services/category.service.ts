@@ -1,9 +1,8 @@
-import type { ICategory, IProduct, IProductMap } from "../../Common/models/interface";
+import type { ICategory } from "../../Common/models/interface";
 import CacheRepository from "../../Infrastructure/repositories/cache/cache.repository";
 import ProductRepository from "../../Infrastructure/repositories/database/product.repository";
 import CategoryRepository from "../../Infrastructure/repositories/database/category.repository";
 import { v7 as uuidv7 } from "uuid";
-import { MapProduct } from "../../Common/models/mapping";
 import { InvariantError, NotFoundError } from "../../Common/errors";
 
 interface ICategoryService {
@@ -80,7 +79,7 @@ class CategoryService implements ICategoryService {
 
 		const dbData = {
 			...categoryData,
-			products: products.map((product: IProduct) => MapProduct(product as IProductMap))
+			products: products
 		};
 		await this._cacheRepository.set({
 			key: cacheKey,

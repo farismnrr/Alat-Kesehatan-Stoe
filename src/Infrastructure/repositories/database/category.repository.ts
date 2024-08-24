@@ -39,7 +39,7 @@ class CategoryRepository implements ICategoryRepository {
 		return result.rows;
 	}
 
-	async getCategoryById(category: Partial<ICategory>): Promise<ICategory[]> {
+	async getCategoryById(category: Partial<ICategory>): Promise<ICategory> {
 		const categoryQuery = {
 			text: "SELECT id, name, description FROM categories WHERE id = $1",
 			values: [category.id]

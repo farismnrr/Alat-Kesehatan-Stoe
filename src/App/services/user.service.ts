@@ -2,7 +2,7 @@ import type { IUser, IUserAuth } from "../../Common/models/interface";
 import bcrypt from "bcrypt";
 import UserRepository from "../../Infrastructure/repositories/database/user.repository";
 import AuthRepository from "../../Infrastructure/repositories/database/auth.repository";
-import { v4 as uuidv4 } from "uuid";
+import { v7 as uuidv7 } from "uuid";
 import {
 	InvariantError,
 	NotFoundError,
@@ -40,7 +40,7 @@ class UserService implements IUserService {
 			throw new InvariantError("Username already exists");
 		}
 
-		const id = uuidv4();
+		const id = uuidv7();
 		const hashedPassword = await bcrypt.hash(payload.password, 10);
 		const userId = await this._userRepository.addUser({
 			...payload,
