@@ -14,11 +14,10 @@ class OrderHandler {
 		this._validator = validator;
 	}
 
+	// Start Order Handler
 	async postOrderHandler(request: Request, h: ResponseToolkit) {
-		const payload = request.payload as IOrder;
 		const user = request.auth.credentials as unknown as IOrder;
-		this._validator.validateAddOrderPayload(payload);
-		const orderId = await this._orderService.addOrder({ ...payload, userId: user.id });
+		const orderId = await this._orderService.addOrder({ userId: user.id });
 		return h
 			.response({
 				status: "success",
@@ -53,6 +52,51 @@ class OrderHandler {
 			})
 			.code(200);
 	}
+	// End Order Handler
+
+	// Start Order Item Handler
+	async postOrderItemHandler(request: Request, h: ResponseToolkit) {
+		const payload = request.payload as any;
+		const user = request.auth.credentials as unknown as IOrder;
+		const { id } = request.params;
+		this._validator.validateAddOrderItemPayload(payload);
+		const itemId = await this._orderService.addOrderItem(payload, id, user.id);
+		return h
+			.response({
+				status: "success",
+				message: "Order item successfully added",
+				data: {
+					itemId
+				}
+			})
+			.code(201);
+	}
+
+	async getOrderItemsHandler(request: Request, h: ResponseToolkit) {
+		const { id } = request.params;
+		const user = request.auth.credentials as unknown as IOrder;
+		const orderItems = await this._orderService.getOrderItems({ orderId: id, userId: user.id });
+		return h
+			.response({
+				status: "success",
+				message: "Order items successfully retrieved",
+				data: orderItems
+			})
+			.code(200);
+	}
+
+	async deleteOrderItemHandler(request: Request, h: ResponseToolkit) {
+		const { id, itemId } = request.params;
+		const user = request.auth.credentials as unknown as IOrder;
+		await this._orderService.deleteOrderItem({ id: itemId, userId: user.id, orderId: id });
+		return h
+			.response({
+				status: "success",
+				message: "Order item successfully deleted"
+			})
+			.code(200);
+	}
+	// End Order Item Handler
 }
 
 export default OrderHandler;

@@ -97,6 +97,7 @@ class UserHandler implements IUserHandler {
 			.code(201);
 	}
 
+	// TODO: Create Authentication Error for Missing Token
 	async putUserAuthHandler(request: Request, h: ResponseToolkit) {
 		const payload = request.payload as IUserAuth;
 		this._validator.validateAuthPayload(payload);
@@ -121,6 +122,7 @@ class UserHandler implements IUserHandler {
 			.code(200);
 	}
 
+	// TODO: Create Authentication Error for Missing Token
 	async deleteUserAuthHandler(request: Request, h: ResponseToolkit) {
 		const payload = request.payload as IUserAuth;
 		this._validator.validateAuthPayload(payload);

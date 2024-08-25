@@ -1,20 +1,10 @@
-import type { IOrder, IOrderMap, IOrderWithUser, IUserMap } from "../../types";
-import { MapUser } from "./user.map";
+import type { IOrderMap, IOrderUserMap } from "../../types";
 
-const MapOrder = (order: IOrderMap): IOrder => {
+const MapOrder = (order: IOrderUserMap): IOrderMap => {
 	return {
-		id: order.id,
-		userId: order.user_id,
-		totalPrice: order.total_price
+		orderId: order.id,
+		userId: order.user_id
 	};
 };
 
-const MapOrderWithUser = (order: IOrderMap, user: IUserMap): IOrderWithUser => {
-	return {
-		id: order.id,
-		totalPrice: parseFloat(order.total_price.toString()),
-		user: MapUser(user)
-	};
-};
-
-export { MapOrder, MapOrderWithUser };
+export { MapOrder };

@@ -1,10 +1,9 @@
-import type { IOrder } from "../../../Common/models/types";
+import { AddOrderItemPayloadSchema } from "./schema";   
 import { InvariantError } from "../../../Common/errors";
-import { AddOrderPayloadSchema } from "./schema";
 
 const OrderValidator = {
-	validateAddOrderPayload: (payload: Partial<IOrder>) => {
-		const validationResult = AddOrderPayloadSchema.validate(payload);
+	validateAddOrderItemPayload: (payload: any) => {
+		const validationResult = AddOrderItemPayloadSchema.validate(payload);
 		if (validationResult.error) {
 			throw new InvariantError(validationResult.error.message);
 		}

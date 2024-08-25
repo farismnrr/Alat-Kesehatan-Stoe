@@ -1,18 +1,12 @@
 import type { RemoveKeys, RenameKeys } from "../../utils/model.types";
 import type { IUser } from "./user.types";
 
-interface IOrder {
+type IOrder = {
 	id: string;
 	userId: string;
-	totalPrice: number;
-}
-
-type IOrderWithUser = RemoveKeys<IOrder, "userId"> & {
-	user: IUser;
-	source: string;
 };
 
-type IOrderMap = RenameKeys<IOrder, "userId", "user_id"> &
-	RenameKeys<IOrder, "totalPrice", "total_price">;
+type IOrderMap = RenameKeys<IOrder, "id", "orderId">;
+type IOrderUserMap = RenameKeys<IOrder, "userId", "user_id">;
 
-export type { IOrder, IOrderWithUser, IOrderMap };
+export type { IOrder, IOrderMap, IOrderUserMap };
