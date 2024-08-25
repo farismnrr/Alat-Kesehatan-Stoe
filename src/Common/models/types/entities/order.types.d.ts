@@ -9,6 +9,7 @@ interface IOrder {
 
 type IOrderWithUser = RemoveKeys<IOrder, "userId"> & {
 	user: IUser;
+	source: string;
 };
 
 type IOrderMap = RenameKeys<IOrder, "userId", "user_id"> &

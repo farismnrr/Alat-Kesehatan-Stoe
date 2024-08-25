@@ -1,4 +1,5 @@
 import type { IOrder, IOrderWithUser } from "../../Common/models/types";
+import CacheRepository from "../../Infrastructure/repositories/cache/cache.repository";
 import AuthRepository from "../../Infrastructure/repositories/database/auth.repository";
 import OrderRepository from "../../Infrastructure/repositories/database/order.repository";
 import { v7 as uuidv7 } from "uuid";
@@ -13,10 +14,16 @@ interface IOrderService {
 class OrderService implements IOrderService {
 	private _authRepository: AuthRepository;
 	private _orderRepository: OrderRepository;
+	private _cacheRepository: CacheRepository;
 
-	constructor(authRepository: AuthRepository, orderRepository: OrderRepository) {
+	constructor(
+		authRepository: AuthRepository,
+		orderRepository: OrderRepository,
+		cacheRepository: CacheRepository
+	) {
 		this._authRepository = authRepository;
 		this._orderRepository = orderRepository;
+		this._cacheRepository = cacheRepository;
 	}
 
 	async addOrder(payload: IOrder): Promise<string> {
@@ -35,6 +42,8 @@ class OrderService implements IOrderService {
 			throw new InvariantError("Failed to add order");
 		}
 
+		await this._cacheRepository.delete({ key: `order:${payload.userId}` });
+
 		return orderId;
 	}
 
@@ -48,12 +57,22 @@ class OrderService implements IOrderService {
 			throw new AuthorizationError("You are not authorized to access this order");
 		}
 
+		const cacheKey = `order:${payload.userId}`;
+		const cachedData = await this._cacheRepository.get({ key: cacheKey });
+		const orderResult = cachedData ? JSON.parse(cachedData) : null;
+		
+		if (orderResult) {
+			return orderResult.map((order: IOrderWithUser) => ({ ...order, source: "cache" }));
+		}
+
 		const orders = await this._orderRepository.getOrderByUserId(payload);
 		if (!orders) {
 			throw new NotFoundError("Order not found");
 		}
 
-		return orders;
+		await this._cacheRepository.set({ key: cacheKey, value: JSON.stringify(orders) });
+
+		return orders.map(order => ({ ...order, source: "database" }));
 	}
 
 	async deleteOrder(payload: Partial<IOrder>): Promise<void> {
@@ -72,6 +91,7 @@ class OrderService implements IOrderService {
 		}
 
 		await this._orderRepository.deleteOrderById(payload);
+		await this._cacheRepository.delete({ key: `order:${payload.userId}` });
 	}
 }
 
