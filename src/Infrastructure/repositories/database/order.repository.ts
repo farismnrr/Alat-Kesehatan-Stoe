@@ -1,6 +1,6 @@
-import type { IOrder, IOrderMap } from "../../../Common/models/types";
+import type { IOrder, IOrderMap, IOrderItem, IOrderItemsMap } from "../../../Common/models/types";
 import { Pool } from "pg";
-import { MapOrder } from "../../../Common/models/mapping";
+import { MapOrder, MapOrderItem } from "../../../Common/models/mapping";
 
 interface IOrderRepository {
 	// Start Order Repository
@@ -11,6 +11,10 @@ interface IOrderRepository {
 	// End Order Repository
 
 	// Start Order Item Repository
+	addOrderItem(orderItem: Partial<IOrderItem>): Promise<string>;
+	getOrderItemsByOrderId(orderItem: Partial<IOrderItem>): Promise<IOrderItemsMap[] | null>;
+	getOrderItemById(orderItem: Partial<IOrderItem>): Promise<IOrderItemsMap | null>;
+	deleteOrderItem(orderItem: Partial<IOrderItem>): Promise<void>;
 	// End Order Item Repository
 }
 
@@ -67,7 +71,7 @@ class OrderRepository implements IOrderRepository {
 	// End Order Repository
 
 	// Start Order Item Repository
-	async addOrderItem(orderItem: any): Promise<string> {
+	async addOrderItem(orderItem: Partial<IOrderItem>): Promise<string> {
 		const orderItemQuery = {
 			text: `
 			  INSERT INTO order_items (id, order_id, product_id, quantity, subtotal)
@@ -82,17 +86,17 @@ class OrderRepository implements IOrderRepository {
 		return orderItemResult.rows[0].id;
 	}
 
-	async getOrderItemsByOrderId(orderItem: Partial<any>): Promise<any | null> {
+	async getOrderItemsByOrderId(orderItem: Partial<IOrderItem>): Promise<IOrderItemsMap[] | null> {
 		const orderItemQuery = {
-			text: "SELECT id, order_id, quantity, subtotal FROM order_items WHERE order_id = $1",
-			values: [orderItem]
+			text: "SELECT id, product_id, quantity, subtotal FROM order_items WHERE order_id = $1",
+			values: [orderItem.orderId]
 		};
 
 		const orderItemResult = await this._pool.query(orderItemQuery);
-		return orderItemResult.rows ? orderItemResult.rows : null;
+		return orderItemResult.rows.map(MapOrderItem);
 	}
 
-	async getOrderItemById(orderItem: Partial<any>): Promise<any | null> {
+	async getOrderItemById(orderItem: Partial<IOrderItem>): Promise<IOrderItemsMap | null> {
 		const orderItemQuery = {
 			text: "SELECT id, order_id, quantity, subtotal FROM order_items WHERE id = $1",
 			values: [orderItem.id]
@@ -102,7 +106,7 @@ class OrderRepository implements IOrderRepository {
 		return orderItemResult.rows[0] ? orderItemResult.rows[0] : null;
 	}
 
-	async deleteOrderItem(orderItem: Partial<any>): Promise<void> {
+	async deleteOrderItem(orderItem: Partial<IOrderItem>): Promise<void> {
 		const orderItemQuery = {
 			text: "DELETE FROM order_items WHERE id = $1",
 			values: [orderItem.id]

@@ -84,7 +84,9 @@ class ProductService implements IProductService {
 			throw new NotFoundError("Product not found");
 		}
 
-		await this._cacheRepository.set({ key: cacheKey, value: JSON.stringify(product) });
+		console.log({ ...product }, "source: database");
+
+		// await this._cacheRepository.set({ key: cacheKey, value: JSON.stringify(product) });
 
 		return {
 			...product,

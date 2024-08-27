@@ -31,6 +31,12 @@ const handleClientError = (server: Hapi.Server) => {
 			});
 			if (response instanceof ClientError) {
 				newResponse.code(response.statusCode);
+			} else if (response instanceof Error) {
+				if (response.message === "invalid input syntax for type uuid: \"xxx\"") {
+					newResponse.code(400);
+				} else {
+					newResponse.code(401);
+				}
 			} else {
 				newResponse.code(500);
 			}

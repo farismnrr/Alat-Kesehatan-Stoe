@@ -1,4 +1,10 @@
-import type { IOrder } from "../../Common/models/types";
+import type {
+	IOrder,
+	IOrderUser,
+	IOrderItem,
+	IOrderCache,
+	IOrderItemsCache
+} from "../../Common/models/types";
 import CacheRepository from "../../Infrastructure/repositories/cache/cache.repository";
 import AuthRepository from "../../Infrastructure/repositories/database/auth.repository";
 import OrderRepository from "../../Infrastructure/repositories/database/order.repository";
@@ -12,10 +18,10 @@ interface IOrderService {
 	deleteOrder(payload: Partial<IOrder>): Promise<void>;
 	// End Order Service
 
-	// TODO: Create the interface for the order item service
 	// Start Order Item Service
-	// addOrderItem(payload: IOrderItem): Promise<string>;
-	// deleteOrderItem(payload: Partial<IOrderItem>): Promise<void>;
+	addOrderItem(payload: IOrderItem, orderId: string, userId: string): Promise<string>;
+	getOrderItems(payload: Partial<IOrderUser>): Promise<IOrderItemsCache>;
+	deleteOrderItem(payload: Partial<IOrderItem>): Promise<void>;
 	// End Order Item Service
 }
 
@@ -52,12 +58,12 @@ class OrderService implements IOrderService {
 		}
 
 		await this._cacheRepository.delete({ key: `order:${payload.userId}` });
+		await this._cacheRepository.delete({ key: `order-item:${payload.userId}` });
 
 		return orderId;
 	}
 
-	// TODO: Create Interface for getOrders Promise
-	async getOrders(payload: Partial<IOrder>): Promise<any> {
+	async getOrders(payload: Partial<IOrder>): Promise<IOrderCache> {
 		if (!payload.userId) {
 			throw new InvariantError("User ID is required");
 		}
@@ -107,12 +113,12 @@ class OrderService implements IOrderService {
 
 		await this._orderRepository.deleteOrderById(payload);
 		await this._cacheRepository.delete({ key: `order:${payload.userId}` });
+		await this._cacheRepository.delete({ key: `order-item:${payload.userId}` });
 	}
 	// End Order Service
 
-	// TODO: Create Interface for addOrderItem Payload
 	// Start Order Item Service
-	async addOrderItem(payload: any, orderId: string, userId: string): Promise<string> {
+	async addOrderItem(payload: IOrderItem, orderId: string, userId: string): Promise<string> {
 		if (!orderId || !payload.productId || !payload.quantity) {
 			throw new InvariantError("Order ID, product ID, and quantity are required");
 		}
@@ -141,13 +147,24 @@ class OrderService implements IOrderService {
 			throw new InvariantError("Failed to add order item");
 		}
 
+		await this._cacheRepository.delete({ key: `order-item:${userId}` });
+
 		return orderItemId;
 	}
 
-	// TODO: Create Interface for getOrderItems Payload and Promise
-	async getOrderItems(payload: Partial<any>): Promise<any> {
-		if (!payload.orderId) {
-			throw new InvariantError("Order ID is required");
+	async getOrderItems(payload: Partial<IOrderUser>): Promise<IOrderItemsCache> {
+		if (!payload.orderId || !payload.userId) {
+			throw new InvariantError("Order ID and user ID are required");
+		}
+
+		const cacheKey = `order-item:${payload.userId}`;
+		const cachedData = await this._cacheRepository.get({ key: cacheKey });
+		const orderResult = cachedData ? JSON.parse(cachedData) : null;
+		if (orderResult) {
+			return {
+				...orderResult,
+				source: "cache"
+			};
 		}
 
 		const role = await this._authRepository.verifyRole({ id: payload.userId });
@@ -164,20 +181,28 @@ class OrderService implements IOrderService {
 			throw new AuthorizationError("You are not allowed to access this order");
 		}
 
-		const orderItems = await this._orderRepository.getOrderItemsByOrderId(payload.orderId);
+		const orderItems = await this._orderRepository.getOrderItemsByOrderId({
+			orderId: payload.orderId
+		});
 		if (!orderItems) {
 			throw new NotFoundError("Order items not found");
 		}
 
-		return {
+		const orderItemsCache = {
 			userId: payload.userId,
 			orderId: payload.orderId,
-			items: orderItems // TODO: Create a mapping function to map the order items
+			items: orderItems,
+		};
+
+		await this._cacheRepository.set({ key: cacheKey, value: JSON.stringify(orderItemsCache) });
+
+		return {
+			...orderItemsCache,
+			source: "database"
 		};
 	}
 
-	// TODO: Create Interface for deleteOrderItem Payload
-	async deleteOrderItem(payload: Partial<any>): Promise<void> {
+	async deleteOrderItem(payload: Partial<IOrderItem>): Promise<void> {
 		if (!payload.id || !payload.userId) {
 			throw new InvariantError("Order ID and user ID are required");
 		}
@@ -202,6 +227,7 @@ class OrderService implements IOrderService {
 		}
 
 		await this._orderRepository.deleteOrderItem(payload);
+		await this._cacheRepository.delete({ key: `order-item:${payload.userId}` });
 	}
 	// End Order Item Service
 }
